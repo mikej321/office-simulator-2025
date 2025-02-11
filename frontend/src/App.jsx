@@ -7,10 +7,13 @@ function App() {
   return (
     <div className="App">
       <h1>Office Simulator 2025 (Placeholder)</h1>
-      <div className="authors">
-        <h2>Bryce Freshwater</h2>
-        <h2>Santiago Mariani</h2>
-        <h2>Michael Johnson</h2>
+      <div className="accreditation">
+        <h2>By yours truly</h2>
+        <div className="authors">
+          <h3>Bryce Freshwater</h3>
+          <h3>Santiago Mariani</h3>
+          <h3>Michael Johnson</h3>
+        </div>
       </div>
       <PhaserGame />
     </div>
