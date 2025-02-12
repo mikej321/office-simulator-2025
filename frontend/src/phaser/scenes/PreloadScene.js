@@ -8,6 +8,6 @@ export default class PreloadScene extends Phaser.Scene {
   preload() {}
 
   create() {
-    this.scene.start("GameScene");
+    this.scene.start("MainMenuScene");
   }
 }

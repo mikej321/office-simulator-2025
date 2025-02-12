@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import PreloadScene from './scenes/PreloadScene';
 import GameScene from './scenes/GameScene';
+import MainMenuScene from './scenes/MainMenuScene';
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -13,12 +14,12 @@ const PhaserGame = () => {
           type: Phaser.AUTO,
           width: 800,
           height: 600,
-          parent: 'phaser-game',
+          parent: 'game-container', // Ensure this ID exists in App.jsx
           physics: {
             default: 'arcade',
             arcade: { gravity: { y: 0 }, debug: false },
           },
-          scene: [BootScene, PreloadScene, GameScene],
+          scene: [BootScene, PreloadScene, MainMenuScene, GameScene],
         };
   
         gameRef.current = new Phaser.Game(config);
@@ -31,8 +32,8 @@ const PhaserGame = () => {
         }
       };
     }, []);
-  
-    return <div id="phaser-game"></div>;
+
+    return null; 
   };
 
 export default PhaserGame;
