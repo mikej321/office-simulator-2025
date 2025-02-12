@@ -1,9 +1,27 @@
 import Phaser from "phaser";
+import WebFont from "webfontloader";
 
 class MainMenuScene extends Phaser.Scene {
   constructor() {
     super({
       key: "MainMenuScene",
+    });
+  }
+
+  preload() {
+    // Use WebFontLoader to load fonts before proceeding
+    WebFont.load({
+      google: {
+        families: ["Chewy", "Fredoka:wght@300..700"],
+      },
+      active: () => {
+        console.log("Fonts loaded");
+        this.scene.start("MainMenuScene");
+      },
+      inactive: () => {
+        console.error("Font loading failed");
+        this.scene.start("MainMenuScene");
+      },
     });
   }
 
