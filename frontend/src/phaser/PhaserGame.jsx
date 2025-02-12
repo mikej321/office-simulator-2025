@@ -19,6 +19,10 @@ const PhaserGame = () => {
             default: 'arcade',
             arcade: { gravity: { y: 0 }, debug: false },
           },
+          scale: {
+            mode: Phaser.Scale.RESIZE, // This will update the canvas size
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
           scene: [BootScene, PreloadScene, MainMenuScene, GameScene],
         };
   
