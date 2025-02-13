@@ -10,26 +10,48 @@ class MainMenuScene extends Phaser.Scene {
 
   preload() {
     // Use WebFontLoader to load fonts before proceeding
+
+    this.fontsLoaded = false;
+
     WebFont.load({
       google: {
         families: ["Chewy", "Fredoka:wght@300..700"],
       },
       active: () => {
         console.log("Fonts loaded");
-        this.scene.start("MainMenuScene");
+        this.fontsLoaded = true;
+        this.startMenu();
       },
       inactive: () => {
         console.error("Font loading failed");
-        this.scene.start("MainMenuScene");
+        this.fontsLoaded = true;
+        this.startMenu();
       },
     });
   }
 
   create() {
+    this.time.addEvent({
+      delay: 100,
+      callback: () => {
+        if (this.fontsLoaded) {
+          if (!this.menuStarted) {
+            this.menuStarted = true;
+            this.startMenu();
+          }
+        } else {
+          this.time.delayedCall(50, this.create, [], this);
+        }
+      },
+    });
+  }
+
+  startMenu() {
     // Center coordinates
     const { width, height } = this.scale;
 
     // Title text
+    if (this.titleText) this.titleText.destroy();
     this.titleText = this.add
       .text(width / 2, height / 4, "Office Simulator 2025", {
         fontSize: "48px",
@@ -38,16 +60,43 @@ class MainMenuScene extends Phaser.Scene {
         fontStyle: "Bold",
         fontFamily: "Fredoka",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setAlpha(0);
+
+    this.tweens.add({
+      targets: this.titleText,
+      alpha: 1,
+      duration: 2000,
+      ease: "Sine.easeInOut",
+    });
+
+    this.tweens.add({
+      targets: this.titleText,
+      scale: 1.05,
+      duration: 2000,
+      ease: "Sine.easeInOut",
+      yoyo: true,
+      repeat: -1,
+    });
 
     // Accreditation text
+    if (this.accreditationText) this.accreditationText.destroy();
     this.accreditationText = this.add
-      .text(width / 2, height / 2.5, "By yours truly", {
+      .text(width / 2, height / 3, "By yours truly", {
         fontSize: "24px",
         color: "#ffffff",
         fontFamily: "Fredoka",
       })
       .setOrigin(0.5);
+
+    this.tweens.add({
+      targets: this.accreditationText,
+      scale: 1.05,
+      duration: 2000,
+      ease: "Sine.easeInOut",
+      yoyo: true,
+      repeat: -1,
+    });
 
     // Author names
     this.authorTexts = [];
@@ -61,6 +110,15 @@ class MainMenuScene extends Phaser.Scene {
         })
         .setOrigin(0.5);
       this.authorTexts.push(text);
+    });
+
+    this.tweens.add({
+      targets: this.authorTexts,
+      scale: 1.02,
+      duration: 2000,
+      ease: "Sine.easeIn",
+      yoyo: true,
+      repeat: -1,
     });
 
     // Start game button
