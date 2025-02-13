@@ -70,9 +70,11 @@ class MainMenuScene extends Phaser.Scene {
       delay: titleTypingSpeed,
       callback: () => {
         if (titleIndex < titleText.length) {
-          this.titleText.setText(titleText.substring(0, titleIndex + 1));
+          this.titleText.setText(titleText.substring(0, titleIndex + 1) + "|"); // Add cursor
           titleIndex++;
         } else {
+          this.titleText.setText(titleText); // Remove cursor at the end
+          this.startCursorBlink(this.titleText, true); // Start blinking
           this.animateAccreditationText();
           titleTyping.remove();
         }
@@ -99,10 +101,6 @@ class MainMenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const accreditationText = "By yours truly";
-    let accreditationIndex = 0;
-    const accreditationTypingSpeed = 100;
-
     // Author names
 
     /* IMPORTANT! Figure out how to get the names
@@ -111,13 +109,12 @@ class MainMenuScene extends Phaser.Scene {
     const authors = ["Bryce Freshwater", "Santiago Mariani", "Michael Johnson"];
     authors.forEach((name, index) => {
       const text = this.add
-        .text(width / 2, height / 2 + index * 40, name, {
+        .text(-200, height / 2 + index * 40, name, {
           fontSize: "20px",
           color: "#ffffff",
           fontFamily: "Chewy",
         })
-        .setOrigin(0.5)
-        .setAlpha(0);
+        .setOrigin(0.5);
       this.authorTexts.push(text);
     });
 
@@ -179,6 +176,20 @@ class MainMenuScene extends Phaser.Scene {
     }
   }
 
+  animateAuthors() {
+    this.authorTexts.forEach((text, index) => {
+      this.time.delayedCall(index * 500, () => {
+        // delays each name by a greater magnitude
+        this.tweens.add({
+          targets: text,
+          x: this.scale.width / 2, // move to center
+          duration: 1000,
+          ease: "Bounce.Out",
+        });
+      });
+    });
+  }
+
   animateAccreditationText() {
     const accreditationText = "By yours truly";
     let accreditationIndex = 0;
@@ -189,17 +200,41 @@ class MainMenuScene extends Phaser.Scene {
       callback: () => {
         if (accreditationIndex < accreditationText.length) {
           this.accreditationText.setText(
-            accreditationText.substring(0, accreditationIndex + 1)
+            accreditationText.substring(0, accreditationIndex + 1) + "|"
           );
           accreditationIndex++;
         } else {
           // Once accreditation is typed, trigger author text animations
-          this.animateAuthorTexts();
+          this.accreditationText.setText(accreditationText); // Remove cursor
+          this.startCursorBlink(this.accreditationText, true); // Start blinking
           accreditationTypingEvent.remove(); // Once accreditation is typed, stop the event
+          this.animateAuthors();
         }
       },
       loop: true,
     });
+  }
+
+  startCursorBlink(textObject, stopAfter = false) {
+    const blink = this.time.addEvent({
+      delay: 500,
+      loop: true,
+      callback: () => {
+        const currentText = textObject.text;
+        if (currentText.endsWith("|")) {
+          textObject.setText(currentText.slice(0, -1)); // Remove cursor
+        } else {
+          textObject.setText(currentText + "|"); // Add cursor
+        }
+      },
+    });
+
+    if (stopAfter) {
+      this.time.delayedCall(500, () => {
+        textObject.setText(textObject.text.replace("|", ""));
+        blink.remove();
+      });
+    }
   }
 }
 
