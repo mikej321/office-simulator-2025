@@ -53,41 +53,31 @@ class MainMenuScene extends Phaser.Scene {
     // Title text
     if (this.titleText) this.titleText.destroy();
     this.titleText = this.add
-      .text(width / 2, height / 4, "Office Simulator 2025", {
+      .text(width / 2, height / 4, "", {
         fontSize: "48px",
         color: "#ffffff",
         letterSpacing: 2,
         fontStyle: "Bold",
         fontFamily: "Fredoka",
       })
-      .setOrigin(0.5)
-      .setAlpha(0)
-      .setY(0);
+      .setOrigin(0.5);
 
-    // fadeIn tween chain
-    this.tweens.add({
-      targets: this.titleText,
-      alpha: 1,
-      y: 300,
-      duration: 1000,
-      ease: "Sine.easeOut",
-      onComplete: () => {
-        this.tweens.add({
-          targets: this.accreditationText,
-          alpha: 1,
-          y: 375,
-          duration: 1000,
-          ease: "Sine.easeOut",
-          onComplete: () => {
-            this.tweens.add({
-              targets: this.authorTexts,
-              alpha: 1,
-              duration: 1000,
-              ease: "Sine.easeOut",
-            });
-          },
-        });
+    let titleIndex = 0;
+    const titleText = "Office Simulator 2025";
+    const titleTypingSpeed = 75;
+
+    const titleTyping = this.time.addEvent({
+      delay: titleTypingSpeed,
+      callback: () => {
+        if (titleIndex < titleText.length) {
+          this.titleText.setText(titleText.substring(0, titleIndex + 1));
+          titleIndex++;
+        } else {
+          this.animateAccreditationText();
+          titleTyping.remove();
+        }
       },
+      loop: true,
     });
 
     this.tweens.add({
@@ -102,14 +92,16 @@ class MainMenuScene extends Phaser.Scene {
     // Accreditation text
     if (this.accreditationText) this.accreditationText.destroy();
     this.accreditationText = this.add
-      .text(width / 2, height / 2.5, "By yours truly", {
+      .text(width / 2, height / 3, "", {
         fontSize: "24px",
         color: "#ffffff",
         fontFamily: "Fredoka",
       })
-      .setOrigin(0.5)
-      .setAlpha(0)
-      .setY(0);
+      .setOrigin(0.5);
+
+    const accreditationText = "By yours truly";
+    let accreditationIndex = 0;
+    const accreditationTypingSpeed = 100;
 
     // Author names
 
@@ -185,6 +177,29 @@ class MainMenuScene extends Phaser.Scene {
     if (this.startText) {
       this.startText.setPosition(width / 2, height - 100);
     }
+  }
+
+  animateAccreditationText() {
+    const accreditationText = "By yours truly";
+    let accreditationIndex = 0;
+    const accreditationTypingSpeed = 100;
+
+    const accreditationTypingEvent = this.time.addEvent({
+      delay: accreditationTypingSpeed,
+      callback: () => {
+        if (accreditationIndex < accreditationText.length) {
+          this.accreditationText.setText(
+            accreditationText.substring(0, accreditationIndex + 1)
+          );
+          accreditationIndex++;
+        } else {
+          // Once accreditation is typed, trigger author text animations
+          this.animateAuthorTexts();
+          accreditationTypingEvent.remove(); // Once accreditation is typed, stop the event
+        }
+      },
+      loop: true,
+    });
   }
 }
 
