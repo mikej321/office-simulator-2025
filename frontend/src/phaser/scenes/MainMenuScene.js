@@ -61,19 +61,39 @@ class MainMenuScene extends Phaser.Scene {
         fontFamily: "Fredoka",
       })
       .setOrigin(0.5)
-      .setAlpha(0);
+      .setAlpha(0)
+      .setY(0);
 
+    // fadeIn tween chain
     this.tweens.add({
       targets: this.titleText,
       alpha: 1,
-      duration: 2000,
-      ease: "Sine.easeInOut",
+      y: 300,
+      duration: 1000,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        this.tweens.add({
+          targets: this.accreditationText,
+          alpha: 1,
+          y: 375,
+          duration: 1000,
+          ease: "Sine.easeOut",
+          onComplete: () => {
+            this.tweens.add({
+              targets: this.authorTexts,
+              alpha: 1,
+              duration: 1000,
+              ease: "Sine.easeOut",
+            });
+          },
+        });
+      },
     });
 
     this.tweens.add({
       targets: this.titleText,
-      scale: 1.05,
-      duration: 2000,
+      scale: 1.02,
+      duration: 1000,
       ease: "Sine.easeInOut",
       yoyo: true,
       repeat: -1,
@@ -82,23 +102,19 @@ class MainMenuScene extends Phaser.Scene {
     // Accreditation text
     if (this.accreditationText) this.accreditationText.destroy();
     this.accreditationText = this.add
-      .text(width / 2, height / 3, "By yours truly", {
+      .text(width / 2, height / 2.5, "By yours truly", {
         fontSize: "24px",
         color: "#ffffff",
         fontFamily: "Fredoka",
       })
-      .setOrigin(0.5);
-
-    this.tweens.add({
-      targets: this.accreditationText,
-      scale: 1.05,
-      duration: 2000,
-      ease: "Sine.easeInOut",
-      yoyo: true,
-      repeat: -1,
-    });
+      .setOrigin(0.5)
+      .setAlpha(0)
+      .setY(0);
 
     // Author names
+
+    /* IMPORTANT! Figure out how to get the names
+    to come in one at a time from the left to right */
     this.authorTexts = [];
     const authors = ["Bryce Freshwater", "Santiago Mariani", "Michael Johnson"];
     authors.forEach((name, index) => {
@@ -108,32 +124,26 @@ class MainMenuScene extends Phaser.Scene {
           color: "#ffffff",
           fontFamily: "Chewy",
         })
-        .setOrigin(0.5);
+        .setOrigin(0.5)
+        .setAlpha(0);
       this.authorTexts.push(text);
     });
 
-    this.tweens.add({
-      targets: this.authorTexts,
-      scale: 1.02,
-      duration: 2000,
-      ease: "Sine.easeIn",
-      yoyo: true,
-      repeat: -1,
-    });
-
     // Start game button
-    this.startText = this.add
-      .text(width / 2, height - 100, "Click to Start", {
-        fontSize: "24px",
-        color: "#00ff00",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: {
-          x: 10,
-          y: 10,
-        },
-      })
-      .setOrigin(0.5);
+    if (!this.startText) {
+      this.startText = this.add
+        .text(width / 2, height - 100, "Click to Start", {
+          fontSize: "24px",
+          color: "#00ff00",
+          fontFamily: "Chewy",
+          backgroundColor: "#222",
+          padding: {
+            x: 10,
+            y: 10,
+          },
+        })
+        .setOrigin(0.5);
+    }
 
     this.startText.setInteractive();
     this.startText.on("pointerdown", () => {
@@ -158,15 +168,23 @@ class MainMenuScene extends Phaser.Scene {
     const width = gameSize.width;
     const height = gameSize.height;
 
-    // Update positions of text elements
-    this.titleText.setPosition(width / 2, height / 4);
-    this.accreditationText.setPosition(width / 2, height / 2.5);
-    // Reposition each author text
-    this.authorTexts.forEach((text, index) => {
-      text.setPosition(width / 2, height / 2 + index * 40);
-    });
-    // Center the start button
-    this.startText.setPosition(width / 2, height - 100);
+    if (this.titleText) {
+      this.titleText.setPosition(width / 2, height / 4);
+    }
+
+    if (this.accreditationText) {
+      this.accreditationText.setPosition(width / 2, height / 3);
+    }
+
+    if (this.authorTexts && this.authorTexts.length > 0) {
+      this.authorTexts.forEach((text, index) => {
+        text.setPosition(width / 2, height / 2 + index * 40);
+      });
+    }
+
+    if (this.startText) {
+      this.startText.setPosition(width / 2, height - 100);
+    }
   }
 }
 
