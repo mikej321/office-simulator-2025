@@ -64,23 +64,21 @@ class MainMenuScene extends Phaser.Scene {
 
     let titleIndex = 0;
     const titleText = "Office Simulator 2025";
-    const titleTypingSpeed = 75;
+    const titleTypingSpeed = 80;
 
-    const titleTyping = this.time.addEvent({
-      delay: titleTypingSpeed,
-      callback: () => {
-        if (titleIndex < titleText.length) {
-          this.titleText.setText(titleText.substring(0, titleIndex + 1) + "|"); // Add cursor
-          titleIndex++;
-        } else {
-          this.titleText.setText(titleText); // Remove cursor at the end
-          this.startCursorBlink(this.titleText, true); // Start blinking
-          this.animateAccreditationText();
-          titleTyping.remove();
-        }
-      },
-      loop: true,
-    });
+    const typeNextLetter = () => {
+      if (titleIndex < titleText.length) {
+        this.titleText.setText(titleText.substring(0, titleIndex + 1) + "|");
+        titleIndex++;
+        this.time.delayedCall(titleTypingSpeed, typeNextLetter);
+      } else {
+        this.titleText.setText(titleText);
+        this.startCursorBlink(this.titleText, true);
+        this.animateAccreditationText();
+      }
+    };
+
+    typeNextLetter();
 
     this.tweens.add({
       targets: this.titleText,
