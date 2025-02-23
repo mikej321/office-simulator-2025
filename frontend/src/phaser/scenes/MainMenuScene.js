@@ -133,8 +133,16 @@ class MainMenuScene extends Phaser.Scene {
     }
 
     this.startText.setInteractive();
+    this.startText.on("pointerover", () => {
+      this.input.setDefaultCursor("pointer");
+    });
+
+    this.startText.on("pointerout", () => {
+      this.input.setDefaultCursor("default");
+    });
+
     this.startText.on("pointerdown", () => {
-      this.scene.start("GameScene"); // Replace with your actual game scene
+      this.scene.start("IntroScene"); // Replace with your actual game scene
     });
 
     // Keyboard listener for fullscreen toggle
