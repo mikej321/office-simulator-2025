@@ -17,6 +17,12 @@ class IntroScene extends Phaser.Scene {
       "/office-simulator-2025/assets/laptop.json"
     );
 
+    this.load.atlas(
+      "player",
+      "/office-simulator-2025/assets/player-sprite.png",
+      "/office-simulator-2025/assets/player-sprite.json"
+    );
+
     /* The JSON file contains frame names and coordinates, which you
     can reference by name instead of grid positions */
     this.load.start();
@@ -81,6 +87,7 @@ class IntroScene extends Phaser.Scene {
 
       // Listen for window resize event
       this.scale.on("resize", this.updatePosition, this);
+      this.createPlayer();
     });
   }
 
@@ -112,6 +119,33 @@ class IntroScene extends Phaser.Scene {
 
     // Position the sprite at center
     this.introLaptop.setPosition(centerX, centerY);
+  }
+
+  createPlayer() {
+    this.player = this.add.sprite(-100, 400, "player", "frame-1").setScale(3);
+
+    this.anims.create({
+      key: "playerMove",
+      frames: this.anims.generateFrameNames("player", {
+        prefix: "frame-",
+        start: 8,
+        end: 41,
+      }),
+      frameRate: 8,
+      repeat: 0,
+    });
+
+    this.time.delayedCall(500, () => {
+      this.player.play("playerMove");
+
+      // Tween to move to middle of the screen
+      this.tweens.add({
+        targets: this.player,
+        x: this.scale.width / 2,
+        duration: 4100, // Adjust as needed
+        ease: "Linear",
+      });
+    });
   }
 }
 
