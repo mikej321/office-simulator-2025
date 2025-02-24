@@ -1,0 +1,43 @@
+{ "frames": {
+   "start": {
+    "frame": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 500
+   },
+   "opening": {
+    "frame": { "x": 433, "y": 0, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 500
+   },
+   "open": {
+    "frame": { "x": 0, "y": 361, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 500
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "Sprite-0001.png",
+  "format": "RGBA8888",
+  "size": { "w": 866, "h": 722 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Open", "opacity": 255, "blendMode": "normal" },
+   { "name": "Closed", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
