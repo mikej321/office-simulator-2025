@@ -10,7 +10,23 @@ class IntroScene extends Phaser.Scene {
 
   preload() {
     // Preparing Fonts
-    this.fontsReady = false;
+    this.fontsLoaded = false;
+
+    WebFont.load({
+      google: {
+        families: ["JetBrains Mono:wght@300,400,500,600,700"],
+      },
+      active: () => {
+        console.log("Fonts loaded");
+        this.fontsLoaded = true;
+        // Add typing function here
+      },
+      inactive: () => {
+        console.error("Font loading failed");
+        this.fontsLoaded = true;
+        // Add typing function here
+      },
+    });
 
     this.cameras.main.setBackgroundColor(0x000000);
     // Use atlas instead of spritesheet since the sizes are different
@@ -32,14 +48,29 @@ class IntroScene extends Phaser.Scene {
   }
 
   create() {
+    // This will be played for scaling at the very beginning of the scene
+    this.updateCanvas();
+  }
+
+  update() {}
+
+  // helper function to scale the background sprite
+  updateCanvas() {
     // Creating the laptop that will be the background for the intro scene
     this.introLaptop = this.add.sprite(500, 500, "introLaptop", "start");
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    // Calculate scale based on sprite's original dimensions
-    const scaleX = (width + 100) / this.introLaptop.width;
-    const scaleY = (height + 100) / this.introLaptop.height;
+
+    // Calculate scale
+    const scaleX =
+      width < 1000
+        ? (width + 100) / this.introLaptop.width
+        : (width - 400) / this.introLaptop.width;
+    const scaleY =
+      height < 1000
+        ? (height + 100) / this.introLaptop.height
+        : (height - 400) / this.introLaptop.height;
 
     // Use the smaller of the two scales to maintain aspect ratio
     const scale = Math.max(scaleX, scaleY);
@@ -86,18 +117,21 @@ class IntroScene extends Phaser.Scene {
       this.introLaptop.setFrame("open");
 
       // The initial scaling and position of the sprite
-      this.updatePosition();
+      this.updateSpritePosition();
 
       // Listen for window resize event
-      this.scale.on("resize", this.updatePosition, this);
-      this.createPlayer();
+      this.scale.on("resize", this.updateSpritePosition, this);
+
+      // Begin the typing animation
+      this.typingAnimation();
+
+      // This function will be called after the text has been typed on the screen
+      // this.createPlayer();
     });
   }
 
-  update() {}
-
   // helper function to update the position and scale
-  updatePosition() {
+  updateSpritePosition() {
     // Get the canvas size
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
@@ -122,6 +156,63 @@ class IntroScene extends Phaser.Scene {
 
     // Position the sprite at center
     this.introLaptop.setPosition(centerX, centerY);
+  }
+
+  typingAnimation() {
+    // Center coordinates (may need to change due to canvas being laptop)
+    const { width, height } = this.scale;
+
+    // Typing configuration
+    if (this.introText) this.introText.destroy();
+    this.introText = this.add
+      .text(width / 2 - 150, height / 4 - 40, "", {
+        fontSize: "24px",
+        color: "#ffffff",
+        letterSpacing: 2,
+        fontFamily: "JetBrains Mono",
+      })
+      .setOrigin(0.5);
+
+    let introTextIndex = 0;
+    const introText = 'let name = ""';
+    const introTypingSpeed = 80;
+
+    const typeNextLetter = () => {
+      if (introTextIndex < introText.length) {
+        this.introText.setText(
+          introText.substring(0, introTextIndex + 1) + "|"
+        );
+        introTextIndex++;
+        this.time.delayedCall(introTypingSpeed, typeNextLetter);
+      } else {
+        this.introText.setText(introText.substring(0, introText.length) + "|");
+        this.startCursorBlink(this.introText, true);
+      }
+    };
+
+    typeNextLetter();
+  }
+
+  startCursorBlink(textObject, stopAfter = false) {
+    const blink = this.time.addEvent({
+      delay: 500,
+      loop: true,
+      callback: () => {
+        const currentText = textObject.text;
+        if (currentText.endsWith("|")) {
+          textObject.setText(currentText.slice(0, -1)); // Remove cursor
+        } else {
+          textObject.setText(currentText + "|"); // Add cursor
+        }
+      },
+    });
+
+    if (stopAfter) {
+      this.time.delayedCall(500, () => {
+        textObject.setText(textObject.text.replace("|", ""));
+        blink.remove();
+      });
+    }
   }
 
   createPlayer() {
