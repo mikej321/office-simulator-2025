@@ -9,6 +9,9 @@ class IntroScene extends Phaser.Scene {
   }
 
   preload() {
+    // Preparing Fonts
+    this.fontsReady = false;
+
     this.cameras.main.setBackgroundColor(0x000000);
     // Use atlas instead of spritesheet since the sizes are different
     this.load.atlas(

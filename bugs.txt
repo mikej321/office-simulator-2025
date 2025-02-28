@@ -1,3 +1,2 @@
 All Bugs should go here
 
-// The author text will just appear on screen after about 3 refreshes. Find out how to fix this!
