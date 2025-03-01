@@ -165,13 +165,14 @@ class IntroScene extends Phaser.Scene {
     // Typing configuration
     if (this.introText) this.introText.destroy();
     this.introText = this.add
-      .text(width / 2 - 150, height / 4 - 40, "", {
+      .text(width / 2 - 275, height / 4 - 40, "|", {
         fontSize: "24px",
         color: "#ffffff",
         letterSpacing: 2,
         fontFamily: "JetBrains Mono",
+        fontStyle: "Bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0.5);
 
     let introTextIndex = 0;
     const introText = 'let name = ""';
@@ -180,17 +181,17 @@ class IntroScene extends Phaser.Scene {
     const typeNextLetter = () => {
       if (introTextIndex < introText.length) {
         this.introText.setText(
-          introText.substring(0, introTextIndex + 1) + "|"
+          introText.substring(0, introTextIndex + 1).replace(/""/, '"|"')
         );
         introTextIndex++;
         this.time.delayedCall(introTypingSpeed, typeNextLetter);
       } else {
-        this.introText.setText(introText.substring(0, introText.length) + "|");
-        this.startCursorBlink(this.introText, true);
+        this.introText.setText('let name = "|"');
+        this.startCursorBlink(this.introText);
       }
     };
 
-    typeNextLetter();
+    this.time.delayedCall(500, typeNextLetter);
   }
 
   startCursorBlink(textObject, stopAfter = false) {
@@ -199,17 +200,17 @@ class IntroScene extends Phaser.Scene {
       loop: true,
       callback: () => {
         const currentText = textObject.text;
-        if (currentText.endsWith("|")) {
-          textObject.setText(currentText.slice(0, -1)); // Remove cursor
+        if (currentText.includes("|")) {
+          textObject.setText(currentText.replace('"|"', '" "')); // Remove cursor
         } else {
-          textObject.setText(currentText + "|"); // Add cursor
+          textObject.setText(currentText.replace('" "', '"|"')); // Add cursor
         }
       },
     });
 
     if (stopAfter) {
       this.time.delayedCall(500, () => {
-        textObject.setText(textObject.text.replace("|", ""));
+        textObject.setText(textObject.text.replace('|"', '"'));
         blink.remove();
       });
     }
