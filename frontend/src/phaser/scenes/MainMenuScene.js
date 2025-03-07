@@ -10,12 +10,11 @@ class MainMenuScene extends Phaser.Scene {
 
   preload() {
     // Use WebFontLoader to load fonts before proceeding
-
     this.fontsLoaded = false;
 
     WebFont.load({
       google: {
-        families: ["Chewy", "Fredoka:wght@300..700"],
+        families: ["Chewy", "Fredoka:wght@300,400,500,600,700"],
       },
       active: () => {
         console.log("Fonts loaded");
@@ -142,7 +141,9 @@ class MainMenuScene extends Phaser.Scene {
     });
 
     this.startText.on("pointerdown", () => {
-      this.scene.start("IntroScene"); // Replace with your actual game scene
+      this.scene.start("testScene");
+      // Replace with your actual game scene
+      // this.scene.start("IntroScene");
     });
 
     // Keyboard listener for fullscreen toggle
