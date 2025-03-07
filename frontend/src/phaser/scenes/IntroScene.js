@@ -32,8 +32,8 @@ class IntroScene extends Phaser.Scene {
     // Use atlas instead of spritesheet since the sizes are different
     this.load.atlas(
       "introLaptop",
-      "/office-simulator-2025/assets/laptop.png",
-      "/office-simulator-2025/assets/laptop.json"
+      "/office-simulator-2025/assets/modified_laptop.png",
+      "/office-simulator-2025/assets/modified_laptop.json"
     );
 
     this.load.atlas(
@@ -92,17 +92,60 @@ class IntroScene extends Phaser.Scene {
         {
           key: "introLaptop",
           frame: "start",
+          duration: 100,
         },
         {
           key: "introLaptop",
           frame: "opening",
+          duration: 2,
         },
         {
           key: "introLaptop",
           frame: "open",
+          duration: 2,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-1",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-2",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-3",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-4",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-5",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-6",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-7",
+          duration: 83,
+        },
+        {
+          key: "introLaptop",
+          frame: "application-8",
+          duration: 83,
         },
       ],
-      frameRate: 2,
+      frameRate: 7,
       repeat: 0,
     });
 
@@ -114,7 +157,7 @@ class IntroScene extends Phaser.Scene {
     // Once the animation is finished, make it static
     this.time.delayedCall(1500, () => {
       // Set the last frame as the static background
-      this.introLaptop.setFrame("open");
+      this.introLaptop.setFrame("application-8");
 
       // The initial scaling and position of the sprite
       this.updateSpritePosition();
@@ -122,10 +165,6 @@ class IntroScene extends Phaser.Scene {
       // Listen for window resize event
       this.scale.on("resize", this.updateSpritePosition, this);
 
-      // Begin the typing animation
-      this.typingAnimation();
-
-      // This function will be called after the text has been typed on the screen
       // this.createPlayer();
     });
   }
@@ -156,64 +195,6 @@ class IntroScene extends Phaser.Scene {
 
     // Position the sprite at center
     this.introLaptop.setPosition(centerX, centerY);
-  }
-
-  typingAnimation() {
-    // Center coordinates (may need to change due to canvas being laptop)
-    const { width, height } = this.scale;
-
-    // Typing configuration
-    if (this.introText) this.introText.destroy();
-    this.introText = this.add
-      .text(width / 2 - 275, height / 4 - 40, "|", {
-        fontSize: "24px",
-        color: "#ffffff",
-        letterSpacing: 2,
-        fontFamily: "JetBrains Mono",
-        fontStyle: "Bold",
-      })
-      .setOrigin(0, 0.5);
-
-    let introTextIndex = 0;
-    const introText = 'let name = ""';
-    const introTypingSpeed = 80;
-
-    const typeNextLetter = () => {
-      if (introTextIndex < introText.length) {
-        this.introText.setText(
-          introText.substring(0, introTextIndex + 1).replace(/""/, '"|"')
-        );
-        introTextIndex++;
-        this.time.delayedCall(introTypingSpeed, typeNextLetter);
-      } else {
-        this.introText.setText('let name = "|"');
-        this.startCursorBlink(this.introText);
-      }
-    };
-
-    this.time.delayedCall(500, typeNextLetter);
-  }
-
-  startCursorBlink(textObject, stopAfter = false) {
-    const blink = this.time.addEvent({
-      delay: 500,
-      loop: true,
-      callback: () => {
-        const currentText = textObject.text;
-        if (currentText.includes("|")) {
-          textObject.setText(currentText.replace('"|"', '" "')); // Remove cursor
-        } else {
-          textObject.setText(currentText.replace('" "', '"|"')); // Add cursor
-        }
-      },
-    });
-
-    if (stopAfter) {
-      this.time.delayedCall(500, () => {
-        textObject.setText(textObject.text.replace('|"', '"'));
-        blink.remove();
-      });
-    }
   }
 
   createPlayer() {
