@@ -4,7 +4,7 @@ import WebFont from "webfontloader";
 class TestScene extends Phaser.Scene {
   constructor() {
     super({
-      key: "testScene",
+      key: "TestScene",
     });
   }
 
@@ -35,11 +35,39 @@ class TestScene extends Phaser.Scene {
       key: "tilemap",
     });
 
+    // This is the code that fixes the issue
+
     this.tileset = this.map.addTilesetImage("office-supplies-2", "base_tiles");
 
-    this.map.createLayer("Tile Layer 1", this.tileset, 0, 0);
+    const layerNames = ["Tile Layer 1", "Tile Layer 2"];
+
+    layerNames.forEach((layerName) => {
+      this.map.createLayer(layerName, this.tileset, 0, 0);
+    });
+
+    this.physics.world.setBounds(
+      0,
+      98,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    );
+
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    );
 
     this.createPlayer();
+
+    console.log("Tilemap width (tiles): ", this.map.width);
+    console.log("Tilemap height: (tiles): ", this.map.height);
+    console.log("Tilemap width (px): ", this.map.widthInPixels);
+    console.log("Tilemap height (px): ", this.map.heightInPixels);
+
+    console.log("Canvas width: ", this.sys.game.config.width);
+    console.log("Canvas height: ", this.sys.game.config.height);
   }
 
   update() {
