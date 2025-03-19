@@ -16,7 +16,9 @@ class TestScene extends Phaser.Scene {
     });
 
     this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
-
+    this.textures
+      .get("asset-export-final-resized")
+      .setFilter(Phaser.Textures.FilterMode.NEAREST);
     // This is the code that fixes the issue
 
     this.floor = map.createLayer("Floor", this.tileset, 0, 0);
@@ -104,6 +106,10 @@ class TestScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // this.cameras.main.setZoom(1.5);
+
+    this.cameras.main.roundPixels = true;
   }
 
   update() {

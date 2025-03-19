@@ -14,8 +14,8 @@ const PhaserGame = () => {
       if (!gameRef.current) {
         const config = {
           type: Phaser.AUTO,
-          width: 800,
-          height: 600,
+          width: window.innerWidth,
+          height: window.innerHeight,
           parent: 'game-container', // Ensure this ID exists in App.jsx
           physics: {
             default: 'arcade',

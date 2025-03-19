@@ -8,7 +8,11 @@ export default class PreloadScene extends Phaser.Scene {
   preload() {
     this.load.image(
       "tileset",
-      "/office-simulator-2025/assets/asset-export-final-resized.png"
+      "/office-simulator-2025/assets/asset-export-final-resized.png",
+      {
+        filtering: false,
+        premultipliedAlpha: false,
+      }
     );
 
     this.load.tilemapTiledJSON(
