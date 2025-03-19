@@ -14,8 +14,8 @@ const PhaserGame = () => {
       if (!gameRef.current) {
         const config = {
           type: Phaser.AUTO,
-          width: 1024,
-          height: 1024,
+          width: 800,
+          height: 600,
           parent: 'game-container', // Ensure this ID exists in App.jsx
           physics: {
             default: 'arcade',
@@ -25,7 +25,7 @@ const PhaserGame = () => {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [BootScene, PreloadScene, MainMenuScene, TestScene, IntroScene],
+          scene: [BootScene, PreloadScene, TestScene, IntroScene],
         };
   
         gameRef.current = new Phaser.Game(config);

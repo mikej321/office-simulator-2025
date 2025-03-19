@@ -1,0 +1,113 @@
+{ "frames": {
+   "start": {
+    "frame": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 150
+   },
+   "opening": {
+    "frame": { "x": 433, "y": 0, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 150
+   },
+   "open": {
+    "frame": { "x": 866, "y": 0, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 500
+   },
+   "application-1": {
+    "frame": { "x": 0, "y": 361, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-2": {
+    "frame": { "x": 433, "y": 361, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-3": {
+    "frame": { "x": 866, "y": 361, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-4": {
+    "frame": { "x": 0, "y": 722, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-5": {
+    "frame": { "x": 433, "y": 722, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-6": {
+    "frame": { "x": 866, "y": 722, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-7": {
+    "frame": { "x": 1299, "y": 722, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   },
+   "application-8": {
+    "frame": { "x": 1732, "y": 722, "w": 433, "h": 361 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 433, "h": 361 },
+    "sourceSize": { "w": 433, "h": 361 },
+    "duration": 83
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "Sprite-0001.png",
+  "format": "RGBA8888",
+  "size": { "w": 2165, "h": 1083 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Laptop Opening", "from": 0, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "Cursor Movement", "from": 3, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "Application", "from": 6, "to": 10, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Open", "opacity": 255, "blendMode": "normal" },
+   { "name": "Hover box", "opacity": 255, "blendMode": "normal" },
+   { "name": "Icons", "opacity": 255, "blendMode": "normal" },
+   { "name": "Job Application", "opacity": 255, "blendMode": "normal" },
+   { "name": "Mouse Cursor", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -1,0 +1,98 @@
+// this.add.image(0, 0, "base_tiles").setOrigin(0, 0);
+
+// Create the tilemap
+const map = this.make.tilemap({
+  key: "tilemap",
+});
+
+// This is the code that fixes the issue
+
+const tileset = map.addTilesetImage("Grass", "base_tiles");
+
+const patches = map.createLayer("Patches", tileset, 0, 0);
+const grass = map.createLayer("Grass", tileset, 0, 0);
+
+// const background = map.createLayer("Grass", tileset, 0, 0);
+
+// const floorDec = this.map.createLayer("Floor Decorations", this.tileset);
+// const separators = this.map.createLayer("Cubicle Separators", this.tileset);
+// const deskRight = this.map.createLayer("Cubicle Desk Right", this.tileset);
+// const deskLeft = this.map.createLayer("Cubicle Desk Left", this.tileset);
+// const desktops = this.map.createLayer("Desktops", this.tileset);
+// const desktopDeco = this.map.createLayer(
+//   "Desktop Decorations",
+//   this.tileset
+// );
+// const wall = this.map.createLayer("Wall", this.tileset);
+// const wallDec = this.map.createLayer("Wall Decorations", this.tileset);
+// const tableDec = this.map.createLayer("Table Decorations", this.tileset);
+
+// floor.setDepth(0);
+
+// this.physics.world.setBounds(0, 98, map.widthInPixels, map.heightInPixels);
+
+// this.createPlayer();
+
+// update() {
+//   this.playerMovement();
+// }
+
+// createPlayer() {
+//   this.player = this.physics.add
+//     .sprite(0, 500, "player", "frame-1")
+//     .setScale(2);
+
+//   this.player.setCollideWorldBounds(true);
+
+//   this.anims.create({
+//     key: "walk",
+//     frames: this.anims.generateFrameNames("player", {
+//       start: 1,
+//       end: 35,
+//       prefix: "frame-",
+//     }),
+//     frameRate: 5,
+//     repeat: -1,
+//   });
+
+//   this.anims.create({
+//     key: "turn",
+//     frames: [
+//       {
+//         key: "player",
+//         frame: "frame-9",
+//       },
+//     ],
+//     frameRate: 20,
+//   });
+
+//   this.cameras.main.startFollow(this.player);
+//   this.physics.world.createDebugGraphic();
+// }
+
+// playerMovement() {
+//   // Creates the cursor for player input
+//   this.cursor = this.input.keyboard.createCursorKeys();
+
+//   if (this.cursor.left.isDown) {
+//     this.player.setVelocityX(-160);
+//     this.player.anims.play("walk", true);
+//     this.player.flipX = true;
+//   } else if (this.cursor.right.isDown) {
+//     this.player.setVelocityX(160);
+//     this.player.anims.play("walk", true);
+//     this.player.flipX = false;
+//   } else if (this.cursor.up.isDown) {
+//     this.player.setVelocityY(-160);
+//     this.player.anims.play("walk", true);
+//     this.player.flipY = true;
+//   } else if (this.cursor.down.isDown) {
+//     this.player.setVelocityY(160);
+//     this.player.anims.play("walk", true);
+//     this.player.flipY = false;
+//   } else {
+//     this.player.setVelocityX(0);
+//     this.player.setVelocityY(0);
+//     this.player.anims.play("turn");
+//   }
+// }

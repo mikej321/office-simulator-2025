@@ -8,66 +8,102 @@ class TestScene extends Phaser.Scene {
     });
   }
 
-  preload() {
-    this.load.image(
-      "base_tiles",
-      "/office-simulator-2025/assets/test-office-1.png"
-    );
-    this.load.tilemapTiledJSON(
-      "tilemap",
-      "/office-simulator-2025/assets/test-office-1.json"
-    );
-
-    this.load.atlas(
-      "player",
-      "/office-simulator-2025/assets/player-sprite.png",
-      "/office-simulator-2025/assets/player-sprite.json"
-    );
-
-    this.load.start();
-  }
+  preload() {}
 
   create() {
-    // this.add.image(0, 0, "base_tiles").setOrigin(0, 0);
-
-    // Create the tilemap
-    this.map = this.make.tilemap({
+    const map = this.make.tilemap({
       key: "tilemap",
     });
 
+    this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
+
     // This is the code that fixes the issue
 
-    this.tileset = this.map.addTilesetImage("office-supplies-2", "base_tiles");
+    this.floor = map.createLayer("Floor", this.tileset, 0, 0);
+    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, 0, 0);
+    this.separators = map.createLayer("Cubicle Separators", this.tileset, 0, 0);
+    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, 0, 0);
+    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, 0, 0);
+    this.desktops = map.createLayer("Desktops", this.tileset, 0, 0);
+    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, 0, 0);
+    this.wall = map.createLayer("Wall", this.tileset, 0, 0);
+    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, 0, 0);
+    this.tableDeco = map.createLayer("Table Decorations", this.tileset, 0, 0);
 
-    const layerNames = ["Tile Layer 1", "Tile Layer 2"];
-
-    layerNames.forEach((layerName) => {
-      this.map.createLayer(layerName, this.tileset, 0, 0);
+    this.floor.setCollisionByProperty({
+      collision: true,
     });
 
-    this.physics.world.setBounds(
-      0,
-      98,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    );
+    this.floorDeco.setCollisionByProperty({
+      collision: true,
+    });
 
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    );
+    this.separators.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.deskRight.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.deskLeft.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.desktops.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.deskDeco.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.wall.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.wallDeco.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.wallDeco.setVisible(true);
+
+    this.tableDeco.setCollisionByProperty({
+      collision: true,
+    });
+
+    this.physics.world.setBounds(10, 98, map.widthInPixels, map.heightInPixels);
 
     this.createPlayer();
 
-    console.log("Tilemap width (tiles): ", this.map.width);
-    console.log("Tilemap height: (tiles): ", this.map.height);
-    console.log("Tilemap width (px): ", this.map.widthInPixels);
-    console.log("Tilemap height (px): ", this.map.heightInPixels);
+    // Ensures the player cant move beyond the game world
+    this.player.setCollideWorldBounds(true);
 
-    console.log("Canvas width: ", this.sys.game.config.width);
-    console.log("Canvas height: ", this.sys.game.config.height);
+    // Collision Detection
+    this.physics.add.collider(this.player, this.floor);
+    this.physics.add.collider(this.player, this.floorDeco);
+    this.physics.add.collider(this.player, this.separators);
+    this.physics.add.collider(this.player, this.deskRight);
+    this.physics.add.collider(this.player, this.deskLeft);
+    this.physics.add.collider(this.player, this.desktops);
+    this.physics.add.collider(this.player, this.deskDeco);
+    this.physics.add.collider(this.player, this.wall);
+    this.physics.add.collider(this.player, this.wallDeco);
+    this.physics.add.collider(this.player, this.tableDeco);
+    this.physics.add.collider(this.player, this.floorDeco);
+
+    // World Boundaries
+    this.physics.world.setBounds(
+      0,
+      0,
+      map.widthInPixels,
+      map.heightInPixels - 7
+    );
+
+    // Camera Boundaries
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
   }
 
   update() {
@@ -75,16 +111,19 @@ class TestScene extends Phaser.Scene {
   }
 
   createPlayer() {
+    // Creates the player sprite
     this.player = this.physics.add
-      .sprite(0, 500, "player", "frame-1")
-      .setScale(2);
+      .sprite(0, 300, "player", "frame-1")
+      .setScale(0.8);
 
-    this.player.setCollideWorldBounds(true);
+    this.player.setSize(32, 32);
+
+    // Sets collision detection for the world boundary
 
     this.anims.create({
       key: "walk",
       frames: this.anims.generateFrameNames("player", {
-        start: 1,
+        start: 10,
         end: 35,
         prefix: "frame-",
       }),
@@ -104,7 +143,6 @@ class TestScene extends Phaser.Scene {
     });
 
     this.cameras.main.startFollow(this.player);
-    this.physics.world.createDebugGraphic();
   }
 
   playerMovement() {
