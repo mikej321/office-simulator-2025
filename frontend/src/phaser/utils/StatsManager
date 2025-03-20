@@ -1,0 +1,53 @@
+class StatsManager  {
+    
+    static wins = 0;
+    static losses = 0;
+    static mentalPoints = 3;
+    static projectProgress = 0;
+
+    static incrementMP() {
+        this.mentalPoints++;
+        console.log("MP: " + this.mentalPoints);
+      }
+
+    static incrementPP() {
+        this.projectProgress++;
+        console.log("PP: " + this.projectProgress);
+    }
+
+    static decrementMP() {
+        this.mentalPoints--;
+
+        if (this.mentalPoints < 0) {
+            console.log("Game Over");
+        } else {
+            console.log("MP: " + this.mentalPoints);
+        }
+    }
+
+    static decrementPP()
+    {
+        this.projectProgress--;
+        
+        console.log("PP: " + this.projectProgress);
+        
+    }
+
+
+    static incrementWins() {
+        this.wins++;
+        console.log("Wins: " + this.wins);
+    }
+
+    static incrementLosses() {
+        this.losses++;
+        console.log("Losses: " + this.losses);
+    }
+
+  
+
+    // more functions to be added
+    // add more functions to manage stats
+};
+
+export default StatsManager;

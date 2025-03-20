@@ -1,7 +1,10 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
+import Pong from "./Pong";
+import StatsManager from "../utils/StatsManager";
 
 class TestScene extends Phaser.Scene {
+  
   constructor() {
     super({
       key: "TestScene",
@@ -20,29 +23,35 @@ class TestScene extends Phaser.Scene {
       this.cameras.main.fadeIn(1000);
     });
 
-    const map = this.make.tilemap({
-      key: "tilemap",
-    });
+     // Define the game area dimensions
+     const gameWidth = 800;
+     const gameHeight = 600;
+ 
+     // Calculate the top-left corner of the game area
+     const offsetX = (this.scale.width - gameWidth) / 2;
+     const offsetY = (this.scale.height - gameHeight) / 2;
 
+    // Create the tilemap and position it in the center
+    const map = this.make.tilemap({ key: "tilemap" });
     this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
-    this.textures
-      .get("asset-export-final-resized")
-      .setFilter(Phaser.Textures.FilterMode.NEAREST);
-    // This is the code that fixes the issue
+    this.textures.get("asset-export-final-resized").setFilter(Phaser.Textures.FilterMode.NEAREST);
 
-    this.floor = map.createLayer("Floor", this.tileset, 0, 0);
-    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, 0, 0);
-    this.separators = map.createLayer("Cubicle Separators", this.tileset, 0, 0);
-    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, 0, 0);
-    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, 0, 0);
-    this.desktops = map.createLayer("Desktops", this.tileset, 0, 0);
-    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, 0, 0);
-    this.wall = map.createLayer("Wall", this.tileset, 0, 0);
-    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, 0, 0);
-    this.tableDeco = map.createLayer("Table Decorations", this.tileset, 0, 0);
+    // Create layers and position them relative to the offsets
+    this.floor = map.createLayer("Floor", this.tileset, offsetX, offsetY);
+    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
+    this.separators = map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
+    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
+    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
+    this.desktops = map.createLayer("Desktops", this.tileset, offsetX, offsetY);
+    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
+    this.wall = map.createLayer("Wall", this.tileset, offsetX, offsetY);
+    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
+    this.tableDeco = map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+
+    // Add UI elements and position them relative to the offsets
 
     // Setting the e key up for button presses
-    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     this.layerArr = [
       this.floor,
@@ -65,12 +74,7 @@ class TestScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
 
     // World Boundaries
-    this.physics.world.setBounds(
-      0,
-      0,
-      map.widthInPixels,
-      map.heightInPixels - 7
-    );
+    this.physics.world.setBounds(offsetX, offsetY, map.widthInPixels, map.heightInPixels);
 
     // Camera Boundaries
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -81,50 +85,169 @@ class TestScene extends Phaser.Scene {
 
     this.cameras.main.roundPixels = true;
 
-    this.createCollisions(this.player, this.layerArr);
+    this.createCollisions(this.player, this.layerArr, offsetX, offsetY);
+
+    this.isPlayerNearArea = false;
+
+      // Create the "Press E to work for the day" text but make it invisible initially
+      this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", {
+        fontSize: "16px",
+        fill: "#ffffff",
+        backgroundColor: "#000000",
+        padding: { x: 10, y: 5 },
+      }).setOrigin(0.5); // Center the text
+  this.interactionText.setVisible(false); // Hide it initially
+
+  this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", {
+    fontSize: "16px",
+    fill: "#ffffff",
+    backgroundColor: "#000000",
+    padding: { x: 10, y: 5 },
+  }).setOrigin(0.5); // Center the text
+  this.choiceText.setVisible(false); // Hide it initially
+  
+  // Define the interactable area (in pixels)
+  const interactableX = offsetX + 425; // X-coordinate of the interactable area (increase to move right)
+  const interactableY = offsetY + 200; // Y-coordinate of the interactable area (decrease to move up)
+  const interactableRadius = 40; // Radius of the interactable area
+
+  // Draw the yellow circle (only once during the `create` method)
+  
+    this.interactableCircle = this.add.circle(
+      interactableX,
+      interactableY,
+      interactableRadius,
+      0xffff00, // Yellow color
+      0.3 // Opacity (30%)
+    );
+  
+
+  // Add keys for interaction
+  this.qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+  this.rKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
   }
 
   update() {
     this.playerMovement();
+    const gameWidth = 800;
+  const gameHeight = 600;
+  const offsetX = (this.scale.width - gameWidth) / 2;
+  const offsetY = (this.scale.height - gameHeight) / 2;
 
-    this.recognizeTileInteractable(this.layerArr);
+    //Tracks the player's position
+    //console.log(`Player X: ${this.player.x}, Player Y: ${this.player.y}`);
+
+    // Define the interactable area (in pixels)
+    const interactableX = offsetX + 425; // X-coordinate of the interactable area (increase to move right)
+    const interactableY = offsetY + 200; // Y-coordinate of the interactable area (decrease to move up)
+    const interactableRadius = 40; // Radius of the interactable area
+
+    // Draw the yellow circle (only once during the `create` method)
+    if (!this.interactableCircle) {
+      this.interactableCircle = this.add.circle(
+        interactableX,
+        interactableY,
+        interactableRadius,
+        0xffff00, // Yellow color
+        0.3 // Opacity (30%)
+      );
+    }
+
+    // Check if the player is within the interactable area
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      interactableX,
+      interactableY
+    );
+    const isPlayerInArea = distance <= interactableRadius;
+
+    // Show or hide the "Press E to work for the day" text
+  if (isPlayerInArea) {
+    this.interactionText.setPosition(interactableX, interactableY - 50); // Position the text above the circle
+    this.interactionText.setVisible(true); // Show the text
+  } else {
+    this.interactionText.setVisible(false); // Hide the text
+    this.choiceText.setVisible(false); // Hide the choice text if the player leaves the area
   }
 
-  createCollisions(player, layers) {
+    // Handle interaction when the E key is pressed
+    if (isPlayerInArea && Phaser.Input.Keyboard.JustDown(this.eKey)) {
+      console.log("Interacted with the specific area!");
+      
+      this.choiceText.setPosition(interactableX, interactableY - 50); // Position the choice text above the circle
+       this.choiceText.setVisible(true); // Show the choice text
+      // Add your interaction logic here (e.g., open a menu, transition to a new scene, etc.)
+    }
+
+      // Handle the player's choice
+  if (this.choiceText.visible) {
+    this.interactionText.setVisible(false); // Hide the initial text
+    if (Phaser.Input.Keyboard.JustDown(this.qKey)) {
+      StatsManager.incrementPP();
+      StatsManager.incrementPP(); // Increment the player's project progress
+      console.log("Player chose to work for the day!");
+      this.choiceText.setVisible(false); // Hide the choice text
+      // Add logic for working here
+    } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
+      console.log("Player chose to goof off!");
+      this.choiceText.setVisible(false); // Hide the choice text
+      console.log("Transitioning to Pong scene...");
+      
+        this.scene.stop("TestScene");
+this.scene.start("Pong");
+    
+      // Add logic for goofing off here
+    }
+  }
+}
+  
+
+  createCollisions(player, layers, offsetX, offsetY) {
     layers.forEach((layer) => {
       layer.setCollisionByProperty({
         collision: true,
       });
 
-      this.physics.add.collider(player, layer);
+      this.physics.add.collider(player, layer, null, null, this);
     });
   }
 
-  recognizeTileInteractable(layers) {
-    layers.forEach((layer) => {
-      const tileWidth = layer.tileset[0].tileWidth;
-      const tileHeight = layer.tileset[0].tileHeight;
-
-      let tileX = Math.floor(this.player.x / tileWidth);
-      let tileY = Math.floor(this.player.y / tileHeight);
-
-      const tile = layer.getTileAt(tileX, tileY);
-
-      console.log(
-        `Player Position: x = ${this.player.x}, y = ${this.player.y}, tileX: ${tileX}, tileY: ${tileY}`
-      );
-
-      if (tile && tile.properties.clicked) {
-        console.log("interacted with the tile!");
+  recognizeTileInteractable(layer) {
+    this.isPlayerNearInteractable = false; // Reset the flag
+  
+    const tileWidth = layer.tileset[0].tileWidth;
+    const tileHeight = layer.tileset[0].tileHeight;
+  
+    // Get the tile the player is currently on
+    const playerTileX = Math.floor(this.player.x / tileWidth);
+    const playerTileY = Math.floor(this.player.y / tileHeight);
+  
+    // Define the radius (number of tiles around the player to check)
+    const radius = 100; // Adjust this value to make the interactable area larger
+  
+    // Loop through tiles within the radius
+    for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+      for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+        const tileX = playerTileX + offsetX;
+        const tileY = playerTileY + offsetY;
+        const tile = layer.getTileAt(tileX, tileY);
+  
+        // Check if the tile has the "interactable" property
+        if (tile && tile.properties.interactable) {
+          console.log("Player is near an interactable desktop!");
+          this.isPlayerNearInteractable = true; // Set the flag
+          return; // Exit the loop early if an interactable tile is found
+        }
       }
-    });
+    }
   }
 
   createPlayer() {
     // Creates the player sprite
     this.player = this.physics.add
-      .sprite(0, 300, "player", "frame-1")
-      .setScale(0.8);
+    .sprite(400, 300, "player", "frame-1") // Centered in the game area
+    .setScale(0.8);
 
     this.player.setSize(32, 32);
 

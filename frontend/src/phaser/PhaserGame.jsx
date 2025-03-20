@@ -6,6 +6,10 @@ import GameScene from './scenes/GameScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import IntroScene from './scenes/IntroScene';
 import TestScene from './scenes/TestScene';
+import Pong from "./scenes/Pong";
+import PongBackground from "./scenes/PongBackground";
+import LostPong from "./scenes/LostPong";
+import WonPong from "./scenes/WonPong";
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -19,13 +23,13 @@ const PhaserGame = () => {
           parent: 'game-container', // Ensure this ID exists in App.jsx
           physics: {
             default: 'arcade',
-            arcade: { gravity: { y: 0 }, debug: false },
+            arcade: { gravity: { y: 0 }, debug: true },
           },
           scale: {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [BootScene, PreloadScene, MainMenuScene, TestScene],
+          scene: [BootScene, PreloadScene, MainMenuScene, TestScene, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong],
         };
   
         gameRef.current = new Phaser.Game(config);
@@ -41,5 +45,5 @@ const PhaserGame = () => {
 
     return null; 
   };
-
+  
 export default PhaserGame;
