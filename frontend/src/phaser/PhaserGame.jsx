@@ -5,7 +5,7 @@ import PreloadScene from './scenes/PreloadScene';
 import GameScene from './scenes/GameScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import IntroScene from './scenes/IntroScene';
-import TestScene from './scenes/testScene';
+import TestScene from './scenes/TestScene';
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -25,7 +25,7 @@ const PhaserGame = () => {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [BootScene, PreloadScene, TestScene, IntroScene],
+          scene: [BootScene, PreloadScene, MainMenuScene, TestScene],
         };
   
         gameRef.current = new Phaser.Game(config);

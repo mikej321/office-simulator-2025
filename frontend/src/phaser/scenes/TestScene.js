@@ -11,6 +11,15 @@ class TestScene extends Phaser.Scene {
   preload() {}
 
   create() {
+    /* A transition occurs here. A delay is added
+    to force the scene to wait until the last scene is finished
+    fading out */
+    this.cameras.main.setAlpha(0); // starts it out fully invisible
+    this.time.delayedCall(1100, () => {
+      this.cameras.main.setAlpha(1);
+      this.cameras.main.fadeIn(1000);
+    });
+
     const map = this.make.tilemap({
       key: "tilemap",
     });
@@ -32,47 +41,21 @@ class TestScene extends Phaser.Scene {
     this.wallDeco = map.createLayer("Wall Decorations", this.tileset, 0, 0);
     this.tableDeco = map.createLayer("Table Decorations", this.tileset, 0, 0);
 
-    this.floor.setCollisionByProperty({
-      collision: true,
-    });
+    // Setting the e key up for button presses
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
-    this.floorDeco.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.separators.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.deskRight.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.deskLeft.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.desktops.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.deskDeco.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.wall.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.wallDeco.setCollisionByProperty({
-      collision: true,
-    });
-
-    this.wallDeco.setVisible(true);
-
-    this.tableDeco.setCollisionByProperty({
-      collision: true,
-    });
+    this.layerArr = [
+      this.floor,
+      this.floorDeco,
+      this.separators,
+      this.deskRight,
+      this.deskLeft,
+      this.desktops,
+      this.deskDeco,
+      this.wall,
+      this.wallDeco,
+      this.tableDeco,
+    ];
 
     this.physics.world.setBounds(10, 98, map.widthInPixels, map.heightInPixels);
 
@@ -80,19 +63,6 @@ class TestScene extends Phaser.Scene {
 
     // Ensures the player cant move beyond the game world
     this.player.setCollideWorldBounds(true);
-
-    // Collision Detection
-    this.physics.add.collider(this.player, this.floor);
-    this.physics.add.collider(this.player, this.floorDeco);
-    this.physics.add.collider(this.player, this.separators);
-    this.physics.add.collider(this.player, this.deskRight);
-    this.physics.add.collider(this.player, this.deskLeft);
-    this.physics.add.collider(this.player, this.desktops);
-    this.physics.add.collider(this.player, this.deskDeco);
-    this.physics.add.collider(this.player, this.wall);
-    this.physics.add.collider(this.player, this.wallDeco);
-    this.physics.add.collider(this.player, this.tableDeco);
-    this.physics.add.collider(this.player, this.floorDeco);
 
     // World Boundaries
     this.physics.world.setBounds(
@@ -110,10 +80,44 @@ class TestScene extends Phaser.Scene {
     // this.cameras.main.setZoom(1.5);
 
     this.cameras.main.roundPixels = true;
+
+    this.createCollisions(this.player, this.layerArr);
   }
 
   update() {
     this.playerMovement();
+
+    this.recognizeTileInteractable(this.layerArr);
+  }
+
+  createCollisions(player, layers) {
+    layers.forEach((layer) => {
+      layer.setCollisionByProperty({
+        collision: true,
+      });
+
+      this.physics.add.collider(player, layer);
+    });
+  }
+
+  recognizeTileInteractable(layers) {
+    layers.forEach((layer) => {
+      const tileWidth = layer.tileset[0].tileWidth;
+      const tileHeight = layer.tileset[0].tileHeight;
+
+      let tileX = Math.floor(this.player.x / tileWidth);
+      let tileY = Math.floor(this.player.y / tileHeight);
+
+      const tile = layer.getTileAt(tileX, tileY);
+
+      console.log(
+        `Player Position: x = ${this.player.x}, y = ${this.player.y}, tileX: ${tileX}, tileY: ${tileY}`
+      );
+
+      if (tile && tile.properties.clicked) {
+        console.log("interacted with the tile!");
+      }
+    });
   }
 
   createPlayer() {

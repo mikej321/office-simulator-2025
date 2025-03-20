@@ -62,7 +62,7 @@ class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     let titleIndex = 0;
-    const titleText = "Office Simulator 2025";
+    const titleText = "BlueSky Thinking";
     const titleTypingSpeed = 80;
 
     const typeNextLetter = () => {
@@ -141,7 +141,16 @@ class MainMenuScene extends Phaser.Scene {
     });
 
     this.startText.on("pointerdown", () => {
-      this.scene.start("testScene");
+      this.scene.transition({
+        target: "TestScene",
+        duration: 1000,
+        moveAbove: true,
+        onUpdate: (progress) => {
+          this.cameras.main.setAlpha(1 - progress);
+        },
+      });
+
+      // this.scene.start("TestScene");
       // Replace with your actual game scene
       // this.scene.start("IntroScene");
     });
