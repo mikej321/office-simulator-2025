@@ -1,0 +1,51 @@
+{ "frames": {
+   "Desktop_PC_resized 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   },
+   "Desktop_PC_resized 1.aseprite": {
+    "frame": { "x": 100, "y": 0, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   },
+   "Desktop_PC_resized 2.aseprite": {
+    "frame": { "x": 0, "y": 100, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   },
+   "Desktop_PC_resized 3.aseprite": {
+    "frame": { "x": 100, "y": 100, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "Desktop_PC_resized.png",
+  "format": "RGBA8888",
+  "size": { "w": 200, "h": 200 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Hard Drive Lights", "from": 2, "to": 3, "direction": "pingpong", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Desktop Animations", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -20,26 +20,64 @@ class TestScene extends Phaser.Scene {
       this.cameras.main.fadeIn(1000);
     });
 
-    const map = this.make.tilemap({
+    this.map = this.make.tilemap({
       key: "tilemap",
     });
 
-    this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
+    this.tileset = this.map.addTilesetImage(
+      "asset-export-final-resized",
+      "tileset"
+    );
     this.textures
       .get("asset-export-final-resized")
       .setFilter(Phaser.Textures.FilterMode.NEAREST);
     // This is the code that fixes the issue
 
-    this.floor = map.createLayer("Floor", this.tileset, 0, 0);
-    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, 0, 0);
-    this.separators = map.createLayer("Cubicle Separators", this.tileset, 0, 0);
-    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, 0, 0);
-    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, 0, 0);
-    this.desktops = map.createLayer("Desktops", this.tileset, 0, 0);
-    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, 0, 0);
-    this.wall = map.createLayer("Wall", this.tileset, 0, 0);
-    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, 0, 0);
-    this.tableDeco = map.createLayer("Table Decorations", this.tileset, 0, 0);
+    this.floor = this.map.createLayer("Floor", this.tileset, 0, 0);
+    this.floorDeco = this.map.createLayer(
+      "Floor Decorations",
+      this.tileset,
+      0,
+      0
+    );
+    this.separators = this.map.createLayer(
+      "Cubicle Separators",
+      this.tileset,
+      0,
+      0
+    );
+    this.deskRight = this.map.createLayer(
+      "Cubicle Desk Right",
+      this.tileset,
+      0,
+      0
+    );
+    this.deskLeft = this.map.createLayer(
+      "Cubicle Desk Left",
+      this.tileset,
+      0,
+      0
+    );
+    this.desktops = this.map.createLayer("Desktops", this.tileset, 0, 0);
+    this.deskDeco = this.map.createLayer(
+      "Desktop Decorations",
+      this.tileset,
+      0,
+      0
+    );
+    this.wall = this.map.createLayer("Wall", this.tileset, 0, 0);
+    this.wallDeco = this.map.createLayer(
+      "Wall Decorations",
+      this.tileset,
+      0,
+      0
+    );
+    this.tableDeco = this.map.createLayer(
+      "Table Decorations",
+      this.tileset,
+      0,
+      0
+    );
 
     // Setting the e key up for button presses
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -57,7 +95,12 @@ class TestScene extends Phaser.Scene {
       this.tableDeco,
     ];
 
-    this.physics.world.setBounds(10, 98, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(
+      10,
+      98,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    );
 
     this.createPlayer();
 
@@ -68,14 +111,24 @@ class TestScene extends Phaser.Scene {
     this.physics.world.setBounds(
       0,
       0,
-      map.widthInPixels,
-      map.heightInPixels - 7
+      this.map.widthInPixels,
+      this.map.heightInPixels - 7
     );
 
     // Camera Boundaries
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    );
 
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    );
 
     // this.cameras.main.setZoom(1.5);
 
@@ -86,8 +139,6 @@ class TestScene extends Phaser.Scene {
 
   update() {
     this.playerMovement();
-
-    this.recognizeTileInteractable(this.layerArr);
   }
 
   createCollisions(player, layers) {
@@ -97,26 +148,6 @@ class TestScene extends Phaser.Scene {
       });
 
       this.physics.add.collider(player, layer);
-    });
-  }
-
-  recognizeTileInteractable(layers) {
-    layers.forEach((layer) => {
-      const tileWidth = layer.tileset[0].tileWidth;
-      const tileHeight = layer.tileset[0].tileHeight;
-
-      let tileX = Math.floor(this.player.x / tileWidth);
-      let tileY = Math.floor(this.player.y / tileHeight);
-
-      const tile = layer.getTileAt(tileX, tileY);
-
-      console.log(
-        `Player Position: x = ${this.player.x}, y = ${this.player.y}, tileX: ${tileX}, tileY: ${tileY}`
-      );
-
-      if (tile && tile.properties.clicked) {
-        console.log("interacted with the tile!");
-      }
     });
   }
 
@@ -133,8 +164,8 @@ class TestScene extends Phaser.Scene {
     this.anims.create({
       key: "walk",
       frames: this.anims.generateFrameNames("player", {
-        start: 10,
-        end: 35,
+        start: 8,
+        end: 12,
         prefix: "frame-",
       }),
       frameRate: 5,
@@ -142,14 +173,25 @@ class TestScene extends Phaser.Scene {
     });
 
     this.anims.create({
-      key: "turn",
-      frames: [
-        {
-          key: "player",
-          frame: "frame-9",
-        },
-      ],
-      frameRate: 20,
+      key: "back",
+      frames: this.anims.generateFrameNames("player", {
+        start: 17,
+        end: 19,
+        prefix: "frame-",
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "idle",
+      frames: this.anims.generateFrameNames("player", {
+        start: 1,
+        end: 8,
+        prefix: "frame-",
+      }),
+      frameRate: 5,
+      repeat: -1,
     });
 
     this.cameras.main.startFollow(this.player);
@@ -169,8 +211,7 @@ class TestScene extends Phaser.Scene {
       this.player.flipX = false;
     } else if (this.cursor.up.isDown) {
       this.player.setVelocityY(-160);
-      this.player.anims.play("walk", true);
-      this.player.flipY = true;
+      this.player.anims.play("back", true);
     } else if (this.cursor.down.isDown) {
       this.player.setVelocityY(160);
       this.player.anims.play("walk", true);
@@ -178,7 +219,7 @@ class TestScene extends Phaser.Scene {
     } else {
       this.player.setVelocityX(0);
       this.player.setVelocityY(0);
-      this.player.anims.play("turn");
+      this.player.anims.play("idle");
     }
   }
 }

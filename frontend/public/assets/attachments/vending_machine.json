@@ -1,0 +1,80 @@
+{ "frames": {
+   "vending_machine 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 1.aseprite": {
+    "frame": { "x": 800, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 2.aseprite": {
+    "frame": { "x": 1600, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 3.aseprite": {
+    "frame": { "x": 0, "y": 600, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 4.aseprite": {
+    "frame": { "x": 800, "y": 600, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 5.aseprite": {
+    "frame": { "x": 1600, "y": 600, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   },
+   "vending_machine 6.aseprite": {
+    "frame": { "x": 0, "y": 1200, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 83
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "vending_machine.png",
+  "format": "RGBA8888",
+  "size": { "w": 2400, "h": 1800 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "orange soda bottom", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "green soda bottom", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "blue soda bottom", "from": 3, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "green soda", "from": 4, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "orange soda", "from": 5, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "blue soda", "from": 6, "to": 6, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Vending Machine Animation", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
