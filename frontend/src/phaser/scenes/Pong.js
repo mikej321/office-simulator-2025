@@ -12,7 +12,8 @@ class Pong extends Phaser.Scene {
         super({
           key: "Pong",
         });
-        this.statsManager = new StatsManager();
+       
+        this.gamesPlayed = 0; // Track the number of games played
       }
 
     init() {
@@ -21,6 +22,7 @@ class Pong extends Phaser.Scene {
         this.rightScore = 0;
         this.paused = false;
         this.ballSpeed = 300; // Initial ball speed
+        StatsManager.setPlayGame();
     }
 
     preload() {
@@ -29,7 +31,10 @@ class Pong extends Phaser.Scene {
 
     create() {
 
+        
+
         console.log("Pong scene started!");
+        this.gamesPlayed++; // Increment the games played counter
          // Define the game area dimensions
         const gameWidth = 800;
         const gameHeight = 600;
@@ -132,31 +137,47 @@ class Pong extends Phaser.Scene {
   }
 
   // Define the maximum score to end the game
-  const maxScore = 1;
+  const maxScore = 3; // Maximum score to win the game
         
     
         if (this.leftScore >= maxScore) {
             console.log("Tom won!!");
             StatsManager.incrementWins();
             StatsManager.incrementMP();
-            StatsManager.decrementPP();
+            
             
             
             this.paused = true;
+            //CHANGE MAX GAMES PLAYED
+            if (this.gamesPlayed >= 3) {
+                console.log("Maximum number of games reached!");
+                this.scene.stop("PongBackground");
+                this.scene.start("MaxPong");
+                return;
+              }
+             else { 
             this.scene.stop("PongBackground");
             //this.scene.stop("Pong");
-            this.scene.run("WonPong");
+            this.scene.run("WonPong");}
         }
         else if (this.rightScore >= maxScore) {
             console.log("Tom lost!!");
             StatsManager.incrementLosses();
-            StatsManager.decrementPP();
+            
             StatsManager.decrementMP();
             this.paused = true;
+            //CHANGE MAX GAMES PLAYED
+            if (this.gamesPlayed >= 3) {
+                console.log("Maximum number of games reached!");
+                this.scene.stop("PongBackground");
+                this.scene.start("MaxPong");
+                return;
+              }
+              else {
             
             this.scene.stop("PongBackground");
             //this.scene.stop("Pong");
-            this.scene.run("LostPong");
+            this.scene.run("LostPong");}
         }
     }
 

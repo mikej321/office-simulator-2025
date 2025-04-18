@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 
-export default class LostPong extends Phaser.Scene {
+export default class MaxPong extends Phaser.Scene {
   constructor() {
     super({
-      key: "LostPong",
+      key: "MaxPong",
     });
   }
 
@@ -19,7 +19,7 @@ export default class LostPong extends Phaser.Scene {
     const title = this.add.text(
       offsetX + gameWidth / 2,
       offsetY + gameHeight / 2 - 50,
-      "Not only did Tom slack off at work today, \nbut he also lost against the pesky ai! \nThis will take a toll on his spirit.",
+      "You really spend the entire day playing Pong?\n...\nI'm impressed?",
       {
         fontSize: "48px",
         color: "#ff0000",
@@ -42,7 +42,7 @@ export default class LostPong extends Phaser.Scene {
     // Add key listener for restarting
     this.input.keyboard.once("keydown-SPACE", () => {
         this.scene.stop("Pong");
-      this.scene.start("WorkDay");
+      this.scene.start("EndOfDay");
     });
   }
 }
