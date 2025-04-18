@@ -1,13 +1,12 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
-import Pong from "./Pong";
-import StatsManager from "../utils/StatsManager";
+import EODStats from "./EODStats";
 
-class TestScene extends Phaser.Scene {
+class EndOfDay extends Phaser.Scene {
   
   constructor() {
     super({
-      key: "TestScene",
+      key: "EndOfDay",
     });
   }
 
@@ -105,7 +104,7 @@ class TestScene extends Phaser.Scene {
     this.isPlayerNearArea = false;
 
       // Create the "Press E to work for the day" text but make it invisible initially
-      this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", {
+      this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to go home for the day", {
         fontSize: "16px",
         fill: "#ffffff",
         backgroundColor: "#000000",
@@ -113,25 +112,19 @@ class TestScene extends Phaser.Scene {
       }).setOrigin(0.5); // Center the text
   this.interactionText.setVisible(false); // Hide it initially
 
-  this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", {
-    fontSize: "16px",
-    fill: "#ffffff",
-    backgroundColor: "#000000",
-    padding: { x: 10, y: 5 },
-  }).setOrigin(0.5); // Center the text
-  this.choiceText.setVisible(false); // Hide it initially
+  
   
   // Define the interactable area (in pixels)
-  const interactableX = offsetX + 425; // X-coordinate of the interactable area (increase to move right)
-  const interactableY = offsetY + 200; // Y-coordinate of the interactable area (decrease to move up)
-  const interactableRadius = 40; // Radius of the interactable area
+  this.interactableX = offsetX + 255; // X-coordinate of the interactable area (increase to move right)
+  this.interactableY = offsetY + 75; // Y-coordinate of the interactable area (decrease to move up)
+  this.interactableRadius = 75; // Radius of the interactable area
 
   // Draw the yellow circle (only once during the `create` method)
   
     this.interactableCircle = this.add.circle(
-      interactableX,
-      interactableY,
-      interactableRadius,
+      this.interactableX,
+      this.interactableY,
+      this.interactableRadius,
       0xffff00, // Yellow color
       0.3 // Opacity (30%)
     );
@@ -152,69 +145,34 @@ class TestScene extends Phaser.Scene {
     //Tracks the player's position
     //console.log(`Player X: ${this.player.x}, Player Y: ${this.player.y}`);
 
-    // Define the interactable area (in pixels)
-    const interactableX = offsetX + 425; // X-coordinate of the interactable area (increase to move right)
-    const interactableY = offsetY + 200; // Y-coordinate of the interactable area (decrease to move up)
-    const interactableRadius = 40; // Radius of the interactable area
+   
 
-    // Draw the yellow circle (only once during the `create` method)
-    if (!this.interactableCircle) {
-      this.interactableCircle = this.add.circle(
-        interactableX,
-        interactableY,
-        interactableRadius,
-        0xffff00, // Yellow color
-        0.3 // Opacity (30%)
-      );
-    }
+    
 
     // Check if the player is within the interactable area
     const distance = Phaser.Math.Distance.Between(
       this.player.x,
       this.player.y,
-      interactableX,
-      interactableY
+      this.interactableX,
+      this.interactableY
     );
-    const isPlayerInArea = distance <= interactableRadius;
+    const isPlayerInArea = distance <= this.interactableRadius;
 
     // Show or hide the "Press E to work for the day" text
-  if (isPlayerInArea) {
-    this.interactionText.setPosition(interactableX, interactableY - 50); // Position the text above the circle
-    this.interactionText.setVisible(true); // Show the text
-  } else {
-    this.interactionText.setVisible(false); // Hide the text
-    this.choiceText.setVisible(false); // Hide the choice text if the player leaves the area
-  }
+    if (this.interactionText) { // Ensure interactionText exists
+        if (isPlayerInArea) {
+            this.interactionText.setPosition(this.interactableX, this.interactableY - 50); // Position the text above the circle
+            this.interactionText.setVisible(true); // Show the text
+        } else {
+            this.interactionText.setVisible(false);}
+         } // Hide the text
 
     // Handle interaction when the E key is pressed
     if (isPlayerInArea && Phaser.Input.Keyboard.JustDown(this.eKey)) {
       console.log("Interacted with the specific area!");
-      
-      this.choiceText.setPosition(interactableX, interactableY - 50); // Position the choice text above the circle
-       this.choiceText.setVisible(true); // Show the choice text
-      // Add your interaction logic here (e.g., open a menu, transition to a new scene, etc.)
-    }
-
-      // Handle the player's choice
-  if (this.choiceText.visible) {
-    this.interactionText.setVisible(false); // Hide the initial text
-    if (Phaser.Input.Keyboard.JustDown(this.qKey)) {
-      StatsManager.incrementPP();
-      StatsManager.incrementPP(); // Increment the player's project progress
-      console.log("Player chose to work for the day!");
-      this.choiceText.setVisible(false); // Hide the choice text
-      // Add logic for working here
-    } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
-      console.log("Player chose to goof off!");
-      this.choiceText.setVisible(false); // Hide the choice text
-      console.log("Transitioning to Pong scene...");
-      
-        this.scene.stop("TestScene");
-this.scene.start("Pong");
-    
-      // Add logic for goofing off here
-    }
-  }
+      this.scene.stop("EndOfDay");
+      this.scene.start("EODStats");
+    } 
 }
   
 
@@ -261,7 +219,7 @@ this.scene.start("Pong");
   createPlayer() {
     // Creates the player sprite
     this.player = this.physics.add
-    .sprite(400, 300, "player", "frame-1") // Centered in the game area
+    .sprite(800, 300, "player", "frame-1") // Centered in the game area
     .setScale(0.8);
 
     this.player.setSize(32, 32);
@@ -308,27 +266,40 @@ this.scene.start("Pong");
     // Creates the cursor for player input
     this.cursor = this.input.keyboard.createCursorKeys();
 
+    // Adjusted velocity values for slower movement
+    const velocity = 100; // Reduced from 160 to 100
+
+    // Horizontal movement
     if (this.cursor.left.isDown) {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-velocity);
       this.player.anims.play("walk", true);
-      this.player.flipX = true;
+      this.player.flipX = true; // Flip sprite for left movement
     } else if (this.cursor.right.isDown) {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(velocity);
       this.player.anims.play("walk", true);
-      this.player.flipX = false;
-    } else if (this.cursor.up.isDown) {
-      this.player.setVelocityY(-160);
-      this.player.anims.play("back", true);
-    } else if (this.cursor.down.isDown) {
-      this.player.setVelocityY(160);
-      this.player.anims.play("walk", true);
-      this.player.flipY = false;
-    } else {
-      this.player.setVelocityX(0);
-      this.player.setVelocityY(0);
-      this.player.anims.play("idle");
-    }
-  }
+  this.player.flipX = false; // Ensure sprite is not flipped
+} else {
+  this.player.setVelocityX(0); // Stop horizontal movement
 }
 
-export default TestScene;
+// Vertical movement
+if (this.cursor.up.isDown) {
+  this.player.setVelocityY(-velocity);
+  this.player.anims.play("back", true); // Play "back" animation for upward movement
+} else if (this.cursor.down.isDown) {
+  this.player.setVelocityY(velocity);
+  this.player.anims.play("walk", true); // Play "walk" animation for downward movement
+} else {
+  this.player.setVelocityY(0); // Stop vertical movement
+}
+
+// Idle animation
+if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
+  this.player.anims.play("idle", true);
+}
+    }
+  }
+
+
+
+export default EndOfDay;

@@ -19,7 +19,7 @@ export default class WonPong extends Phaser.Scene {
     const title = this.add.text(
       offsetX + gameWidth / 2,
       offsetY + gameHeight / 2 - 50,
-      "Good job Tom! \nYou didn't get any work done today, \nbut somehow you still feel productive!",
+      "Good job Tom! \nYou didn't get any work done, \nbut somehow you still feel productive!",
       {
         fontSize: "48px",
         color: "#00ff00",
@@ -42,7 +42,7 @@ export default class WonPong extends Phaser.Scene {
     // Add key listener for continuing
     this.input.keyboard.once("keydown-SPACE", () => {
         this.scene.stop("Pong");
-      this.scene.start("TestScene");
+      this.scene.start("WorkDay");
     });
   }
 }
