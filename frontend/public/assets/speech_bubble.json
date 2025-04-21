@@ -1,0 +1,42 @@
+{ "frames": {
+   "frame-1": {
+    "frame": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   },
+   "frame-2": {
+    "frame": { "x": 100, "y": 0, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   },
+   "frame-3": {
+    "frame": { "x": 0, "y": 100, "w": 100, "h": 100 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 100 },
+    "sourceSize": { "w": 100, "h": 100 },
+    "duration": 83
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "speech_bubble.png",
+  "format": "RGBA8888",
+  "size": { "w": 200, "h": 200 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Speech Bubble", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -27,6 +27,12 @@ export default class PreloadScene extends Phaser.Scene {
     );
 
     this.load.atlas(
+      "speech-bubble",
+      "/office-simulator-2025/assets/speech_bubble.png",
+      "/office-simulator-2025/assets/speech_bubble.json"
+    );
+
+    this.load.atlas(
       "blue-chair",
       "/office-simulator-2025/assets/attachments/blue_chair_resized.png",
       "/office-simulator-2025/assets/attachments/blue_chair_resized.json"
@@ -78,6 +84,6 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("MainMenuScene");
+    this.scene.start("TestScene");
   }
 }

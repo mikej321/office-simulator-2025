@@ -135,6 +135,21 @@ class TestScene extends Phaser.Scene {
     this.cameras.main.roundPixels = true;
 
     this.createCollisions(this.player, this.layerArr);
+
+    if (!this.anims.exists("bubble")) {
+      this.anims.create({
+        key: "bubble",
+        frames: this.anims.generateFrameNames("speech-bubble", {
+          start: 1,
+          end: 3,
+          prefix: "frame-",
+        }),
+        frameRate: 10,
+        repeat: 0,
+      });
+    }
+
+    this.introductionsAreInOrder();
   }
 
   update() {
@@ -151,10 +166,85 @@ class TestScene extends Phaser.Scene {
     });
   }
 
+  // introductionsAreInOrder() {
+  //   this.time.delayedCall(2500, () => {
+  //     this.speechAnimation(
+  //       this.player.x + 10,
+  //       this.player.y - 35,
+  //       "Hello there!"
+  //     );
+  //     this.time.delayedCall(
+  //       3000,
+  //       () => {
+  //         this.speechBubble.destroy();
+  //       },
+  //       [],
+  //       this
+  //     );
+  //   });
+  // }
+
+  introductionsAreInOrder() {
+    this.time.delayedCall(2500, this.showFirstText, [], this);
+  }
+
+  showFirstText() {
+    this.speechAnimation(
+      this.player.x + 10,
+      this.player.y - 35,
+      "Hello there!",
+      8
+    );
+
+    this.time.delayedCall(
+      3000,
+      () => {
+        this.speechBubble.anims.stop("bubble");
+        this.destroyText();
+      },
+      [],
+      this
+    );
+  }
+
+  destroySpeechBubble() {
+    if (this.speechBubble) {
+      this.speechBubble.destroy();
+    }
+  }
+
+  destroyText() {
+    if (this.text) {
+      this.text.destroy();
+    }
+
+    this.time.delayedCall(500, this.showSecondText, [], this);
+  }
+
+  finalDestroyText() {
+    if (this.text && this.speechBubble) {
+      this.text.destroy();
+      this.speechBubble.destroy();
+    }
+  }
+
+  showSecondText() {
+    this.speechAnimation(
+      this.player.x + 10,
+      this.player.y - 35,
+      `Welcome to \nour game!`,
+      8
+    );
+
+    this.time.delayedCall(3000, () => {
+      this.finalDestroyText();
+    });
+  }
+
   createPlayer() {
     // Creates the player sprite
     this.player = this.physics.add
-      .sprite(0, 300, "player", "frame-1")
+      .sprite(260, 230, "player", "frame-1")
       .setScale(0.8);
 
     this.player.setSize(32, 32);
@@ -221,6 +311,24 @@ class TestScene extends Phaser.Scene {
       this.player.setVelocityY(0);
       this.player.anims.play("idle");
     }
+  }
+
+  speechAnimation(x, y, text, size) {
+    this.speechBubble = this.add.sprite(x + 2, y - 10, "textbox").setScale(2);
+
+    this.speechBubble.play("bubble");
+
+    this.text = this.add
+      .text(x, y - 55, text, {
+        fontSize: `${size}px`,
+        color: "#000",
+        fontFamily: "Arial",
+        align: "center",
+        wordWrap: {
+          width: 140,
+        },
+      })
+      .setOrigin(0.5);
   }
 }
 
