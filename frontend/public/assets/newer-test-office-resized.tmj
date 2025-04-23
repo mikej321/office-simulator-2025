@@ -347,12 +347,12 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 277, 278, 276, 0, 274, 277, 278, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 278, 342, 0, 279, 277, 278, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 225, 226, 0, 0, 0, 2147483812, 2147483811, 0, 0, 0, 0, 0, 0, 0, 0, 0, 161, 162, 0, 0, 0, 2147483876, 2147483875, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 257, 258, 0, 0, 0, 2147483844, 2147483843, 0, 0, 0, 0, 0, 0, 0, 0, 0, 193, 194, 0, 0, 0, 2147483908, 2147483907, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 2147484017, 0, 397, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147484046, 0, 399, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 277, 278, 279, 0, 276, 277, 278, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 278, 274, 0, 341, 277, 278, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 163, 164, 0, 0, 0, 2147483874, 2147483873, 0, 0, 0, 0, 0, 0, 0, 0, 0, 227, 228, 0, 0, 0, 2147483810, 2147483809, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 195, 196, 0, 0, 0, 2147483906, 2147483905, 0, 0, 0, 0, 0, 0, 0, 0, 0, 259, 260, 0, 0, 0, 2147483842, 2147483841, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 2147484045, 0, 369, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147484047, 0, 398, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -371,9 +371,229 @@
          "width":32,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":13,
+         "name":"Red Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":14,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"red-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":80,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":15,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"red-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":14,
+         "name":"Green Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":16,
+                 "name":"green",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"green-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":336,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":17,
+                 "name":"green",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"green-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":15,
+         "name":"Orange Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":18,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"orange-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":19,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"orange-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":336,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":12,
+         "name":"Blue Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":10,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"blue-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":11,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"blue-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":80,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":12,
- "nextobjectid":9,
+ "nextlayerid":16,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.1",

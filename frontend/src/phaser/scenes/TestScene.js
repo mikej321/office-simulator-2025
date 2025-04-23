@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
+import SpeechBubble from "../../factories/speechBubble";
 
 class TestScene extends Phaser.Scene {
   constructor() {
@@ -14,11 +15,11 @@ class TestScene extends Phaser.Scene {
     /* A transition occurs here. A delay is added
     to force the scene to wait until the last scene is finished
     fading out */
-    this.cameras.main.setAlpha(0); // starts it out fully invisible
-    this.time.delayedCall(1100, () => {
-      this.cameras.main.setAlpha(1);
-      this.cameras.main.fadeIn(1000);
-    });
+    // this.cameras.main.setAlpha(0); // starts it out fully invisible
+    // this.time.delayedCall(1100, () => {
+    //   this.cameras.main.setAlpha(1);
+    //   this.cameras.main.fadeIn(1000);
+    // });
 
     this.map = this.make.tilemap({
       key: "tilemap",
@@ -40,6 +41,7 @@ class TestScene extends Phaser.Scene {
       0,
       0
     );
+
     this.separators = this.map.createLayer(
       "Cubicle Separators",
       this.tileset,
@@ -52,6 +54,7 @@ class TestScene extends Phaser.Scene {
       0,
       0
     );
+
     this.deskLeft = this.map.createLayer(
       "Cubicle Desk Left",
       this.tileset,
@@ -78,6 +81,126 @@ class TestScene extends Phaser.Scene {
       0,
       0
     );
+
+    this.interactables = this.physics.add.staticGroup();
+
+    // Blue Chair Object
+
+    this.blueChairLayer = this.map.getObjectLayer("Blue Chair");
+
+    this.blueChairLayer.objects.forEach((obj) => {
+      const frame = obj.properties.find((p) => p.name === "frame").value;
+      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+
+      const chair = this.add
+        .sprite(
+          obj.x + obj.width / 2,
+          obj.y + obj.height / 2,
+          "blue-chair",
+          frame
+        )
+        .setOrigin(0.5, 0.5)
+        .setFlipX(flipX);
+
+      if (flipX) {
+        chair.x += 9;
+        chair.y -= 4;
+      } else {
+        chair.x -= 9;
+        chair.y -= 4;
+      }
+
+      this.physics.add.existing(chair, true);
+
+      this.interactables.add(chair);
+    });
+
+    this.redChairLayer = this.map.getObjectLayer("Red Chair");
+
+    this.redChairLayer.objects.forEach((obj) => {
+      const frame = obj.properties.find((p) => p.name === "frame").value;
+      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+
+      const chair = this.add
+        .sprite(
+          obj.x + obj.width / 2,
+          obj.y + obj.height / 2,
+          "red-chair",
+          frame
+        )
+        .setOrigin(0.5, 0.5)
+        .setFlipX(flipX);
+
+      if (flipX) {
+        chair.x += 9;
+        chair.y -= 3;
+      } else {
+        chair.x -= 9;
+        chair.y -= 3;
+      }
+
+      this.physics.add.existing(chair, true);
+
+      this.interactables.add(chair);
+    });
+
+    this.greenChairLayer = this.map.getObjectLayer("Green Chair");
+
+    this.greenChairLayer.objects.forEach((obj) => {
+      const frame = obj.properties.find((p) => p.name === "frame").value;
+      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+
+      const chair = this.add
+        .sprite(
+          obj.x + obj.width / 2,
+          obj.y + obj.height / 2,
+          "green-chair",
+          frame
+        )
+        .setOrigin(0.5, 0.5)
+        .setFlipX(flipX);
+
+      chair.y += 1;
+
+      if (flipX) {
+        chair.x += 9;
+      } else {
+        chair.x -= 9;
+      }
+
+      this.physics.add.existing(chair, true);
+
+      this.interactables.add(chair);
+    });
+
+    this.orangeChairLayer = this.map.getObjectLayer("Orange Chair");
+
+    this.orangeChairLayer.objects.forEach((obj) => {
+      const frame = obj.properties.find((p) => p.name === "frame").value;
+      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+
+      const chair = this.add
+        .sprite(
+          obj.x + obj.width / 2,
+          obj.y + obj.height / 2,
+          "orange-chair",
+          frame
+        )
+        .setOrigin(0.5, 0.5)
+        .setFlipX(flipX);
+
+      chair.y -= 3;
+
+      if (flipX) {
+        chair.x += 9;
+      } else {
+        chair.x -= 9;
+      }
+
+      this.physics.add.existing(chair, true);
+
+      this.interactables.add(chair);
+    });
 
     // Setting the e key up for button presses
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -136,24 +259,27 @@ class TestScene extends Phaser.Scene {
 
     this.createCollisions(this.player, this.layerArr);
 
-    if (!this.anims.exists("bubble")) {
-      this.anims.create({
-        key: "bubble",
-        frames: this.anims.generateFrameNames("speech-bubble", {
-          start: 1,
-          end: 3,
-          prefix: "frame-",
-        }),
-        frameRate: 10,
-        repeat: 0,
-      });
-    }
+    this.bubble = new SpeechBubble(
+      this,
+      this.player.x,
+      this.player.y - this.player.height / 2,
+      "Hello there, I am Tom",
+      {},
+      250
+    );
 
-    this.introductionsAreInOrder();
+    this.bubble.show();
+
+    this.time.delayedCall(3000, () => this.bubble.hide());
   }
 
   update() {
     this.playerMovement();
+
+    this.bubble.setPosition(
+      this.player.x,
+      this.player.y - this.player.height / 2
+    );
   }
 
   createCollisions(player, layers) {
@@ -163,81 +289,6 @@ class TestScene extends Phaser.Scene {
       });
 
       this.physics.add.collider(player, layer);
-    });
-  }
-
-  // introductionsAreInOrder() {
-  //   this.time.delayedCall(2500, () => {
-  //     this.speechAnimation(
-  //       this.player.x + 10,
-  //       this.player.y - 35,
-  //       "Hello there!"
-  //     );
-  //     this.time.delayedCall(
-  //       3000,
-  //       () => {
-  //         this.speechBubble.destroy();
-  //       },
-  //       [],
-  //       this
-  //     );
-  //   });
-  // }
-
-  introductionsAreInOrder() {
-    this.time.delayedCall(2500, this.showFirstText, [], this);
-  }
-
-  showFirstText() {
-    this.speechAnimation(
-      this.player.x + 10,
-      this.player.y - 35,
-      "Hello there!",
-      8
-    );
-
-    this.time.delayedCall(
-      3000,
-      () => {
-        this.speechBubble.anims.stop("bubble");
-        this.destroyText();
-      },
-      [],
-      this
-    );
-  }
-
-  destroySpeechBubble() {
-    if (this.speechBubble) {
-      this.speechBubble.destroy();
-    }
-  }
-
-  destroyText() {
-    if (this.text) {
-      this.text.destroy();
-    }
-
-    this.time.delayedCall(500, this.showSecondText, [], this);
-  }
-
-  finalDestroyText() {
-    if (this.text && this.speechBubble) {
-      this.text.destroy();
-      this.speechBubble.destroy();
-    }
-  }
-
-  showSecondText() {
-    this.speechAnimation(
-      this.player.x + 10,
-      this.player.y - 35,
-      `Welcome to \nour game!`,
-      8
-    );
-
-    this.time.delayedCall(3000, () => {
-      this.finalDestroyText();
     });
   }
 
@@ -311,24 +362,6 @@ class TestScene extends Phaser.Scene {
       this.player.setVelocityY(0);
       this.player.anims.play("idle");
     }
-  }
-
-  speechAnimation(x, y, text, size) {
-    this.speechBubble = this.add.sprite(x + 2, y - 10, "textbox").setScale(2);
-
-    this.speechBubble.play("bubble");
-
-    this.text = this.add
-      .text(x, y - 55, text, {
-        fontSize: `${size}px`,
-        color: "#000",
-        fontFamily: "Arial",
-        align: "center",
-        wordWrap: {
-          width: 140,
-        },
-      })
-      .setOrigin(0.5);
   }
 }
 
