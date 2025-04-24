@@ -81,19 +81,9 @@ class EndOfDay extends Phaser.Scene {
     this.physics.world.setBounds(offsetX, offsetY, map.widthInPixels, map.heightInPixels);
 
     // Camera Boundaries
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    );
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    );
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     // this.cameras.main.setZoom(1.5);
 
@@ -277,29 +267,28 @@ class EndOfDay extends Phaser.Scene {
     } else if (this.cursor.right.isDown) {
       this.player.setVelocityX(velocity);
       this.player.anims.play("walk", true);
-  this.player.flipX = false; // Ensure sprite is not flipped
-} else {
-  this.player.setVelocityX(0); // Stop horizontal movement
-}
+      this.player.flipX = false; // Ensure sprite is not flipped
+    } else {
+      this.player.setVelocityX(0); // Stop horizontal movement
+    }
 
-// Vertical movement
-if (this.cursor.up.isDown) {
-  this.player.setVelocityY(-velocity);
-  this.player.anims.play("back", true); // Play "back" animation for upward movement
-} else if (this.cursor.down.isDown) {
-  this.player.setVelocityY(velocity);
-  this.player.anims.play("walk", true); // Play "walk" animation for downward movement
-} else {
-  this.player.setVelocityY(0); // Stop vertical movement
-}
+    // Vertical movement
+    if (this.cursor.up.isDown) {
+      this.player.setVelocityY(-velocity);
+      this.player.anims.play("back", true); // Play "back" animation for upward movement
+    } else if (this.cursor.down.isDown) {
+      this.player.setVelocityY(velocity);
+      this.player.anims.play("walk", true); // Play "walk" animation for downward movement
+    } else {
+      this.player.setVelocityY(0); // Stop vertical movement
+    }
 
-// Idle animation
-if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
-  this.player.anims.play("idle", true);
-}
+    // Idle animation
+    if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
+      this.player.anims.play("idle", true);
     }
   }
 
-
+}
 
 export default EndOfDay;
