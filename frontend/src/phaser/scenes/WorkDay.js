@@ -62,6 +62,14 @@ class WorkDay extends Phaser.Scene {
 
     this.createPlayer();
 
+    this.interactHint = this.add.text(0, 0, 'E', {
+      fontSize: '20px',
+      fill: '#fff',
+      backgroundColor: '#000',
+      padding: { x: 6, y: 2 },
+    }).setOrigin(0.5).setVisible(false);
+    
+
     // Ensures the player can't move beyond the game world
     this.player.setCollideWorldBounds(true);
 
@@ -180,6 +188,12 @@ class WorkDay extends Phaser.Scene {
         this.scene.start("Pong");
       }
     }
+    if (this.currentInteraction && !this.interactionInProgress) {
+      this.interactHint.setVisible(true);
+      this.interactHint.setPosition(this.player.x, this.player.y - 40);
+    } else {
+      this.interactHint.setVisible(false);
+    }
   }
 
   createCollisions(player, layers) {
@@ -193,26 +207,29 @@ class WorkDay extends Phaser.Scene {
     this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
 
+    if (!this.anims.exists("walk")){
     this.anims.create({
       key: "walk",
       frames: this.anims.generateFrameNames("player", { start: 8, end: 12, prefix: "frame-" }),
       frameRate: 5,
       repeat: -1,
-    });
+    });}
 
+    if (!this.anims.exists("back")){
     this.anims.create({
       key: "back",
       frames: this.anims.generateFrameNames("player", { start: 17, end: 19, prefix: "frame-" }),
       frameRate: 5,
       repeat: -1,
-    });
+    });}
 
+    if (!this.anims.exists("idle")){
     this.anims.create({
       key: "idle",
       frames: this.anims.generateFrameNames("player", { start: 1, end: 8, prefix: "frame-" }),
       frameRate: 5,
       repeat: -1,
-    });
+    });}
 
     this.cameras.main.startFollow(this.player);
 
