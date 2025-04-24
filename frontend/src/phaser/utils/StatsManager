@@ -1,0 +1,92 @@
+class StatsManager  {
+    
+    static wins = 0;
+    static losses = 0;
+    static mentalPoints = 3;
+    static projectProgress = 0;
+    static playGame = false;
+    static workDayCount = 0; // Track the number of workday iterations
+
+    static incrementWorkDayCount() {
+        this.workDayCount++;
+        console.log("WorkDay Count: " + this.workDayCount);
+    }
+
+    static resetWorkDayCount() {
+        this.workDayCount = 0;
+    }
+
+    static getWorkDayCount() {
+        return this.workDayCount;
+    }
+
+    static setPlayGame() {
+        this.playGame = true;
+    }
+    static resetPlayGame() {
+        this.playGame = false;
+    }
+    static getPlayGame() {
+        return this.playGame;
+    }
+    static incrementMP() {
+        this.mentalPoints++;
+        console.log("MP: " + this.mentalPoints);
+      }
+    
+    static getMP() {
+        return this.mentalPoints;
+    }
+
+    static incrementPP() {
+        this.projectProgress++;
+        console.log("PP: " + this.projectProgress);
+    }
+
+    static getPP() {
+        return this.projectProgress;
+    }
+
+    static decrementMP() {
+        this.mentalPoints--;
+
+        if (this.mentalPoints < 0) {
+            console.log("Game Over");
+        } else {
+            console.log("MP: " + this.mentalPoints);
+        }
+    }
+
+    static decrementPP()
+    {
+        this.projectProgress--;
+        
+        console.log("PP: " + this.projectProgress);
+        
+    }
+
+
+    static incrementWins() {
+        this.wins++;
+        console.log("Wins: " + this.wins);
+    }
+    static getWins() {
+        return this.wins;
+    }
+
+    static incrementLosses() {
+        this.losses++;
+        console.log("Losses: " + this.losses);
+    }
+
+    static getLosses() {
+        return this.losses;
+    }
+
+  
+
+    // more functions to be added
+    // add more functions to manage stats
+};
+
+export default StatsManager;
