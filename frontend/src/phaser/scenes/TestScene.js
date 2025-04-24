@@ -84,123 +84,94 @@ class TestScene extends Phaser.Scene {
 
     this.interactables = this.physics.add.staticGroup();
 
-    // Blue Chair Object
+    [
+      "Blue Chair",
+      "Red Chair",
+      "Green Chair",
+      "Orange Chair",
+      "Vending Machine",
+      "Door",
+      "Printer",
+    ].forEach((layerName) => {
+      this.map.getObjectLayer(layerName).objects.forEach((obj) => {
+        const isTileObject = obj.gid !== undefined;
 
-    this.blueChairLayer = this.map.getObjectLayer("Blue Chair");
+        const frame = obj.properties.find((p) => p.name === "frame").value;
+        const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+        const centerX = obj.x + obj.width / 2;
+        const centerY = isTileObject
+          ? obj.y - obj.height / 2
+          : obj.y + obj.height / 2;
 
-    this.blueChairLayer.objects.forEach((obj) => {
-      const frame = obj.properties.find((p) => p.name === "frame").value;
-      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
+        const sprite = this.interactables
+          .create(
+            centerX,
+            centerY,
+            layerName.toLowerCase().replace(" ", "-"),
+            frame
+          )
+          .setOrigin(0.5)
+          .setFlipX(flipX);
 
-      const chair = this.add
-        .sprite(
-          obj.x + obj.width / 2,
-          obj.y + obj.height / 2,
-          "blue-chair",
-          frame
-        )
-        .setOrigin(0.5, 0.5)
-        .setFlipX(flipX);
+        /* All of the position nudges are placed by using a custom function 'objectNudge'.
+        The objectNudge takes 4 parameters
+        
+        obj: In this case, it'd be the created sprite above
+        propertyName (optional): This is an optional parameter for doing conditionals based on if
+        the property exists
+        x: How far you want to nudge it on the x axis
+        y: How far you want to nudge it on the y axis
 
-      if (flipX) {
-        chair.x += 9;
-        chair.y -= 4;
-      } else {
-        chair.x -= 9;
-        chair.y -= 4;
-      }
+        */
+        switch (layerName) {
+          case "Red Chair":
+            this.objectNudge(sprite, 9, 2, flipX);
+            break;
+          case "Blue Chair":
+            this.objectNudge(sprite, 9, 3, flipX);
+            break;
+          case "Orange Chair":
+            this.objectNudge(sprite, 9, 2, flipX);
+            break;
+          case "Green Chair":
+            this.objectNudge(sprite, 9, -2, flipX);
+            break;
+          case "Door":
+            this.objectNudge(sprite, 0, 18);
+            break;
+          case "Printer":
+            this.objectNudge(sprite, -6, 7);
+            break;
+          default:
+            break;
+        }
 
-      this.physics.add.existing(chair, true);
+        //
 
-      this.interactables.add(chair);
+        // if (layerName === "Door") {
+        //   sprite.y += 18;
+        // }
+
+        /* This is the code that's responsible for shrinking the sprite's canvas body
+        down to the proper size. Without it, it would create invisible walls that prevent
+        the player from walking */
+        sprite.body.setSize(obj.width, obj.height);
+        sprite.body.setOffset(
+          (sprite.width - obj.width) / 2,
+          (sprite.height - obj.height) / 2
+        );
+
+        this.physics.add.existing(sprite, true);
+
+        // this.debugBox(sprite);
+
+        this.interactables.add(sprite);
+      });
     });
 
-    this.redChairLayer = this.map.getObjectLayer("Red Chair");
+    this.createPlayer();
 
-    this.redChairLayer.objects.forEach((obj) => {
-      const frame = obj.properties.find((p) => p.name === "frame").value;
-      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
-
-      const chair = this.add
-        .sprite(
-          obj.x + obj.width / 2,
-          obj.y + obj.height / 2,
-          "red-chair",
-          frame
-        )
-        .setOrigin(0.5, 0.5)
-        .setFlipX(flipX);
-
-      if (flipX) {
-        chair.x += 9;
-        chair.y -= 3;
-      } else {
-        chair.x -= 9;
-        chair.y -= 3;
-      }
-
-      this.physics.add.existing(chair, true);
-
-      this.interactables.add(chair);
-    });
-
-    this.greenChairLayer = this.map.getObjectLayer("Green Chair");
-
-    this.greenChairLayer.objects.forEach((obj) => {
-      const frame = obj.properties.find((p) => p.name === "frame").value;
-      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
-
-      const chair = this.add
-        .sprite(
-          obj.x + obj.width / 2,
-          obj.y + obj.height / 2,
-          "green-chair",
-          frame
-        )
-        .setOrigin(0.5, 0.5)
-        .setFlipX(flipX);
-
-      chair.y += 1;
-
-      if (flipX) {
-        chair.x += 9;
-      } else {
-        chair.x -= 9;
-      }
-
-      this.physics.add.existing(chair, true);
-
-      this.interactables.add(chair);
-    });
-
-    this.orangeChairLayer = this.map.getObjectLayer("Orange Chair");
-
-    this.orangeChairLayer.objects.forEach((obj) => {
-      const frame = obj.properties.find((p) => p.name === "frame").value;
-      const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
-
-      const chair = this.add
-        .sprite(
-          obj.x + obj.width / 2,
-          obj.y + obj.height / 2,
-          "orange-chair",
-          frame
-        )
-        .setOrigin(0.5, 0.5)
-        .setFlipX(flipX);
-
-      chair.y -= 3;
-
-      if (flipX) {
-        chair.x += 9;
-      } else {
-        chair.x -= 9;
-      }
-
-      this.physics.add.existing(chair, true);
-
-      this.interactables.add(chair);
-    });
+    this.physics.add.collider(this.player, this.interactables);
 
     // Setting the e key up for button presses
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -224,8 +195,6 @@ class TestScene extends Phaser.Scene {
       this.map.widthInPixels,
       this.map.heightInPixels
     );
-
-    this.createPlayer();
 
     // Ensures the player cant move beyond the game world
     this.player.setCollideWorldBounds(true);
@@ -268,9 +237,9 @@ class TestScene extends Phaser.Scene {
       250
     );
 
-    this.bubble.show();
+    // this.bubble.show();
 
-    this.time.delayedCall(3000, () => this.bubble.hide());
+    // this.time.delayedCall(3000, () => this.bubble.hide());
   }
 
   update() {
@@ -282,6 +251,20 @@ class TestScene extends Phaser.Scene {
     );
   }
 
+  // Custom Debug Box function. Place it anywhere with a sprite inside to generate a red box
+  debugBox(sprite) {
+    this.add
+      .rectangle(
+        sprite.body.x + sprite.body.width / 2,
+        sprite.body.y + sprite.body.height / 2,
+        sprite.body.width,
+        sprite.body.height,
+        0xff00000,
+        0.3
+      )
+      .setOrigin(0.5);
+  }
+
   createCollisions(player, layers) {
     layers.forEach((layer) => {
       layer.setCollisionByProperty({
@@ -290,6 +273,19 @@ class TestScene extends Phaser.Scene {
 
       this.physics.add.collider(player, layer);
     });
+  }
+
+  objectNudge(obj, objX, objY, propertyName = "") {
+    if (propertyName === "") {
+      obj.x += objX;
+      obj.y += objY;
+    } else if (propertyName) {
+      obj.x += objX;
+      obj.y -= objY;
+    } else {
+      obj.x -= objX;
+      obj.y -= objY;
+    }
   }
 
   createPlayer() {

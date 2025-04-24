@@ -58,20 +58,20 @@ export default class PreloadScene extends Phaser.Scene {
 
     this.load.atlas(
       "door",
-      "/office-simulator-2025/assets/attachments/Door.png",
-      "/office-simulator-2025/assets/attachments/Door.json"
+      "/office-simulator-2025/assets/attachments/Door_resized.png",
+      "/office-simulator-2025/assets/attachments/Door_resized.json"
     );
 
     this.load.atlas(
       "printer",
-      "/office-simulator-2025/assets/attachments/printer.png",
-      "/office-simulator-2025/assets/attachments/printer.json"
+      "/office-simulator-2025/assets/attachments/printer_resized.png",
+      "/office-simulator-2025/assets/attachments/printer_resized.json"
     );
 
     this.load.atlas(
       "vending-machine",
-      "/office-simulator-2025/assets/attachments/vending_machine.png",
-      "/office-simulator-2025/assets/attachments/vending_machine.json"
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.png",
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.json"
     );
 
     // this.load.start()
