@@ -11,9 +11,9 @@ export default class SpeechBubble extends Phaser.GameObjects.Container {
 
     // 1) Create text with wordWrap
     this.text = scene.add.text(0, 0, message, {
-      fontSize: "16px",
+      fontSize: "12px",
       color: "#000",
-      align: "left",
+      align: "center",
       wordWrap: {
         width: maxWidth,
         ...style,

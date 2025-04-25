@@ -83,6 +83,8 @@ class TestScene extends Phaser.Scene {
     );
 
     this.interactables = this.physics.add.staticGroup();
+    this.sensors = this.physics.add.staticGroup();
+    this.printerGroup = this.add.group();
 
     [
       "Blue Chair",
@@ -92,16 +94,72 @@ class TestScene extends Phaser.Scene {
       "Vending Machine",
       "Door",
       "Printer",
+      "Door Sensor",
+      "Vending Sensor",
+      "Printer Sensor",
     ].forEach((layerName) => {
       this.map.getObjectLayer(layerName).objects.forEach((obj) => {
         const isTileObject = obj.gid !== undefined;
-
-        const frame = obj.properties.find((p) => p.name === "frame").value;
+        const objects = this.map.getObjectLayer(layerName).objects;
+        const frame = obj.properties.find((p) => p.name === "frame")?.value;
         const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
         const centerX = obj.x + obj.width / 2;
         const centerY = isTileObject
           ? obj.y - obj.height / 2
           : obj.y + obj.height / 2;
+
+        if (layerName === "Printer") {
+          objects.forEach((obj, idx) => {
+            const sprite = this.interactables
+              .create(
+                obj.x + obj.width / 2,
+                obj.y - obj.height / 2,
+                "printer",
+                obj.properties.find((p) => p.name === "frame").value
+              )
+              .setOrigin(0.5);
+
+            this.objectNudge(sprite, -6, 37);
+
+            sprite.body.setSize(obj.width, obj.height);
+            sprite.body.setOffset(
+              (sprite.width - obj.width) / 2,
+              (sprite.height - obj.height) / 2
+            );
+
+            this.printerGroup.add(sprite);
+
+            const zoneObj =
+              this.map.getObjectLayer("Printer Sensor").objects[idx];
+            const zone = this.add
+              .zone(
+                zoneObj.x + zoneObj.width / 2,
+                zoneObj.y + zoneObj.height / 2,
+                zoneObj.width,
+                zoneObj.height
+              )
+              .setOrigin(0.5);
+            this.physics.add.existing(zone, true);
+            zone.name = "Printer Sensor";
+            zone.linkedSprite = sprite;
+            this.sensors.add(zone);
+          });
+
+          return;
+        }
+        if (layerName.includes("Sensor")) {
+          const zone = this.add
+            .zone(centerX, centerY, obj.width, obj.height)
+            .setOrigin(0.5);
+
+          zone.sensorType = obj.name;
+          this.physics.add.existing(zone, true);
+          zone.body.debugShowBody = false;
+          zone.name = obj.name;
+          this.sensors.add(zone);
+
+          return;
+        }
 
         const sprite = this.interactables
           .create(
@@ -139,9 +197,6 @@ class TestScene extends Phaser.Scene {
           case "Door":
             this.objectNudge(sprite, 0, 18);
             break;
-          case "Printer":
-            this.objectNudge(sprite, -6, 7);
-            break;
           default:
             break;
         }
@@ -174,7 +229,7 @@ class TestScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.interactables);
 
     // Setting the e key up for button presses
-    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     this.layerArr = [
       this.floor,
@@ -228,27 +283,176 @@ class TestScene extends Phaser.Scene {
 
     this.createCollisions(this.player, this.layerArr);
 
-    this.bubble = new SpeechBubble(
-      this,
-      this.player.x,
-      this.player.y - this.player.height / 2,
-      "Hello there, I am Tom",
-      {},
-      250
+    // Object Sprite Definitions for later usage
+    this.doorSprite = this.interactables
+      .getChildren()
+      .find((child) => child.texture.key === "door");
+
+    this.printerSprite = this.interactables
+      .getChildren()
+      .find((child) => child.texture.key === "printer");
+    // Object Animations
+
+    this.anims.create({
+      key: "exit",
+      frames: this.anims.generateFrameNames("door", {
+        prefix: "door-",
+        start: 1,
+        end: 8,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "print",
+      frames: this.anims.generateFrameNames("printer", {
+        prefix: "printer-",
+        start: 1,
+        end: 8,
+      }),
+      frameRate: 8,
+      repeat: 0,
+    });
+
+    // flags for sensors
+    this.currentSensor = null;
+    this.bubble = null;
+
+    this.physics.add.overlap(
+      this.player,
+      this.sensors,
+      (player, zone) => {
+        // console.log("entered sensor named", zone.name);
+
+        // If in a zone, do nothing
+        if (this.bubble) return;
+        if (this.currentSensor === zone) return;
+
+        let msg;
+
+        switch (zone.name) {
+          case "Door Sensor":
+            msg = `Press 'E' to leave work`;
+            break;
+          case "Vending Sensor":
+            msg = `Press 'E' to grab a drink`;
+            break;
+          case "Printer Sensor":
+            msg = `Press 'E' to print something`;
+            break;
+          default:
+            break;
+        }
+
+        this.bubble = new SpeechBubble(
+          this,
+          this.player.x,
+          this.player.y - this.player.height / 2 - 10,
+          msg,
+          {},
+          250
+        );
+
+        this.bubble.show();
+        this.currentSensor = zone;
+      },
+      null,
+      this
     );
 
-    // this.bubble.show();
-
-    // this.time.delayedCall(3000, () => this.bubble.hide());
+    this.physics.add.collider(
+      this.player,
+      this.sensors,
+      null,
+      (player, zone) => {
+        if (
+          this.currentSensor === zone &&
+          !this.physics.world.overlap(this.player, zone)
+        ) {
+          console.log("exited sensor named", zone.name);
+          this.currentSensor = null;
+        }
+        return false;
+      },
+      this
+    );
   }
 
   update() {
     this.playerMovement();
 
-    this.bubble.setPosition(
-      this.player.x,
-      this.player.y - this.player.height / 2
-    );
+    const sensor = this.currentSensor;
+
+    if (
+      this.currentSensor &&
+      this.currentSensor.name === "Door Sensor" &&
+      Phaser.Input.Keyboard.JustDown(this.eKey)
+    ) {
+      if (this.doorSprite) {
+        this.doorSprite.play("exit");
+      }
+
+      if (this.bubble) {
+        this.bubble.hide();
+        this.bubble.destroy();
+        this.bubble = null;
+      }
+
+      sensor.body.enable = false;
+      sensor.setVisible(false);
+
+      this.currentSensor = null;
+
+      this.time.delayedCall(3000, () => {
+        this.doorSprite.anims.playReverse("exit");
+
+        sensor.body.enable = true;
+        sensor.setVisible(true);
+      });
+
+      return;
+    } else if (
+      this.currentSensor &&
+      this.currentSensor.name === "Printer Sensor" &&
+      Phaser.Input.Keyboard.JustDown(this.eKey)
+    ) {
+      if (sensor.linkedSprite) {
+        sensor.linkedSprite.play("print");
+      }
+
+      if (this.bubble) {
+        this.bubble.hide();
+        this.bubble.destroy();
+        this.bubble = null;
+      }
+
+      sensor.body.enable = false;
+      sensor.setVisible(false);
+
+      this.currentSensor = null;
+
+      this.time.delayedCall(3000, () => {
+        sensor.body.enable = true;
+        sensor.setVisible(true);
+      });
+
+      return;
+    }
+
+    if (sensor && this.bubble) {
+      this.bubble.setPosition(
+        this.player.x,
+        this.player.y - this.player.height / 2 - 10
+      );
+
+      if (!this.physics.world.overlap(this.player, sensor)) {
+        console.log("Exited sensor named", sensor.name);
+        this.bubble.hide();
+        this.bubble = null;
+        this.currentSensor = null;
+      }
+    }
   }
 
   // Custom Debug Box function. Place it anywhere with a sprite inside to generate a red box
@@ -263,6 +467,19 @@ class TestScene extends Phaser.Scene {
         0.3
       )
       .setOrigin(0.5);
+  }
+
+  distanceCheck(player, object) {
+    const dist = Phaser.Math.Distance.Between(
+      player.x,
+      player.y,
+      object.x,
+      object.y
+    );
+
+    if (dist < 32) {
+      console.log("I am in range");
+    }
   }
 
   createCollisions(player, layers) {
