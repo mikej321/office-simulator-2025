@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import WebFont from "webfontloader";
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -6,6 +7,19 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.script(
+      "webfont",
+      "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
+    );
+
+    this.load.once("filecomplete-script-webfont", () => {
+      WebFont.load({
+        google: {
+          families: ["Orbitron:400,700"],
+        },
+      });
+    });
+
     this.load.image(
       "tileset",
       "/office-simulator-2025/assets/asset-export-final-resized.png",

@@ -377,6 +377,34 @@ class TestScene extends Phaser.Scene {
       },
       this
     );
+
+    // Clock setup
+
+    this.clockText = this.add
+      .text(235, 32, "", {
+        fontFamily: "Orbitron",
+        fontSize: "12px",
+        color: "#00ff00",
+      })
+      .setScrollFactor(0)
+      .setDepth(1000);
+
+    this.gameTime = new Date();
+    this.gameTime.setHours(9, 0, 0, 0);
+
+    // 1 sec = 1 game minute
+    const timeScale = 120;
+
+    this.updateClock();
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.gameTime.setSeconds(this.gameTime.getSeconds() + timeScale);
+        this.updateClock();
+      },
+      callbackScope: this,
+      loop: true,
+    });
   }
 
   update() {
@@ -453,6 +481,14 @@ class TestScene extends Phaser.Scene {
         this.currentSensor = null;
       }
     }
+  }
+
+  updateClock() {
+    const now = new Date();
+    const h = String(this.gameTime.getHours()).padStart(2, "0");
+    const m = String(this.gameTime.getMinutes()).padStart(2, "0");
+    const s = String(this.gameTime.getSeconds()).padStart(2, "0");
+    this.clockText.setText(`${h}:${m}`);
   }
 
   // Custom Debug Box function. Place it anywhere with a sprite inside to generate a red box
