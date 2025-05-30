@@ -6,23 +6,45 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  name         String
-  player_stats Stats[] @relation("playerStats")
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  password   String // Hashed password
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  characters Character[]
+}
+
+model Character {
+  id        Int        @id @default(autoincrement())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id])
+  stats     Stats?
+  gameState GameState?
 }
 
 model Stats {
-  id      Int  @id @default(autoincrement())
-  fatigue Int
-  userId  Int
-  user    User @relation("playerStats", fields: [userId], references: [id])
+  id           Int       @id @default(autoincrement())
+  fatigue      Int       @default(100)
+  productivity Int       @default(100)
+  characterId  Int       @unique
+  character    Character @relation(fields: [characterId], references: [id])
+}
+
+model GameState {
+  id          Int       @id @default(autoincrement())
+  currentDay  Int       @default(1)
+  lastSaved   DateTime  @default(now())
+  characterId Int       @unique
+  character   Character @relation(fields: [characterId], references: [id])
 }
