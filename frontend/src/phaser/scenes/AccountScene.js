@@ -122,11 +122,6 @@ class AccountScene extends Phaser.Scene {
     this.createInputField("email", -100, "Email");
     this.createInputField("password", -20, "Password", true);
 
-    // Only show character name field for signup
-    if (this.mode === "signup") {
-      this.createInputField("characterName", 60, "Character Name");
-    }
-
     // Submit button
     this.submitButton = this.add
       .text(0, 150, this.mode === "signup" ? "Create Account" : "Sign In", {
@@ -261,22 +256,14 @@ class AccountScene extends Phaser.Scene {
       this.showError("Email and password are required");
       return;
     }
-
-    if (this.mode === "signup" && !this.formData.characterName) {
-      this.showError("Character name is required");
-      return;
-    }
-
     if (!this.validateEmail(this.formData.email)) {
       this.showError("Invalid email format");
       return;
     }
-
     if (this.formData.password.length < 6) {
       this.showError("Password must be at least 6 characters");
       return;
     }
-
     try {
       // Disable submit button and show loading state
       this.submitButton.setStyle({ color: "#666666" });
@@ -284,7 +271,6 @@ class AccountScene extends Phaser.Scene {
         this.mode === "signup" ? "Creating Account..." : "Signing In..."
       );
       this.submitButton.disableInteractive();
-
       console.log(`Attempting to ${this.mode}...`);
       const endpoint = this.mode === "signup" ? "signup" : "login";
       const response = await fetch(
@@ -297,44 +283,35 @@ class AccountScene extends Phaser.Scene {
           body: JSON.stringify({
             email: this.formData.email,
             password: this.formData.password,
-            ...(this.mode === "signup" && {
-              name: this.formData.characterName,
-            }),
           }),
         }
       );
-
       const data = await response.json();
       console.log("Server response:", data);
-
       if (!response.ok) {
         throw new Error(
           data.message || data.errors?.[0]?.msg || `Failed to ${this.mode}`
         );
       }
-
       // Store the token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
       // Show success message
       this.submitButton.setText(
         this.mode === "signup" ? "Account Created!" : "Signed In!"
       );
       this.submitButton.setStyle({ color: "#00ff00" });
-
       // Add a small delay before transitioning
       this.time.delayedCall(1000, () => {
         // Use standard Phaser scene transition
         this.cameras.main.fade(1000, 0, 0, 0);
         this.time.delayedCall(1000, () => {
-          this.scene.start("TestScene");
+          this.scene.start("PlayerMenuScene");
         });
       });
     } catch (error) {
       console.error(`Error during ${this.mode}:`, error);
       this.showError(error.message);
-
       // Reset submit button
       this.submitButton.setStyle({ color: "#00ff00" });
       this.submitButton.setText(

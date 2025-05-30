@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Phaser from "phaser";
 import BootScene from "./scenes/BootScene";
 import PreloadScene from "./scenes/PreloadScene";
 import GameScene from "./scenes/GameScene";
 import MainMenuScene from "./scenes/MainMenuScene";
-import IntroScene from "./scenes/IntroScene";
 import TestScene from "./scenes/TestScene";
 import AccountScene from "./scenes/AccountScene";
+import PlayerMenuScene from "./scenes/PlayerMenuScene";
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
@@ -31,6 +31,7 @@ const PhaserGame = () => {
           PreloadScene,
           MainMenuScene,
           AccountScene,
+          PlayerMenuScene,
           TestScene,
           GameScene,
         ],

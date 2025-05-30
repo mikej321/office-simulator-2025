@@ -34,17 +34,24 @@ model Character {
 }
 
 model Stats {
-  id           Int       @id @default(autoincrement())
-  fatigue      Int       @default(100)
-  productivity Int       @default(100)
-  characterId  Int       @unique
-  character    Character @relation(fields: [characterId], references: [id])
+  id              Int       @id @default(autoincrement())
+  mentalPoints    Int       @default(3)
+  energyLevel     Int       @default(3)
+  motivationLevel Int       @default(3)
+  focusLevel      Int       @default(3)
+  characterId     Int       @unique
+  character       Character @relation(fields: [characterId], references: [id])
 }
 
 model GameState {
-  id          Int       @id @default(autoincrement())
-  currentDay  Int       @default(1)
-  lastSaved   DateTime  @default(now())
-  characterId Int       @unique
-  character   Character @relation(fields: [characterId], references: [id])
+  id                  Int       @id @default(autoincrement())
+  wins                Int       @default(0)
+  losses              Int       @default(0)
+  projectProgress     Int       @default(0)
+  workDayCount        Int       @default(0)
+  workDayLimit        Int       @default(5)
+  workDayLimitReached Boolean   @default(false)
+  characterId         Int       @unique
+  character           Character @relation(fields: [characterId], references: [id])
+  lastSaved           DateTime  @default(now())
 }
