@@ -107,7 +107,7 @@ app.post(
 
       // Generate token
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "24h",
       });
 
       console.log("Login successful for user:", email);
@@ -177,7 +177,7 @@ app.post(
 
       // Generate token
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "24h",
       });
 
       console.log("User created successfully:", user.id);

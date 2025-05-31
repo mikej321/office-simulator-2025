@@ -40,7 +40,7 @@ model Stats {
   motivationLevel Int       @default(3)
   focusLevel      Int       @default(3)
   characterId     Int       @unique
-  character       Character @relation(fields: [characterId], references: [id])
+  character       Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
 }
 
 model GameState {
@@ -52,6 +52,6 @@ model GameState {
   workDayLimit        Int       @default(5)
   workDayLimitReached Boolean   @default(false)
   characterId         Int       @unique
-  character           Character @relation(fields: [characterId], references: [id])
+  character           Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   lastSaved           DateTime  @default(now())
 }
