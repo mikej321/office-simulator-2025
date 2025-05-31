@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gameRoutes = require("./routes/game");
 
 console.log("Starting server initialization...");
 
@@ -291,6 +292,9 @@ app.delete("/api/character/:id", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: "Error deleting character" });
   }
 });
+
+// Game routes
+app.use("/api/game", authenticateJWT, gameRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

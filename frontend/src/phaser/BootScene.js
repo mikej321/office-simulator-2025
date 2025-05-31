@@ -19,7 +19,9 @@ export default class BootScene extends Phaser.Scene {
           this.scene.start("PlayerMenuScene");
           return;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error(e);
+      }
     }
     this.scene.start("MainMenuScene");
   }

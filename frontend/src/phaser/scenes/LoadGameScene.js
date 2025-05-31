@@ -64,7 +64,7 @@ class LoadGameScene extends Phaser.Scene {
       this.characters = data.characters || [];
       this.currentIndex = 0;
       this.charactersLoaded = true;
-    } catch (error) {
+    } catch {
       this.characters = [];
       this.charactersLoaded = true;
     }
@@ -161,7 +161,7 @@ class LoadGameScene extends Phaser.Scene {
     y += 20;
 
     // Action buttons container
-    const buttonSpacing = 200; // Space between buttons
+    // const buttonSpacing = 200; // Space between buttons
 
     // Keep Playing button - aligned with stat names
     const playBtn = this.add
@@ -178,6 +178,7 @@ class LoadGameScene extends Phaser.Scene {
       this.showConfirmPopup(
         "Are you sure you want to load this character?",
         () => {
+          console.log("Loading character data:", char);
           this.game.registry.set("activeCharacter", char);
           this.scene.start("TestScene");
         }
@@ -205,7 +206,7 @@ class LoadGameScene extends Phaser.Scene {
     // Left/right arrows - moved below buttons
     if (this.characters.length > 1) {
       const leftArrow = this.add
-        .text(width / 2 - 180, y + 80, "<", {
+        .text(width / 2 - 180, y - 370, "<", {
           fontSize: "48px",
           color: "#fff",
           fontFamily: "Chewy",
@@ -219,7 +220,7 @@ class LoadGameScene extends Phaser.Scene {
         this.showCharacter();
       });
       const rightArrow = this.add
-        .text(width / 2 + 180, y + 80, ">", {
+        .text(width / 2 + 180, y - 370, ">", {
           fontSize: "48px",
           color: "#fff",
           fontFamily: "Chewy",

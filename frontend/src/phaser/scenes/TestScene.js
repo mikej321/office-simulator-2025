@@ -2,6 +2,9 @@ import Phaser from "phaser";
 import WebFont from "webfontloader";
 import SpeechBubble from "../../factories/speechBubble";
 import PauseMenu from "../../factories/pauseMenu";
+import { saveProgress } from "../../utils/saveGame";
+import { showPopup } from "../../utils/showPopup";
+import { getCurrentStatsWithCharacterId } from "../../utils/gameState";
 
 class TestScene extends Phaser.Scene {
   constructor() {
@@ -400,8 +403,19 @@ class TestScene extends Phaser.Scene {
     });
 
     this.pauseMenu = new PauseMenu(this, {
-      onSave: () => {
-        // TODO: Implement save logic
+      onSave: async () => {
+        const token = localStorage.getItem("token");
+        console.log("Token used for saveProgress:", token);
+        const currentStats = getCurrentStatsWithCharacterId(this);
+        try {
+          const result = await saveProgress(currentStats, token);
+          showPopup(
+            this,
+            result.saved ? "Progress Saved!" : "No Progress to Save"
+          );
+        } catch (e) {
+          showPopup(this, "Save failed!");
+        }
       },
       onBack: () => {
         this.scene.start("PlayerMenuScene");
