@@ -93,10 +93,9 @@ class PlayerMenuScene extends Phaser.Scene {
       this.scene.start("CharacterCreationScene");
     });
 
-    // Load Game click handler (to be implemented)
+    // Load Game click handler
     this.loadGameButton.on("pointerdown", () => {
-      // TODO: Implement load game logic
-      alert("Load Game not implemented yet.");
+      this.scene.start("LoadGameScene");
     });
 
     // Sign Out button at the bottom

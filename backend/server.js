@@ -139,7 +139,7 @@ app.post(
     body("password")
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters long"),
-    body("name").notEmpty().withMessage("Character name is required"),
+    // No name required
   ],
   async (req, res) => {
     try {
@@ -151,7 +151,7 @@ app.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { email, password, name } = req.body;
+      const { email, password } = req.body;
 
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
@@ -167,27 +167,11 @@ app.post(
       const hashedPassword = await bcrypt.hash(password, 10);
       console.log("Creating user:", email);
 
-      // Create user and initial character
+      // Create user only (no initial character)
       const user = await prisma.user.create({
         data: {
           email,
           password: hashedPassword,
-          characters: {
-            create: {
-              name,
-              stats: {
-                create: {
-                  fatigue: 100,
-                  productivity: 100,
-                },
-              },
-              gameState: {
-                create: {
-                  currentDay: 1,
-                },
-              },
-            },
-          },
         },
       });
 
@@ -210,6 +194,103 @@ app.post(
     }
   }
 );
+
+// Character creation endpoint
+app.post(
+  "/api/character/create",
+  authenticateJWT,
+  [
+    body("name").notEmpty().withMessage("Character name is required"),
+    body("mentalPoints").isInt({ min: 1 }),
+    body("energyLevel").isInt({ min: 1 }),
+    body("motivationLevel").isInt({ min: 1 }),
+    body("focusLevel").isInt({ min: 1 }),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const userId = req.user.id;
+      const { name, mentalPoints, energyLevel, motivationLevel, focusLevel } =
+        req.body;
+      // Create character, stats, and game state
+      const character = await prisma.character.create({
+        data: {
+          name,
+          user: { connect: { id: userId } },
+          stats: {
+            create: {
+              mentalPoints: Number(mentalPoints),
+              energyLevel: Number(energyLevel),
+              motivationLevel: Number(motivationLevel),
+              focusLevel: Number(focusLevel),
+            },
+          },
+          gameState: {
+            create: {
+              wins: 0,
+              losses: 0,
+              projectProgress: 0,
+              workDayCount: 0,
+              workDayLimit: 5,
+              workDayLimitReached: false,
+            },
+          },
+        },
+        include: {
+          stats: true,
+          gameState: true,
+        },
+      });
+      res.status(201).json({ character });
+    } catch (error) {
+      console.error("Character creation error:", error);
+      res.status(500).json({ message: "Error creating character" });
+    }
+  }
+);
+
+// Get all characters for the logged-in user
+app.get("/api/character/list", authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const characters = await prisma.character.findMany({
+      where: { userId },
+      include: {
+        stats: true,
+        gameState: true,
+      },
+    });
+    res.json({ characters });
+  } catch (error) {
+    console.error("Error fetching characters:", error);
+    res.status(500).json({ message: "Error fetching characters" });
+  }
+});
+
+// Delete a character by id (if it belongs to the user)
+app.delete("/api/character/:id", authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const charId = parseInt(req.params.id, 10);
+    // Check ownership
+    const character = await prisma.character.findUnique({
+      where: { id: charId },
+    });
+    if (!character || character.userId !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this character" });
+    }
+    await prisma.character.delete({ where: { id: charId } });
+    res.json({ message: "Character deleted" });
+  } catch (error) {
+    console.error("Error deleting character:", error);
+    res.status(500).json({ message: "Error deleting character" });
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

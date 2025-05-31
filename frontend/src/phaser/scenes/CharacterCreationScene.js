@@ -108,16 +108,17 @@ class CharacterCreationScene extends Phaser.Scene {
           fontFamily: "Fredoka",
         })
         .setOrigin(0, 0.5);
+      // Stat value (move to same level as label)
       this.statTexts[stat] = this.add
-        .text(width / 2 - 20, y, this.formData[stat], {
-          fontSize: "26px",
+        .text(width / 2 + 20, y, this.formData[stat], {
+          fontSize: "32px",
           color: "#00ff00",
           fontFamily: "Fredoka",
         })
-        .setOrigin(0, 0.5);
-      // Add - button
+        .setOrigin(0.5, 0.5);
+      // Add - button (shifted right)
       const minusBtn = this.add
-        .text(width / 2 + 60, y, "-", {
+        .text(width / 2 + 70, y, "-", {
           fontSize: "32px",
           color: "#ff5555",
           fontFamily: "Chewy",
@@ -127,9 +128,9 @@ class CharacterCreationScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setInteractive();
       minusBtn.on("pointerdown", () => this.adjustStat(stat, -1));
-      // Add + button
+      // Add + button (shifted further right)
       const plusBtn = this.add
-        .text(width / 2 + 120, y, "+", {
+        .text(width / 2 + 130, y, "+", {
           fontSize: "32px",
           color: "#55ff55",
           fontFamily: "Chewy",
@@ -142,11 +143,11 @@ class CharacterCreationScene extends Phaser.Scene {
       y += 60;
     });
 
-    // Remaining points
+    // Remaining points (moved lower)
     this.remainingText = this.add
       .text(
         width / 2,
-        height / 2 + 100,
+        height / 2 + 130,
         `Points left: ${this.remainingPoints}`,
         {
           fontSize: "24px",
@@ -158,7 +159,7 @@ class CharacterCreationScene extends Phaser.Scene {
 
     // Error text
     this.errorText = this.add
-      .text(width / 2, height / 2 + 140, "", {
+      .text(width / 2, height / 2 + 170, "", {
         fontSize: "22px",
         color: "#ff3333",
         fontFamily: "Fredoka",
@@ -167,7 +168,7 @@ class CharacterCreationScene extends Phaser.Scene {
 
     // Submit button
     this.submitButton = this.add
-      .text(width / 2, height / 2 + 200, "Submit Application", {
+      .text(width / 2, height / 2 + 230, "Submit Application", {
         fontSize: "28px",
         color: "#00ff00",
         fontFamily: "Chewy",
@@ -180,7 +181,7 @@ class CharacterCreationScene extends Phaser.Scene {
 
     // Sign Out button
     this.signOutButton = this.add
-      .text(width / 2, height / 2 + 260, "Sign Out", {
+      .text(width / 2, height / 2 + 290, "Sign Out", {
         fontSize: "24px",
         color: "#ff5555",
         fontFamily: "Chewy",
@@ -251,9 +252,11 @@ class CharacterCreationScene extends Phaser.Scene {
       if (!response.ok) {
         throw new Error(data.message || "Failed to create character");
       }
+      // Store character in global registry
+      this.game.registry.set("activeCharacter", data.character);
       this.submitButton.setText("Success!");
       this.time.delayedCall(1000, () => {
-        this.scene.start("PlayerMenuScene");
+        this.scene.start("TestScene");
       });
     } catch (error) {
       this.showError(error.message);

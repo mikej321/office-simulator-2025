@@ -7,6 +7,8 @@ import MainMenuScene from "./scenes/MainMenuScene";
 import TestScene from "./scenes/TestScene";
 import AccountScene from "./scenes/AccountScene";
 import PlayerMenuScene from "./scenes/PlayerMenuScene";
+import CharacterCreationScene from "./scenes/CharacterCreationScene";
+import LoadGameScene from "./scenes/LoadGameScene";
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
@@ -32,6 +34,8 @@ const PhaserGame = () => {
           MainMenuScene,
           AccountScene,
           PlayerMenuScene,
+          LoadGameScene,
+          CharacterCreationScene,
           TestScene,
           GameScene,
         ],
