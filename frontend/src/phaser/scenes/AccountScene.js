@@ -45,6 +45,10 @@ class AccountScene extends Phaser.Scene {
 
   create() {
     console.log("AccountScene create started");
+    this.formData = { email: "", password: "", characterName: "" };
+    this.activeInput = null;
+    this.keyboardListener = null;
+    this.menuStarted = false;
     this.time.addEvent({
       delay: 100,
       callback: () => {
@@ -118,9 +122,69 @@ class AccountScene extends Phaser.Scene {
     // Form container
     this.formContainer = this.add.container(width / 2, height / 2);
 
-    // Create input fields
-    this.createInputField("email", -100, "Email");
-    this.createInputField("password", -20, "Password", true);
+    // Phaser-only input fields
+    this.inputFields = [
+      { key: "email", label: "Email", y: -50, isPassword: false },
+      { key: "password", label: "Password", y: 30, isPassword: true },
+    ];
+    this.inputBoxes = {};
+    this.inputTexts = {};
+    this.activeInput = null;
+    this.keyboardListener = null;
+
+    this.inputFields.forEach((field) => {
+      const labelX = -150;
+      const inputX = 100;
+      // Draw box
+      const boxWidth = 240;
+      const boxHeight = 44;
+      const boxY = field.y;
+      const box = this.add
+        .rectangle(inputX, boxY, boxWidth, boxHeight, 0x444444, 1)
+        .setOrigin(0.5)
+        .setInteractive();
+      box.setStrokeStyle(2, 0xaaaaaa);
+      box.on("pointerdown", () => this.focusInputField(field.key));
+      this.formContainer.add(box);
+      this.inputBoxes[field.key] = box;
+      // Label
+      const label = this.add
+        .text(labelX, boxY, field.label + ":", {
+          fontSize: "24px",
+          color: "#ffffff",
+          fontFamily: "Fredoka",
+        })
+        .setOrigin(0, 0.5);
+      this.formContainer.add(label);
+      // Text
+      const text = this.add
+        .text(
+          inputX - boxWidth / 2 + 12,
+          boxY,
+          this.formData[field.key] || "",
+          {
+            fontSize: "24px",
+            color: "#ffffff",
+            fontFamily: "Fredoka",
+            fixedWidth: boxWidth - 24,
+            maxLines: 1,
+          }
+        )
+        .setOrigin(0, 0.5)
+        .setInteractive();
+      text.on("pointerdown", () => this.focusInputField(field.key));
+      this.formContainer.add(text);
+      this.inputTexts[field.key] = text;
+    });
+
+    // Transparent overlay for blur
+    this.inputOverlay = this.add
+      .rectangle(width / 2, height / 2, width, height, 0x000000, 0)
+      .setOrigin(0.5)
+      .setDepth(10000)
+      .setInteractive();
+    this.inputOverlay.visible = false;
+    this.inputOverlay.on("pointerdown", () => this.blurInputField());
 
     // Submit button
     this.submitButton = this.add
@@ -163,90 +227,49 @@ class AccountScene extends Phaser.Scene {
 
     // Listen for resize events
     this.scale.on("resize", this.resize, this);
-
-    // Add keyboard input handling
-    this.input.keyboard.on("keydown", this.handleKeyDown, this);
   }
 
-  createInputField(fieldName, yOffset, label, isPassword = false) {
-    console.log(`Creating input field: ${fieldName}`);
-    const labelText = this.add
-      .text(-150, yOffset, label + ":", {
-        fontSize: "24px",
-        color: "#ffffff",
-        fontFamily: "Fredoka",
-      })
-      .setOrigin(0, 0.5);
-
-    const inputText = this.add
-      .text(0, yOffset, "", {
-        fontSize: "24px",
-        color: "#ffffff",
-        fontFamily: "Fredoka",
-        backgroundColor: "#333",
-        padding: {
-          x: 10,
-          y: 5,
-        },
-      })
-      .setOrigin(0, 0.5)
-      .setInteractive();
-
-    this.formContainer.add([labelText, inputText]);
-
-    // Store reference to input text
-    this[fieldName + "Input"] = inputText;
-
-    // Add click handler
-    inputText.on("pointerdown", () => {
-      console.log(`Input field clicked: ${fieldName}`);
-      this.activeInput = fieldName;
-      this.showKeyboard(fieldName, isPassword);
-    });
-  }
-
-  showKeyboard(fieldName, isPassword) {
-    // Create a temporary input element
-    const input = document.createElement("input");
-    input.type = isPassword ? "password" : "text";
-    input.style.position = "absolute";
-    input.style.opacity = "0";
-    input.style.pointerEvents = "none";
-    document.body.appendChild(input);
-
-    // Focus the input
-    input.focus();
-
-    // Handle input
-    input.oninput = (e) => {
-      this.formData[fieldName] = e.target.value;
-      this[fieldName + "Input"].setText(
-        isPassword ? "•".repeat(e.target.value.length) : e.target.value
+  focusInputField(key) {
+    if (this.activeInput === key) return;
+    this.blurInputField();
+    this.activeInput = key;
+    this.inputTexts[key].setColor("#ffff00");
+    this.inputOverlay.visible = true;
+    if (this.keyboardListener) {
+      this.input.keyboard.off("keydown", this.keyboardListener);
+      this.keyboardListener = null;
+    }
+    this.keyboardListener = (event) => {
+      if (this.activeInput !== key) return;
+      if (event.key === "Backspace") {
+        this.formData[key] = (this.formData[key] || "").slice(0, -1);
+      } else if (event.key === "Enter") {
+        this.blurInputField();
+        return;
+      } else if (
+        event.key.length === 1 &&
+        (this.formData[key] || "").length < 32
+      ) {
+        this.formData[key] = (this.formData[key] || "") + event.key;
+      }
+      this.inputTexts[key].setText(
+        key === "password"
+          ? "•".repeat((this.formData[key] || "").length)
+          : this.formData[key]
       );
     };
-
-    // Handle blur
-    input.onblur = () => {
-      document.body.removeChild(input);
-      this.activeInput = null;
-    };
+    this.input.keyboard.on("keydown", this.keyboardListener);
   }
 
-  handleKeyDown(event) {
-    if (this.activeInput) {
-      const input = this[this.activeInput + "Input"];
-      if (event.key === "Backspace") {
-        this.formData[this.activeInput] = this.formData[this.activeInput].slice(
-          0,
-          -1
-        );
-        input.setText(
-          this.activeInput === "password"
-            ? "•".repeat(this.formData[this.activeInput].length)
-            : this.formData[this.activeInput]
-        );
-      }
+  blurInputField() {
+    if (!this.activeInput) return;
+    this.inputTexts[this.activeInput].setColor("#ffffff");
+    this.inputOverlay.visible = false;
+    if (this.keyboardListener) {
+      this.input.keyboard.off("keydown", this.keyboardListener);
+      this.keyboardListener = null;
     }
+    this.activeInput = null;
   }
 
   async handleSubmit() {
@@ -347,6 +370,11 @@ class AccountScene extends Phaser.Scene {
     if (this.formContainer) {
       this.formContainer.setPosition(width / 2, height / 2);
     }
+  }
+
+  // Clean up on shutdown
+  shutdown() {
+    this.blurInputField();
   }
 }
 

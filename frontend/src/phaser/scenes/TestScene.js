@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 import SpeechBubble from "../../factories/speechBubble";
+import PauseMenu from "../../factories/pauseMenu";
 
 class TestScene extends Phaser.Scene {
   constructor() {
@@ -398,72 +399,26 @@ class TestScene extends Phaser.Scene {
       loop: true,
     });
 
+    this.pauseMenu = new PauseMenu(this, {
+      onSave: () => {
+        // TODO: Implement save logic
+      },
+      onBack: () => {
+        this.scene.start("PlayerMenuScene");
+      },
+    });
+
     this.input.keyboard.on("keydown-P", () => {
-      if (!this.isPaused) {
-        this.showPauseMenu();
+      if (!this.pauseMenu.isPaused) {
+        this.pauseMenu.show();
       }
     });
     this.isPaused = false;
   }
 
-  showPauseMenu() {
-    this.isPaused = true;
-    const { width, height } = this.scale;
-    this.pauseOverlay = this.add
-      .rectangle(width / 2, height / 2, width, height, 0x000000, 0.7)
-      .setOrigin(0.5);
-    this.pauseBox = this.add
-      .rectangle(width / 2, height / 2, 400, 250, 0x222222, 1)
-      .setOrigin(0.5);
-    this.pauseText = this.add
-      .text(width / 2, height / 2 - 60, "Paused", {
-        fontSize: "40px",
-        color: "#fff",
-        fontFamily: "Fredoka",
-      })
-      .setOrigin(0.5);
-    this.saveBtn = this.add
-      .text(width / 2, height / 2, "Save Game", {
-        fontSize: "28px",
-        color: "#00ff00",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    this.saveBtn.on("pointerdown", () => {
-      // TODO: Implement save logic
-      this.hidePauseMenu();
-    });
-    this.backBtn = this.add
-      .text(width / 2, height / 2 + 60, "Go Back to Main Screen", {
-        fontSize: "24px",
-        color: "#ff5555",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    this.backBtn.on("pointerdown", () => {
-      this.hidePauseMenu();
-      this.scene.start("PlayerMenuScene");
-    });
-    this.input.keyboard.on("keydown-P", this.hidePauseMenu, this);
-  }
-
-  hidePauseMenu() {
-    this.isPaused = false;
-    if (this.pauseOverlay) this.pauseOverlay.destroy();
-    if (this.pauseBox) this.pauseBox.destroy();
-    if (this.pauseText) this.pauseText.destroy();
-    if (this.saveBtn) this.saveBtn.destroy();
-    if (this.backBtn) this.backBtn.destroy();
-    this.input.keyboard.off("keydown-P", this.hidePauseMenu, this);
-  }
-
   update() {
+    if (this.pauseMenu.isPaused) return;
+
     this.playerMovement();
 
     const sensor = this.currentSensor;

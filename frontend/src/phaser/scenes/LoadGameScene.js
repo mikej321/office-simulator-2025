@@ -6,6 +6,9 @@ class LoadGameScene extends Phaser.Scene {
     super({ key: "LoadGameScene" });
     this.characters = [];
     this.currentIndex = 0;
+    this.menuStarted = false;
+    this.fontsLoaded = false;
+    this.charactersLoaded = false;
   }
 
   preload() {
@@ -14,16 +17,18 @@ class LoadGameScene extends Phaser.Scene {
       google: { families: ["Chewy", "Fredoka:wght@300,400,500,600,700"] },
       active: () => {
         this.fontsLoaded = true;
-        this.loadCharacters();
       },
       inactive: () => {
         this.fontsLoaded = true;
-        this.loadCharacters();
       },
     });
   }
 
   create() {
+    this.menuStarted = false;
+    this.charactersLoaded = false;
+    this.loadCharacters();
+
     this.time.addEvent({
       delay: 100,
       callback: () => {
@@ -37,6 +42,15 @@ class LoadGameScene extends Phaser.Scene {
         }
       },
     });
+  }
+
+  shutdown() {
+    this.clearScreen();
+    this.characters = [];
+    this.currentIndex = 0;
+    this.menuStarted = false;
+    this.fontsLoaded = false;
+    this.charactersLoaded = false;
   }
 
   async loadCharacters() {
@@ -97,6 +111,7 @@ class LoadGameScene extends Phaser.Scene {
         fontFamily: "Chewy",
       })
       .setOrigin(0.5);
+
     // Character stats
     let y = 220;
     const stats = char.stats || {};
@@ -109,10 +124,10 @@ class LoadGameScene extends Phaser.Scene {
       wins: "Wins",
       losses: "Losses",
       projectProgress: "Project Progress",
-      workDayCount: "Work Day Count",
-      workDayLimit: "Work Day Limit",
-      workDayLimitReached: "Work Day Limit Reached",
+      workDayCount: "Current Day",
     };
+
+    // Display only the specified stats
     [
       ["mentalPoints", stats.mentalPoints],
       ["energyLevel", stats.energyLevel],
@@ -122,19 +137,17 @@ class LoadGameScene extends Phaser.Scene {
       ["losses", game.losses],
       ["projectProgress", game.projectProgress],
       ["workDayCount", game.workDayCount],
-      ["workDayLimit", game.workDayLimit],
-      ["workDayLimitReached", game.workDayLimitReached ? "Yes" : "No"],
     ].forEach(([key, value]) => {
       if (value !== undefined) {
         this.add
-          .text(width / 2 - 100, y, statLabels[key] + ":", {
+          .text(width / 2 - 150, y, statLabels[key] + ":", {
             fontSize: "26px",
             color: "#fff",
             fontFamily: "Fredoka",
           })
           .setOrigin(0, 0.5);
         this.add
-          .text(width / 2 + 100, y, String(value), {
+          .text(width / 2 + 150, y, String(value), {
             fontSize: "26px",
             color: "#00ff00",
             fontFamily: "Fredoka",
@@ -143,10 +156,56 @@ class LoadGameScene extends Phaser.Scene {
         y += 36;
       }
     });
-    // Left/right arrows
+
+    // Add extra spacing after stats
+    y += 20;
+
+    // Action buttons container
+    const buttonSpacing = 200; // Space between buttons
+
+    // Keep Playing button - aligned with stat names
+    const playBtn = this.add
+      .text(width / 2 - 150, y, "Keep Playing", {
+        fontSize: "28px",
+        color: "#00ff00",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: { x: 16, y: 8 },
+      })
+      .setOrigin(0, 0.5)
+      .setInteractive();
+    playBtn.on("pointerdown", () => {
+      this.showConfirmPopup(
+        "Are you sure you want to load this character?",
+        () => {
+          this.game.registry.set("activeCharacter", char);
+          this.scene.start("TestScene");
+        }
+      );
+    });
+
+    // Delete button - aligned with stat values
+    const deleteBtn = this.add
+      .text(width / 2 + 150, y, "Delete", {
+        fontSize: "24px",
+        color: "#ff5555",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: { x: 16, y: 8 },
+      })
+      .setOrigin(1, 0.5)
+      .setInteractive();
+    deleteBtn.on("pointerdown", () => {
+      this.showConfirmPopup(
+        "Are you sure you want to delete this character?",
+        () => this.deleteCharacter(char.id)
+      );
+    });
+
+    // Left/right arrows - moved below buttons
     if (this.characters.length > 1) {
       const leftArrow = this.add
-        .text(width / 2 - 180, height - 120, "<", {
+        .text(width / 2 - 180, y + 80, "<", {
           fontSize: "48px",
           color: "#fff",
           fontFamily: "Chewy",
@@ -160,7 +219,7 @@ class LoadGameScene extends Phaser.Scene {
         this.showCharacter();
       });
       const rightArrow = this.add
-        .text(width / 2 + 180, height - 120, ">", {
+        .text(width / 2 + 180, y + 80, ">", {
           fontSize: "48px",
           color: "#fff",
           fontFamily: "Chewy",
@@ -172,43 +231,7 @@ class LoadGameScene extends Phaser.Scene {
         this.showCharacter();
       });
     }
-    // Keep Playing button
-    const playBtn = this.add
-      .text(width / 2, height - 100, "Keep Playing", {
-        fontSize: "28px",
-        color: "#00ff00",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    playBtn.on("pointerdown", () => {
-      this.showConfirmPopup(
-        "Are you sure you want to load this character?",
-        () => {
-          this.game.registry.set("activeCharacter", char);
-          this.scene.start("TestScene");
-        }
-      );
-    });
-    // Delete button
-    const deleteBtn = this.add
-      .text(width / 2, height - 50, "Delete", {
-        fontSize: "24px",
-        color: "#ff5555",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    deleteBtn.on("pointerdown", () => {
-      this.showConfirmPopup(
-        "Are you sure you want to delete this character?",
-        () => this.deleteCharacter(char.id)
-      );
-    });
+
     // Add Back button at top left
     const backBtn = this.add
       .text(40, 40, "← Back", {
