@@ -91,7 +91,22 @@ export default class PreloadScene extends Phaser.Scene {
     // this.load.start()
   }
 
-  create() {
+  async create() {
+    // Check for token
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch("http://localhost:8000/api/auth/verify", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          this.scene.start("PlayerMenuScene");
+          return;
+        }
+      } catch {
+        // Ignore error, fall through to MainMenuScene
+      }
+    }
     this.scene.start("MainMenuScene");
   }
 }
