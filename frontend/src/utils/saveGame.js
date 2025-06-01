@@ -35,8 +35,28 @@ function setLocalSave(data) {
 
 function statsChanged(current, last) {
   if (!last) return true;
-  const changed = JSON.stringify(current) !== JSON.stringify(last);
+
+  // Extract only the fields we care about for comparison
+  const currentStats = {
+    mentalPoints: current.mentalPoints,
+    energyLevel: current.energyLevel,
+    motivationLevel: current.motivationLevel,
+    focusLevel: current.focusLevel,
+    workDayCount: current.workDayCount,
+  };
+
+  const lastStats = {
+    mentalPoints: last.mentalPoints,
+    energyLevel: last.energyLevel,
+    motivationLevel: last.motivationLevel,
+    focusLevel: last.focusLevel,
+    workDayCount: last.workDayCount,
+  };
+
+  const changed = JSON.stringify(currentStats) !== JSON.stringify(lastStats);
   console.log("Stats changed:", changed);
+  console.log("Current stats for comparison:", currentStats);
+  console.log("Last saved stats for comparison:", lastStats);
   return changed;
 }
 
