@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
+import { showConfirmPopup } from "../../utils/showConfirmPopup";
 
 class LoadGameScene extends Phaser.Scene {
   constructor() {
@@ -175,7 +176,8 @@ class LoadGameScene extends Phaser.Scene {
       .setOrigin(0, 0.5)
       .setInteractive();
     playBtn.on("pointerdown", () => {
-      this.showConfirmPopup(
+      showConfirmPopup(
+        this,
         "Are you sure you want to load this character?",
         () => {
           console.log("Loading character data:", char);
@@ -197,7 +199,8 @@ class LoadGameScene extends Phaser.Scene {
       .setOrigin(1, 0.5)
       .setInteractive();
     deleteBtn.on("pointerdown", () => {
-      this.showConfirmPopup(
+      showConfirmPopup(
+        this,
         "Are you sure you want to delete this character?",
         () => this.deleteCharacter(char.id)
       );
@@ -263,65 +266,6 @@ class LoadGameScene extends Phaser.Scene {
       this.currentIndex = this.characters.length - 1;
     }
     this.showCharacter();
-  }
-
-  showConfirmPopup(message, onConfirm) {
-    const { width, height } = this.scale;
-    // Overlay
-    const overlay = this.add
-      .rectangle(width / 2, height / 2, width, height, 0x000000, 0.7)
-      .setOrigin(0.5);
-    // Popup box
-    const box = this.add
-      .rectangle(width / 2, height / 2, 400, 200, 0x222222, 1)
-      .setOrigin(0.5);
-    // Message
-    const msgText = this.add
-      .text(width / 2, height / 2 - 40, message, {
-        fontSize: "26px",
-        color: "#fff",
-        fontFamily: "Fredoka",
-        align: "center",
-        wordWrap: { width: 360 },
-      })
-      .setOrigin(0.5);
-    // Confirm button
-    const confirmBtn = this.add
-      .text(width / 2 - 60, height / 2 + 40, "Confirm", {
-        fontSize: "24px",
-        color: "#00ff00",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    // Cancel button
-    const cancelBtn = this.add
-      .text(width / 2 + 60, height / 2 + 40, "Cancel", {
-        fontSize: "24px",
-        color: "#ff5555",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-    confirmBtn.on("pointerdown", () => {
-      overlay.destroy();
-      box.destroy();
-      msgText.destroy();
-      confirmBtn.destroy();
-      cancelBtn.destroy();
-      onConfirm();
-    });
-    cancelBtn.on("pointerdown", () => {
-      overlay.destroy();
-      box.destroy();
-      msgText.destroy();
-      confirmBtn.destroy();
-      cancelBtn.destroy();
-    });
   }
 
   clearScreen() {

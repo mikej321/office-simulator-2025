@@ -1,6 +1,11 @@
-import Phaser from "phaser";
+// pauseMenu.js
+// A factory class for creating and managing the pause menu UI component.
+// This is in factories/ rather than utils/ because it's a stateful class that managesmultiple UI elements and user interactions, not just a simple utility function.
+
+import { showConfirmPopup } from "../utils/showConfirmPopup";
 
 class PauseMenu {
+  // Creates a new PauseMenu instance.
   constructor(scene, options = {}) {
     this.scene = scene;
     this.isPaused = false;
@@ -13,6 +18,10 @@ class PauseMenu {
     };
   }
 
+  /**
+   * Shows the pause menu if it's not already visible.
+   * Creates all UI elements and sets up event listeners.
+   */
   show() {
     if (this.isPaused) return;
 
@@ -75,6 +84,10 @@ class PauseMenu {
     this.scene.input.keyboard.on("keydown-P", this.hide, this);
   }
 
+  /**
+   * Hides the pause menu if it's visible.
+   * Calls destroy to clean up all UI elements.
+   */
   hide() {
     if (!this.isPaused) return;
 
@@ -82,6 +95,10 @@ class PauseMenu {
     this.destroy();
   }
 
+  /**
+   * Destroys all UI elements and removes event listeners.
+   * This is called when the menu is hidden or when the scene is destroyed.
+   */
   destroy() {
     if (this.overlay) this.overlay.destroy();
     if (this.box) this.box.destroy();
@@ -91,70 +108,14 @@ class PauseMenu {
     this.scene.input.keyboard.off("keydown-P", this.hide, this);
   }
 
+  /**
+   * Shows a confirmation dialog before returning to the main menu.
+   * Uses the showConfirmPopup utility for consistent UI.
+   */
   showConfirmPopup() {
-    const { width, height } = this.scene.scale;
-
-    // Create overlay
-    const overlay = this.scene.add
-      .rectangle(width / 2, height / 2, width, height, 0x000000, 0.7)
-      .setOrigin(0.5);
-
-    // Create popup box
-    const box = this.scene.add
-      .rectangle(width / 2, height / 2, 400, 200, 0x222222, 1)
-      .setOrigin(0.5);
-
-    // Create message
-    const msgText = this.scene.add
-      .text(width / 2, height / 2 - 40, this.options.confirmMessage, {
-        fontSize: "26px",
-        color: "#fff",
-        fontFamily: "Fredoka",
-        align: "center",
-        wordWrap: { width: 360 },
-      })
-      .setOrigin(0.5);
-
-    // Create confirm button
-    const confirmBtn = this.scene.add
-      .text(width / 2 - 60, height / 2 + 40, "Confirm", {
-        fontSize: "24px",
-        color: "#00ff00",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-
-    // Create cancel button
-    const cancelBtn = this.scene.add
-      .text(width / 2 + 60, height / 2 + 40, "Cancel", {
-        fontSize: "24px",
-        color: "#ff5555",
-        fontFamily: "Chewy",
-        backgroundColor: "#222",
-        padding: { x: 16, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-
-    confirmBtn.on("pointerdown", () => {
-      overlay.destroy();
-      box.destroy();
-      msgText.destroy();
-      confirmBtn.destroy();
-      cancelBtn.destroy();
+    showConfirmPopup(this.scene, this.options.confirmMessage, () => {
       this.hide();
       this.options.onBack();
-    });
-
-    cancelBtn.on("pointerdown", () => {
-      overlay.destroy();
-      box.destroy();
-      msgText.destroy();
-      confirmBtn.destroy();
-      cancelBtn.destroy();
     });
   }
 }

@@ -1,98 +1,109 @@
 // saveGame.js
-// Utility for modular save game logic (API or localStorage)
+// Utility to save game progress to backend or localStorage
 
-const API_URL = "http://localhost:8000/api/game/save"; // Adjust as needed
-
-async function fetchLastSaved(token, characterId) {
-  try {
-    const response = await fetch(
-      `${API_URL}/latest?characterId=${characterId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    if (!response.ok) throw new Error("No backend save");
-    const data = await response.json();
-    console.log("Fetched last saved stats:", data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching last saved stats:", error);
-    return null;
-  }
-}
-
-function getLocalSave() {
-  try {
-    return JSON.parse(localStorage.getItem("lastSave"));
-  } catch {
-    return null;
-  }
-}
-
-function setLocalSave(data) {
-  localStorage.setItem("lastSave", JSON.stringify(data));
-}
-
-function statsChanged(current, last) {
+// Function to check if stats have changed
+const statsChanged = (current, last) => {
   if (!last) return true;
 
-  // Extract only the fields we care about for comparison
-  const currentStats = {
-    mentalPoints: current.mentalPoints,
-    energyLevel: current.energyLevel,
-    motivationLevel: current.motivationLevel,
-    focusLevel: current.focusLevel,
-    workDayCount: current.workDayCount,
-  };
+  // Check if any stat has changed
+  const changed =
+    current.mentalPoints !== last.mentalPoints ||
+    current.energyLevel !== last.energyLevel ||
+    current.motivationLevel !== last.motivationLevel ||
+    current.focusLevel !== last.focusLevel ||
+    current.workDayCount !== last.workDayCount ||
+    current.actionsUsed !== last.actionsUsed;
 
-  const lastStats = {
-    mentalPoints: last.mentalPoints,
-    energyLevel: last.energyLevel,
-    motivationLevel: last.motivationLevel,
-    focusLevel: last.focusLevel,
-    workDayCount: last.workDayCount,
-  };
-
-  const changed = JSON.stringify(currentStats) !== JSON.stringify(lastStats);
   console.log("Stats changed:", changed);
-  console.log("Current stats for comparison:", currentStats);
-  console.log("Last saved stats for comparison:", lastStats);
   return changed;
-}
+};
 
-export async function saveProgress(currentStats, token = null) {
-  // Try backend first if token provided
-  if (token) {
-    const last = await fetchLastSaved(token, currentStats.characterId);
-    console.log("Current stats:", currentStats);
-    console.log("Last saved stats:", last);
-    if (!statsChanged(currentStats, last)) {
+// Function to save progress
+export const saveProgress = async (currentStats) => {
+  try {
+    // Get token from localStorage for authentication
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
       return { saved: false, method: "backend" };
     }
-    // Save to backend
-    const response = await fetch(API_URL, {
-      method: "POST",
+
+    // Fetch the last saved stats from the backend (GET request)
+    const response = await fetch("/api/game/save/latest", {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(currentStats),
     });
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Backend save error:", errorData);
-      throw new Error("Failed to save to backend");
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return { saved: true, method: "backend" };
-  } else {
-    // Fallback to localStorage
-    const last = getLocalSave();
+
+    // Parse the backend response as JSON to get the last saved stats object
+    const lastSavedStats = await response.json();
     console.log("Current stats:", currentStats);
-    console.log("Last saved stats:", last);
-    if (!statsChanged(currentStats, last)) {
+    console.log("Last saved stats:", lastSavedStats);
+
+    // Compare current and last saved stats to see if anything has changed
+    const hasChanged = statsChanged(currentStats, lastSavedStats);
+
+    // Check if actions have been used (prevents action cheesing)
+    const actionsUsed = currentStats.actionsUsed || 0;
+    const lastActionsUsed = lastSavedStats.actionsUsed || 0;
+
+    // Only save if stats changed or actions were used
+    if (!hasChanged && actionsUsed <= lastActionsUsed) {
+      return { saved: false, method: "backend" };
+    }
+
+    // Save to backend (POST request)
+    const saveResponse = await fetch("/api/game/save", {
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json", 
+        Authorization: `Bearer ${token}`, 
+      },
+      body: JSON.stringify(currentStats), 
+    });
+
+    if (!saveResponse.ok) {
+      throw new Error(`HTTP error! status: ${saveResponse.status}`);
+    }
+
+    // If save is successful, return success
+    return { saved: true, method: "backend" };
+  } catch (error) {
+    // If any error occurs above (network/server/etc), we end up here
+    console.error("Error saving to backend:", error);
+
+    // Fallback to localStorage
+    try {
+      // Get the last saved stats from localStorage (if any)
+      const lastSavedStats = JSON.parse(
+        localStorage.getItem("lastSavedStats") || "{}"
+      );
+      console.log("Current stats (local):", currentStats);
+      console.log("Last saved stats (local):", lastSavedStats);
+
+      // Check if stats have changed
+      const hasChanged = statsChanged(currentStats, lastSavedStats);
+
+      // Check if actions have been used
+      const actionsUsed = currentStats.actionsUsed || 0;
+      const lastActionsUsed = lastSavedStats.actionsUsed || 0;
+
+      // Only save if stats changed or actions were used
+      if (!hasChanged && actionsUsed <= lastActionsUsed) {
+        return { saved: false, method: "local" };
+      }
+
+      // Save to localStorage
+      localStorage.setItem("lastSavedStats", JSON.stringify(currentStats));
+      return { saved: true, method: "local" };
+    } catch (localError) {
+      // If saving to localStorage fails, log the error and return failure
+      console.error("Error saving to localStorage:", localError);
       return { saved: false, method: "local" };
     }
-    setLocalSave(currentStats);
-    return { saved: true, method: "local" };
   }
-}
+};
