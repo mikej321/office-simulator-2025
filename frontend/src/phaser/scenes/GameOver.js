@@ -10,11 +10,10 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   create() {
-    StatsManager.resetWorkDayCount(); // Reset work day count
     const gameWidth = 800;
     const gameHeight = 600;
 
-    // Add a dark background
+  
     this.add.rectangle(
       gameWidth / 2, // Center X
       gameHeight / 2, // Center Y
@@ -65,7 +64,7 @@ export default class GameOverScene extends Phaser.Scene {
 
     // Add a key listener for restarting the game
     this.input.keyboard.once("keydown-SPACE", () => {
-        StatsManager.resetWorkDayCount(); // Reset work day count
+      StatsManager.resetAllStats(); // Reset all stats before restarting
       this.scene.stop("GameOver"); // Stop GameOver scene
       this.scene.start("WorkDay"); // Transition to WorkDay scene
     });

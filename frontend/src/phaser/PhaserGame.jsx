@@ -15,7 +15,15 @@ import EndOfDay from './scenes/EndOfDay';
 import EODStats from './scenes/EODStats';
 import BigTom from './scenes/BigTom';
 import GameOver from './scenes/GameOver';
-import Home from './scenes/home';
+import Home from './scenes/Home';
+import HomeEvening from './scenes/HomeEvening';
+import SleepCutscene from "./scenes/SleepCutscene";
+import MusicManager from './scenes/MusicManager';
+import OpeningScene from './scenes/OpeningScene';
+import TutorialScene from './scenes/TutorialScene';
+import VictoryCutscene from './scenes/VictoryCutscene'; 
+import FiredCutscene from './scenes/FiredCutscene'; 
+import DeathCutscene from './scenes/DeathCutscene';
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -29,13 +37,13 @@ const PhaserGame = () => {
           parent: 'game-container', // Ensure this ID exists in App.jsx
           physics: {
             default: 'arcade',
-            arcade: { gravity: { y: 0 }, debug: true },
+            arcade: { gravity: { y: 0 }, debug: false }, //make debug true to see physics bodies
           },
           scale: {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home ],
+          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home, HomeEvening, SleepCutscene, MusicManager, OpeningScene, TutorialScene, VictoryCutscene, FiredCutscene, DeathCutscene ],
         };
   
         gameRef.current = new Phaser.Game(config);

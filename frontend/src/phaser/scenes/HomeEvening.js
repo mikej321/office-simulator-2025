@@ -4,9 +4,9 @@ import MusicManager from "./MusicManager";
 import StatsOverlay from '../utils/StatsOverlay';
 
 
-class Home extends Phaser.Scene {
+class HomeEvening extends Phaser.Scene {
   constructor() {
-    super({ key: "Home" });
+    super({ key: "HomeEvening" });
     this.taskCount = 0;
     this.maxTasks = 3;
     this.interactionInProgress = false;
@@ -15,28 +15,22 @@ class Home extends Phaser.Scene {
   preload() {
     this.load.image("tiles", "assets/InteriorTilesLITE.png");
     this.load.tilemapTiledJSON("map", "assets/map.json");
-    
   }
 
   create() {
     this.statsOverlay = new StatsOverlay(this);
     this.scene.get('MusicManager').stopMusic();
-    if (!this.scene.isActive('MusicManager')) {
-      this.scene.launch('MusicManager');
-      this.time.delayedCall(100, () => {
-        this.scene.get('MusicManager').playTrack('home');
-      });
-    } else {
-      this.scene.get('MusicManager').playTrack('home');
+    if (!this.scene.isActive("MusicManager")) {
+      this.scene.launch("MusicManager");
     }
-
+    this.scene.get("MusicManager").playTrack("home");
     this.interactionInProgress = false;
 
     this.cameras.main.setAlpha(0);
-    this.time.delayedCall(1100, () => {
+    this.time.delayedCall(7000, () => {
       this.cameras.main.setAlpha(1);
       this.cameras.main.fadeIn(1000);
-      this.displayGoodMorning();
+      this.displayGoodEvening();
     });
 
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -53,7 +47,6 @@ class Home extends Phaser.Scene {
     this.collisionLayers = [];
     map.layers.forEach((layerData) => {
       const layer = map.createLayer(layerData.name, tileset, offsetX, offsetY);
-      // Set collision shapes from Tiled
       layer.setCollisionFromCollisionGroup();
       this.collisionLayers.push(layer);
     });
@@ -97,8 +90,6 @@ class Home extends Phaser.Scene {
   }
 
   update() {
-    //console.log("Scene update running");//debugging
-    //console.log("statsOverlay ref:", this.statsOverlay);//debugging
     this.statsOverlay.update();
     if (!this.interactionInProgress) {
       this.playerMovement();
@@ -158,7 +149,6 @@ class Home extends Phaser.Scene {
         repeat: -1,
       });
     }
-
     //this.cameras.main.startFollow(this.player);
   }
 
@@ -239,28 +229,20 @@ class Home extends Phaser.Scene {
   }
 
   performTask(name) {
-    if (name === "calloff") {
-      this.showMessage("You called off work today.");
-      this.time.delayedCall(3000, () => {
-        this.scene.stop("Home");
-        this.taskCount = 0;
-        this.scene.start("HomeEvening"); //transition to the evening scene
-      });
-      return;
-    }
     this.taskCount++;
 
-    this.showMessage(this.getActionFlavorText(name), 7000); // now using new param for 7s
+    this.showMessage(this.getActionFlavorText(name), 7000);
 
     switch (name) {
       case "tv":
         StatsManager.incrementMP();
-        StatsManager.incrementFocusLevel();
         break;
       case "desk":
-        StatsManager.incrementMotivationLevel();
-        StatsManager.incrementMP();
+        StatsManager.incrementPP();
+        StatsManager.decrementMP();
+        StatsManager.decrementMP();
         StatsManager.decrementEnergyLevel();
+        StatsManager.decrementFocusLevel();
         break;
       case "bringlunch":
         StatsManager.incrementEnergyLevel();
@@ -273,33 +255,30 @@ class Home extends Phaser.Scene {
         break;
       case "read":
         StatsManager.incrementFocusLevel();
-        StatsManager.incrementMP();
         StatsManager.incrementMotivationLevel();
+        StatsManager.incrementMP();
         break;
       case "calloff":
         StatsManager.incrementMP();
         StatsManager.incrementMP();
-        StatsManager.incrementEnergyLevel();
-        StatsManager.incrementFocusLevel();
-        StatsManager.decrementMotivationLevel();
-        StatsManager.decrementMotivationLevel();
-        StatsManager.decrementFocusLevel();
-        StatsManager.decrementEnergyLevel();
+        StatsManager.incrementMotivationLevel();
         break;
       case "freshenup":
-        StatsManager.incrementMotivationLevel();
-        StatsManager.incrementFocusLevel();
+        StatsManager.incrementMP();
+        StatsManager.incrementMP();
+        StatsManager.incrementEnergyLevel();
         break;
       default:
         break;
-  }
+    }
 
     if (this.taskCount >= this.maxTasks || name === "bed") {
+      StatsManager.incrementWorkDayCount();
       this.time.delayedCall(7000, () => {
-      this.scene.stop("Home");
-      this.taskCount = 0;
-      this.scene.start("WorkDay");
-    });
+        this.scene.stop("HomeEvening");
+        this.taskCount = 0;
+        this.scene.start("SleepCutscene");
+      });
     } else {
       this.time.delayedCall(7000, () => {
         this.scene.restart();
@@ -310,42 +289,42 @@ class Home extends Phaser.Scene {
   getActionText(name) {
     switch (name) {
       case "tv":
-        return "watch the news";
+        return "watch TV";
       case "desk":
-        return "watch a podcast";
+        return "work extra from home";
       case "bringlunch":
-        return "make breakfast";
+        return "pack your lunch for tomorrow";
       case "bed":
-        return "sleep in extra";
+        return "doom scroll on your phone and call it a night";
       case "read":
         return "read your book";
       case "calloff":
-        return "call off work";
+        return "call a friend";
       case "freshenup":
-        return "put extra effort into appearance";
+        return "take a decompressing bath";
       default:
         return "do this";
     }
   }
 
-  getActionFlavorText(name){
+  getActionFlavorText(name) {
     switch (name) {
       case "tv":
-        return "You learn exactly nothing useful, but you feel informed.";
+        return "The sitcom laugh track fills the silence. Again.";
       case "desk":
-        return "'You are the CEO of your vibe,' says a man with six side hustles.";
+        return "Grinding late. Maybe tomorrow you’ll log off on time.";
       case "bringlunch":
-        return "You burn toast so perfectly it's modern art.";
+        return "You pack lunch like you’re meal-prepping for an apocalypse.";
       case "bed":
-        return "Five more minutes turns into a full-on lifestyle.";
+        return "You scroll into oblivion. The algorithm wins.";
       case "read":
-        return "You read one paragraph. Then re-read it. Three times.";
+        return "You read two pages, then fall asleep with the book on your face.";
       case "calloff":
-        return "You fake cough so well, you almost believe it.";
+        return "Catching up felt good. Until you remembered you were the one who forgot last time.";
       case "freshenup":
-        return "You clean up so well, your mirror says 'who's that?'";
+        return "The steam fogs up more than the mirror. You feel human again.";
       default:
-        return "do this";
+        return "You wrap up your day.";
     }
   }
 
@@ -357,7 +336,6 @@ class Home extends Phaser.Scene {
       padding: { x: 10, y: 5 },
     };
 
-    // Destroy existing message if still showing
     if (this.activeMessage) {
       this.activeMessage.destroy();
     }
@@ -375,7 +353,7 @@ class Home extends Phaser.Scene {
     });
   }
 
-  displayGoodMorning() {
+  displayGoodEvening() {
     const style = {
       fontSize: "24px",
       fill: "#fff",
@@ -384,13 +362,12 @@ class Home extends Phaser.Scene {
     };
 
     const msg = this.add
-      .text(this.scale.width / 2, 80, "Good morning!", style)
+      .text(this.scale.width / 2, 80, "Good evening!", style)
       .setOrigin(0.5)
-      .setScrollFactor(0) // So it stays fixed on screen
+      .setScrollFactor(0)
       .setDepth(999)
       .setAlpha(0);
 
-    // Fade in, then fade out after delay
     this.tweens.add({
       targets: msg,
       alpha: 1,
@@ -402,4 +379,4 @@ class Home extends Phaser.Scene {
     });
   }
 }
-export default Home;
+export default HomeEvening;

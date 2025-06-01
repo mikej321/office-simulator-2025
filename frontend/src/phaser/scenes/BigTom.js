@@ -8,20 +8,20 @@ export default class BigTom extends Phaser.Scene {
   }
 
   preload() {
-    // Load the BigTom sprite or reuse the existing "player" sprite
-    this.load.image("bigTom", "assets/bigtom.png"); // Replace with the actual path to your BigTom asset
+    // Load the BigTom image
+    this.load.image("bigTom", "assets/bigtom.png");
   }
 
   create() {
     const gameWidth = 800;
     const gameHeight = 600;
 
-    // Add BigTom sprite to the center of the screen
+    //BigTom sprite to the center of the screen
     const bigTom = this.add.image(gameWidth / 2, gameHeight / 2, "bigTom");
 
    
 
-    // Add a dark rectangle background for the text
+    //dark rectangle background for the text
     const textBackground = this.add.rectangle(
       gameWidth / 2, // Center X
       gameHeight - 100, // Center Y
@@ -32,7 +32,7 @@ export default class BigTom extends Phaser.Scene {
     );
     textBackground.setOrigin(0.5);
 
-    // Add a title or message
+    
     this.add.text(
       gameWidth / 2,
       gameHeight - 100,

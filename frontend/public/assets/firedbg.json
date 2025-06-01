@@ -1,0 +1,80 @@
+{ "frames": {
+   "Sprite-0001 0.": {
+    "frame": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 1.": {
+    "frame": { "x": 800, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 2.": {
+    "frame": { "x": 1600, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 3.": {
+    "frame": { "x": 2400, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 4.": {
+    "frame": { "x": 3200, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 5.": {
+    "frame": { "x": 4000, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   },
+   "Sprite-0001 6.": {
+    "frame": { "x": 4800, "y": 0, "w": 800, "h": 600 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 800, "h": 600 },
+    "sourceSize": { "w": 800, "h": 600 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-x64",
+  "image": "firedbg.png",
+  "format": "RGBA8888",
+  "size": { "w": 5600, "h": 600 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Floor", "opacity": 255, "blendMode": "normal" },
+   { "name": "Wall", "opacity": 255, "blendMode": "normal" },
+   { "name": "Desk", "opacity": 255, "blendMode": "normal" },
+   { "name": "Chair", "opacity": 255, "blendMode": "normal" },
+   { "name": "Boss", "opacity": 255, "blendMode": "normal" },
+   { "name": "Tom", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
