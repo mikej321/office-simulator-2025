@@ -2,37 +2,51 @@ class StatsManager  {
     
     static wins = 0;
     static losses = 0;
-    static mentalPoints = 3;
+    static mentalPoints = 3; // Starting mental points
     static projectProgress = 0;
+    static maxProjectProgress = 10; // Set a maximum for project progress
+    static energyLevel = 3;
+    static motivationLevel = 3;
+    static focusLevel = 3;
     static playGame = false;
-    static workDayCount = 0; // Track the number of workday iterations
+    static workDayTaskNumber = 0; // Track the number of iterations
+    static workDayCount = 6; // Track the number of work days
+    static workDayLimit = 5; // Set a limit for work days
+    static workDayLimitReached = false;
 
-    static incrementWorkDayCount() {
-        this.workDayCount++;
-        console.log("WorkDay Count: " + this.workDayCount);
+    static getMaxProjectProgress() {
+        return this.maxProjectProgress;
+    }
+    
+    static incrementWorkDayTaskNumber() {
+        this.workDayTaskNumber++;
+        console.log("WorkDay Count: " + this.workDayTaskNumber);
     }
 
-    static resetWorkDayCount() {
-        this.workDayCount = 0;
+    static resetWorkDayTaskNumber() {
+        this.workDayTaskNumber = 0;
     }
 
-    static getWorkDayCount() {
-        return this.workDayCount;
+    static getWorkDayTaskNumber() {
+        return this.workDayTaskNumber;
     }
 
     static setPlayGame() {
         this.playGame = true;
     }
+
     static resetPlayGame() {
         this.playGame = false;
     }
+
     static getPlayGame() {
         return this.playGame;
     }
+
     static incrementMP() {
         this.mentalPoints++;
         console.log("MP: " + this.mentalPoints);
-      }
+    }
     
     static getMP() {
         return this.mentalPoints;
@@ -49,7 +63,6 @@ class StatsManager  {
 
     static decrementMP() {
         this.mentalPoints--;
-
         if (this.mentalPoints < 0) {
             console.log("Game Over");
         } else {
@@ -60,15 +73,19 @@ class StatsManager  {
     static decrementPP()
     {
         this.projectProgress--;
-        
+        if (this.projectProgress < 0) {
+            this.projectProgress = 0; // Prevent negative progress
+            console.log("Project progress cannot go below zero.");
+        }
         console.log("PP: " + this.projectProgress);
-        
     }
-
 
     static incrementWins() {
         this.wins++;
         console.log("Wins: " + this.wins);
+        this.incrementMP();
+        this.incrementMotivationLevel();
+        this.incrementFocusLevel();
     }
     static getWins() {
         return this.wins;
@@ -77,16 +94,103 @@ class StatsManager  {
     static incrementLosses() {
         this.losses++;
         console.log("Losses: " + this.losses);
+        this.decrementMP();
+        this.decrementMotivationLevel();
     }
 
     static getLosses() {
         return this.losses;
     }
 
-  
+    static getEnergyLevel() {
+        return this.energyLevel;
+    }
 
-    // more functions to be added
-    // add more functions to manage stats
+    static getMotivationLevel() {
+        return this.motivationLevel;
+    }
+
+    static getFocusLevel() {
+        return this.focusLevel;
+    }
+
+    static incrementEnergyLevel() {
+        this.energyLevel++;
+        console.log("Energy Level: " + this.energyLevel);
+    }   
+
+    static decrementEnergyLevel() {
+        this.energyLevel--;
+        if (this.energyLevel < 0) {
+            this.energyLevel = 0; // Prevent negative energy level
+            console.log("Energy Level cannot go below zero.");
+        } else {
+            console.log("Energy Level: " + this.energyLevel);
+        }
+    }   
+
+    static incrementMotivationLevel() {
+        this.motivationLevel++;
+        console.log("Motivation Level: " + this.motivationLevel);
+    }
+
+    static decrementMotivationLevel() {
+        this.motivationLevel--;
+        if (this.motivationLevel < 0) {
+            this.motivationLevel = 0; // Prevent negative motivation level
+            console.log("Motivation Level cannot go below zero.");
+        } else {
+            console.log("Motivation Level: " + this.motivationLevel);
+        }
+    }
+
+    static incrementFocusLevel() {
+        this.focusLevel++;
+        console.log("Focus Level: " + this.focusLevel);
+    }  
+
+    static decrementFocusLevel() {
+        this.focusLevel--;
+        if (this.focusLevel < 0) {
+            this.focusLevel = 0; // Prevent negative focus level
+            console.log("Focus Level cannot go below zero.");
+        } else {
+            console.log("Focus Level: " + this.focusLevel);
+        }
+    }   
+
+    static incrementWorkDayCount() {
+        this.workDayCount++;
+    }
+
+    static getWorkDayCount() {
+        return this.workDayCount;
+    }
+
+    static getWorkDayLimit() {
+        return this.workDayLimit;
+    }   
+
+    static setWorkDayLimitReached(value) {
+        this.workDayLimitReached = value;
+    }
+
+    static hasReachedWorkDayLimit() {
+        return this.workDayLimitReached;
+    }
+
+    static resetAllStats() {
+        this.wins = 0;
+        this.losses = 0;
+        this.mentalPoints = 3;
+        this.projectProgress = 0;
+        this.energyLevel = 3;
+        this.motivationLevel = 3;
+        this.focusLevel = 3;
+        this.playGame = false;
+        this.workDayTaskNumber = 0;
+        this.workDayLimitReached = false;
+    }
 };
 
 export default StatsManager;

@@ -1,5 +1,8 @@
 import Phaser from "phaser";
 import StatsManager from "../utils/StatsManager";
+import MusicManager from "./MusicManager";
+import StatsOverlay from '../utils/StatsOverlay';
+
 
 class WorkDay extends Phaser.Scene {
   constructor() {
@@ -8,19 +11,42 @@ class WorkDay extends Phaser.Scene {
     });
   }
 
-  preload() {}
+  init(){
+    this.textStyle = {
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#1c0d00",              // warm black text
+      backgroundColor: "#ffffff",    // white background
+      padding: { x: 14, y: 8 },       // generous spacing
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#999999",             // dark gray glow
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
+    };
+  }
+
+  preload() {
+    this.load.image("avatarTall", "assets/avatar-tall.png");
+  }
 
   create() {
-    // Reset the workday count if starting fresh
-    if (StatsManager.getWorkDayCount() === 0) {
-      StatsManager.resetWorkDayCount();
+    this.statsOverlay = new StatsOverlay(this);
+    this.scene.get('MusicManager').stopMusic();
+    if (!this.scene.isActive('MusicManager')) {
+      this.scene.launch('MusicManager');
     }
+    this.scene.get('MusicManager').playTrack('office');
 
-    if (StatsManager.getMP() === 0) {
-      console.log("Mental Health is at 0. He died of stress related causes.");
-      this.scene.stop("WorkDay");
-      this.scene.start("BigTom");
-      return;
+
+    // Reset the workday count if starting fresh
+    if (StatsManager.getWorkDayTaskNumber() === 0) {
+      StatsManager.resetWorkDayTaskNumber();
     }
 
     // Fade-in transition
@@ -87,20 +113,10 @@ class WorkDay extends Phaser.Scene {
     ]);
 
     // Create interaction text
-    this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5);
+    this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", this.textStyle).setOrigin(0.5);
     this.interactionText.setVisible(false);
 
-    this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5);
+    this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", this.textStyle).setOrigin(0.5);
     this.choiceText.setVisible(false);
 
     // Define the interactable area
@@ -115,11 +131,31 @@ class WorkDay extends Phaser.Scene {
       0xffff00,
       0.3
     );
+
+    // Add the avatar image at a chosen position
+    this.avatar = this.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+
+
+    // Add a text box for interaction (hidden by default)
+    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "Hey there. Long day?", this.textStyle).setOrigin(0.5).setVisible(false);
+
+    // Enable overlap check between player and avatar
+    this.physics.add.overlap(this.player, this.avatar, () => {
+      this.avatarText.setVisible(true);
+    }, null, this);
   }
 
   update() {
+    this.statsOverlay.update();
     // Check if the workday loop is complete
-    if (StatsManager.getWorkDayCount() >= 3) {
+    if (StatsManager.getWorkDayTaskNumber() >= 3) {
+       StatsManager.incrementWorkDayCount();
+
+      // Check if limit is reached
+      if (StatsManager.getWorkDayCount() >= StatsManager.getWorkDayLimit()) {
+        StatsManager.setWorkDayLimitReached(true);
+      }
+      
       console.log("Workday loop complete. Transitioning to EndOfDay.");
       this.scene.stop("WorkDay");
       this.scene.start("EndOfDay");
@@ -158,30 +194,47 @@ class WorkDay extends Phaser.Scene {
     // Handle the player's choice
     if (this.choiceText.visible) {
       if (Phaser.Input.Keyboard.JustDown(this.qKey)) {
-        StatsManager.incrementPP();
+        let effectiveness = 1;
+        if (StatsManager.getEnergyLevel() >= 3) effectiveness += 0.5;
+        if (StatsManager.getFocusLevel() >= 3) effectiveness += 0.5;
+        if (StatsManager.getMotivationLevel() >= 3) effectiveness += 0.5;
+        if (StatsManager.getMP() <= 0) effectiveness -= 1;
+
+        effectiveness = Math.max(0, effectiveness); // Cap at minimum 0
+
+        const projectGain = Math.floor(effectiveness);
+        for (let i = 0; i < projectGain; i++) {
+          StatsManager.incrementPP();
+        }
+        // Burnout penalty for working
+        StatsManager.decrementEnergyLevel();
+        StatsManager.decrementMotivationLevel();
+        StatsManager.decrementFocusLevel();
         StatsManager.decrementMP();
         console.log("Player chose to work for the day!");
         this.choiceText.setVisible(false);
         this.interactionText.setVisible(false);
         // Destroy the existing player before respawning
-    if (this.player) {
-      this.player.destroy(); // Remove the existing player sprite
-    }
+      if (this.player) {
+        this.player.destroy(); // Remove the existing player sprite
+      }
 
         // Respawn the player
         this.player.setPosition(800, 300);
 
         // Increment the workday count
-        StatsManager.incrementWorkDayCount();
+        StatsManager.incrementWorkDayTaskNumber();
         this.createPlayer(); // Recreate the player to show the correct text
       } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
-        console.log("Player chose to goof off!");
-        StatsManager.incrementMP();
-        StatsManager.decrementPP();
-        this.choiceText.setVisible(false);
+          console.log("Player chose to goof off!");
+          StatsManager.incrementMP();
+          StatsManager.incrementMotivationLevel();
+          StatsManager.incrementEnergyLevel();
+          StatsManager.decrementFocusLevel();
+          this.choiceText.setVisible(false);
 
         // Increment the workday count
-        StatsManager.incrementWorkDayCount();
+        StatsManager.incrementWorkDayTaskNumber();
 
         // Transition to Pong
         this.scene.stop("WorkDay");
@@ -193,6 +246,18 @@ class WorkDay extends Phaser.Scene {
       this.interactHint.setPosition(this.player.x, this.player.y - 40);
     } else {
       this.interactHint.setVisible(false);
+    }
+
+    const nearAvatar = Phaser.Math.Distance.Between(
+      this.player.x, this.player.y,
+      this.avatar.x, this.avatar.y
+    ) < 50;
+
+    const wasVisible = this.avatarText.visible;
+    if (nearAvatar && !wasVisible) {
+      this.avatarText.setVisible(true);
+    } else if (!nearAvatar && wasVisible) {
+      this.avatarText.setVisible(false);
     }
   }
 
@@ -231,14 +296,14 @@ class WorkDay extends Phaser.Scene {
       repeat: -1,
     });}
 
-    this.cameras.main.startFollow(this.player);
+    //this.cameras.main.startFollow(this.player);
 
     // Display a short-timed text box over Tom's head based on workday count
-    const workDayCount = StatsManager.getWorkDayCount();
-    console.log("Current WorkDay Count in createPlayer:", workDayCount);
+    const workDayTaskNumber = StatsManager.getWorkDayTaskNumber();
+    console.log("Current WorkDay Count in createPlayer:", workDayTaskNumber);
 
     let textToDisplay = "";
-    switch (workDayCount) {
+    switch (workDayTaskNumber) {
       case 0:
         textToDisplay = "Tom, you better get working! \nYour desk is collecting dust.";
         break;
@@ -260,12 +325,7 @@ class WorkDay extends Phaser.Scene {
         this.player.x, // Position the text at the player's X position
         this.player.y - 50, // Position the text slightly above the player's head
         textToDisplay, // The text to display
-        {
-          fontSize: "16px",
-          fill: "#ffffff",
-          backgroundColor: "#000000",
-          padding: { x: 10, y: 5 },
-        }
+        this.textStyle
       ).setOrigin(0.5); // Center the text
 
       // Use a delayed call to hide or destroy the text after 2 seconds
@@ -276,35 +336,48 @@ class WorkDay extends Phaser.Scene {
   }
 
   playerMovement() {
+    this.cursor = this.input.keyboard.createCursorKeys();
     const velocity = 100;
-    const cursor = this.input.keyboard.createCursorKeys();
 
-    if (cursor.left.isDown) {
+    let isMoving = false;
+
+    if (this.cursor.left.isDown) {
       this.player.setVelocityX(-velocity);
-      this.player.anims.play("walk", true);
       this.player.flipX = true;
-    } else if (cursor.right.isDown) {
+      isMoving = true;
+    } else if (this.cursor.right.isDown) {
       this.player.setVelocityX(velocity);
-      this.player.anims.play("walk", true);
       this.player.flipX = false;
+      isMoving = true;
     } else {
       this.player.setVelocityX(0);
     }
 
-    if (cursor.up.isDown) {
+    if (this.cursor.up.isDown) {
       this.player.setVelocityY(-velocity);
-      this.player.anims.play("back", true);
-    } else if (cursor.down.isDown) {
+      isMoving = true;
+    } else if (this.cursor.down.isDown) {
       this.player.setVelocityY(velocity);
-      this.player.anims.play("walk", true);
+      isMoving = true;
     } else {
       this.player.setVelocityY(0);
     }
 
-    if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
-      this.player.anims.play("idle", true);
+    if (isMoving) {
+      if (this.cursor.up.isDown) {
+        if (this.player.anims.currentAnim?.key !== "back") {
+          this.player.anims.play("back", true);
+        }
+      } else {
+        if (this.player.anims.currentAnim?.key !== "walk") {
+          this.player.anims.play("walk", true);
+        }
+      }
+    } else {
+      if (this.player.anims.currentAnim?.key !== "idle") {
+        this.player.anims.play("idle", true);
+      }
     }
   }
 }
-
 export default WorkDay;

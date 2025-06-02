@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 import EODStats from "./EODStats";
+import StatsManager from "../utils/StatsManager";
+
 
 class EndOfDay extends Phaser.Scene {
   
@@ -22,13 +24,13 @@ class EndOfDay extends Phaser.Scene {
       this.cameras.main.fadeIn(1000);
     });
 
-     // Define the game area dimensions
-     const gameWidth = 800;
-     const gameHeight = 600;
+    // Define the game area dimensions
+    const gameWidth = 800;
+    const gameHeight = 600;
  
-     // Calculate the top-left corner of the game area
-     const offsetX = (this.scale.width - gameWidth) / 2;
-     const offsetY = (this.scale.height - gameHeight) / 2;
+    // Calculate the top-left corner of the game area
+    const offsetX = (this.scale.width - gameWidth) / 2;
+    const offsetY = (this.scale.height - gameHeight) / 2;
 
     // Create the tilemap and position it in the center
     const map = this.make.tilemap({ key: "tilemap" });
@@ -47,8 +49,6 @@ class EndOfDay extends Phaser.Scene {
     this.wallDeco = map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
     this.tableDeco = map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
 
-    // Add UI elements and position them relative to the offsets
-
     // Setting the e key up for button presses
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
@@ -65,12 +65,7 @@ class EndOfDay extends Phaser.Scene {
       this.tableDeco,
     ];
 
-    this.physics.world.setBounds(
-      10,
-      98,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    );
+    this.physics.world.setBounds(10, 98, map.widthInPixels, map.heightInPixels);
 
     this.createPlayer();
 
@@ -94,23 +89,32 @@ class EndOfDay extends Phaser.Scene {
     this.isPlayerNearArea = false;
 
       // Create the "Press E to work for the day" text but make it invisible initially
-      this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to go home for the day", {
-        fontSize: "16px",
-        fill: "#ffffff",
-        backgroundColor: "#000000",
-        padding: { x: 10, y: 5 },
-      }).setOrigin(0.5); // Center the text
-  this.interactionText.setVisible(false); // Hide it initially
+    this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to go home for the day", {
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#1c0d00",              // warm black text
+      backgroundColor: "#ffffff",    // white background
+      padding: { x: 14, y: 8 },       // generous spacing
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#999999",             // dark gray glow
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
+    }).setOrigin(0.5); // Center the text
+    this.interactionText.setVisible(false); // Hide it initially
 
-  
-  
-  // Define the interactable area (in pixels)
-  this.interactableX = offsetX + 255; // X-coordinate of the interactable area (increase to move right)
-  this.interactableY = offsetY + 75; // Y-coordinate of the interactable area (decrease to move up)
-  this.interactableRadius = 75; // Radius of the interactable area
 
-  // Draw the yellow circle (only once during the `create` method)
-  
+    // Define the interactable area (in pixels)
+    this.interactableX = offsetX + 255; // X-coordinate of the interactable area (increase to move right)
+    this.interactableY = offsetY + 75; // Y-coordinate of the interactable area (decrease to move up)
+    this.interactableRadius = 75; // Radius of the interactable area
+
+    // Draw the yellow circle (only once during the `create` method)
     this.interactableCircle = this.add.circle(
       this.interactableX,
       this.interactableY,
@@ -118,27 +122,20 @@ class EndOfDay extends Phaser.Scene {
       0xffff00, // Yellow color
       0.3 // Opacity (30%)
     );
-  
 
-  // Add keys for interaction
-  this.qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-  this.rKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-  }
+    //keys for interaction
+    this.qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    this.rKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    }
 
   update() {
     this.playerMovement();
     const gameWidth = 800;
-  const gameHeight = 600;
-  const offsetX = (this.scale.width - gameWidth) / 2;
-  const offsetY = (this.scale.height - gameHeight) / 2;
+    const gameHeight = 600;
+    const offsetX = (this.scale.width - gameWidth) / 2;
+    const offsetY = (this.scale.height - gameHeight) / 2;
 
-    //Tracks the player's position
-    //console.log(`Player X: ${this.player.x}, Player Y: ${this.player.y}`);
-
-   
-
-    
-
+  
     // Check if the player is within the interactable area
     const distance = Phaser.Math.Distance.Between(
       this.player.x,
@@ -159,12 +156,12 @@ class EndOfDay extends Phaser.Scene {
 
     // Handle interaction when the E key is pressed
     if (isPlayerInArea && Phaser.Input.Keyboard.JustDown(this.eKey)) {
-      console.log("Interacted with the specific area!");
-      this.scene.stop("EndOfDay");
-      this.scene.start("EODStats");
-    } 
-}
-  
+      
+        this.scene.stop("EndOfDay");
+        this.scene.start("EODStats");
+      
+    }
+  }
 
   createCollisions(player, layers, offsetX, offsetY) {
     layers.forEach((layer) => {
@@ -288,7 +285,6 @@ class EndOfDay extends Phaser.Scene {
       this.player.anims.play("idle", true);
     }
   }
-
 }
 
 export default EndOfDay;
