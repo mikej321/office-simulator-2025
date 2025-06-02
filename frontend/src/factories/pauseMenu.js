@@ -1,6 +1,4 @@
-// pauseMenu.js
 // A factory class for creating and managing the pause menu UI component.
-// This is in factories/ rather than utils/ because it's a stateful class that managesmultiple UI elements and user interactions, not just a simple utility function.
 
 import { showConfirmPopup } from "../utils/showConfirmPopup";
 
@@ -18,10 +16,8 @@ class PauseMenu {
     };
   }
 
-  /**
-   * Shows the pause menu if it's not already visible.
-   * Creates all UI elements and sets up event listeners.
-   */
+  //Shows the pause menu if it's not already visible.
+  //Creates all UI elements and sets up event listeners.
   show() {
     if (this.isPaused) return;
 
@@ -92,10 +88,8 @@ class PauseMenu {
     this.scene.input.keyboard.on("keydown-P", this.hide, this);
   }
 
-  /**
-   * Hides the pause menu if it's visible.
-   * Calls destroy to clean up all UI elements.
-   */
+  //Hides the pause menu if it's visible.
+  //Calls destroy to clean up all UI elements.
   hide() {
     if (!this.isPaused) return;
 
@@ -103,10 +97,7 @@ class PauseMenu {
     this.destroy();
   }
 
-  /**
-   * Destroys all UI elements and removes event listeners.
-   * This is called when the menu is hidden or when the scene is destroyed.
-   */
+  //Destroys all UI elements and removes event listeners.
   destroy() {
     if (this.overlay) this.overlay.destroy();
     if (this.box) this.box.destroy();
@@ -116,10 +107,7 @@ class PauseMenu {
     this.scene.input.keyboard.off("keydown-P", this.hide, this);
   }
 
-  /**
-   * Shows a confirmation dialog before returning to the main menu.
-   * Uses the showConfirmPopup utility for consistent UI.
-   */
+  //Shows a confirmation dialog before returning to the main menu.
   showConfirmPopup() {
     showConfirmPopup(this.scene, this.options.confirmMessage, () => {
       this.hide();
