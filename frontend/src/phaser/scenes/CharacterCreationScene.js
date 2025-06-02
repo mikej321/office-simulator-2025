@@ -1,7 +1,19 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 
+/**
+ * CharacterCreationScene handles the character creation process.
+ * It provides a form interface for users to:
+ * - Enter a character name
+ * - Allocate stat points to different attributes
+ * - Submit the character for creation
+ * @extends Phaser.Scene
+ */
 class CharacterCreationScene extends Phaser.Scene {
+  /**
+   * Creates an instance of CharacterCreationScene.
+   * Initializes default stats and form data.
+   */
   constructor() {
     super({ key: "CharacterCreationScene" });
     this.initialStat = 3;
@@ -28,6 +40,10 @@ class CharacterCreationScene extends Phaser.Scene {
     this.remainingPoints = this.extraPoints;
   }
 
+  /**
+   * Preloads required assets and fonts for the scene.
+   * Uses WebFontLoader to load Google Fonts before proceeding.
+   */
   preload() {
     this.fontsLoaded = false;
     WebFont.load({
@@ -43,6 +59,10 @@ class CharacterCreationScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Creates the scene and sets up initial state.
+   * Waits for fonts to load before starting the form.
+   */
   create() {
     // Reset all state for a fresh form
     this.formStarted = false;
@@ -71,6 +91,10 @@ class CharacterCreationScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Sets up the character creation form UI.
+   * Creates input fields, stat allocation controls, and submit button.
+   */
   startForm() {
     const { width, height } = this.scale;
     // Title
@@ -165,7 +189,7 @@ class CharacterCreationScene extends Phaser.Scene {
     // Stat allocation
     this.statTexts = {};
     let y = height / 2 - 100;
-    this.stats.forEach((stat, i) => {
+    this.stats.forEach((stat) => {
       this.add
         .text(width / 2 - 180, y, this.statLabels[stat] + ":", {
           fontSize: "26px",
@@ -245,6 +269,12 @@ class CharacterCreationScene extends Phaser.Scene {
     this.submitButton.on("pointerdown", () => this.handleSubmit());
   }
 
+  /**
+   * Adjusts a character stat up or down.
+   * Manages the remaining points pool and updates UI.
+   * @param {string} stat - The stat to adjust
+   * @param {number} delta - The amount to adjust (-1 or 1)
+   */
   adjustStat(stat, delta) {
     if (delta === 1 && this.remainingPoints > 0) {
       this.formData[stat] += 1;
@@ -257,6 +287,10 @@ class CharacterCreationScene extends Phaser.Scene {
     this.remainingText.setText(`Points left: ${this.remainingPoints}`);
   }
 
+  /**
+   * Focuses the name input field.
+   * Creates a blinking cursor and sets up keyboard input handling.
+   */
   focusNameInput() {
     if (this.activeInput === "name") return;
     this.activeInput = "name";
@@ -306,6 +340,10 @@ class CharacterCreationScene extends Phaser.Scene {
     this.input.keyboard.on("keydown", this.keyboardListener);
   }
 
+  /**
+   * Removes focus from the name input field.
+   * Cleans up cursor and keyboard listeners.
+   */
   blurNameInput() {
     if (this.activeInput !== "name") return;
     this.activeInput = null;
@@ -322,6 +360,11 @@ class CharacterCreationScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Handles form submission.
+   * Validates input and creates the character.
+   * Manages loading states and error handling.
+   */
   async handleSubmit() {
     this.blurNameInput();
     if (this.remainingPoints > 0) {
@@ -360,6 +403,10 @@ class CharacterCreationScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Displays an error message to the user.
+   * @param {string} message - The error message to display
+   */
   showError(message) {
     this.errorText.setText(message);
     this.tweens.add({
@@ -370,6 +417,10 @@ class CharacterCreationScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Cleans up resources when the scene is shut down.
+   * Removes focus from input fields and cleans up event listeners.
+   */
   shutdown() {
     this.blurNameInput();
   }
