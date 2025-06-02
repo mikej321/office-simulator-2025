@@ -11,6 +11,8 @@ class WorkDay extends Phaser.Scene {
     });
   }
 
+  currentChrisLineIndex = null;
+
   init(){
     this.textStyle = {
       fontFamily: "Fredoka",
@@ -36,6 +38,52 @@ class WorkDay extends Phaser.Scene {
   }
 
   create() {
+    this.chrisLines = [
+        "Debugging is like being the detective in a crime movie where you're also the murderer.",
+        "Did you try turning it off and on again?",
+        "Your code compiles? Looks like someone’s graduating!",
+        "Keep calm and `git commit`.",
+        "Behind every great coder is a stack of failed builds.",
+        "You're not just pushing code — you're pushing limits.",
+        "Real programmers don't comment code. If it was hard to write, it should be hard to read.",
+        "Don't worry, I left a few bugs in there for nostalgia.",
+        "Every bug you squashed brought you here.",
+        "You don't write bugs — you write unexpected features.",
+        "Remember: failing tests are just misunderstood success stories.",
+        "`NaN`, `undefined`, `null` — just like my emotions during your first project review.",
+        "Code is poetry. And your early work was... abstract.",
+        "Graduating? Who gave you permission to stop learning?",
+        "Your recursion has finally terminated. Congratulations!",
+        "I ran a `diff` between then and now — you’ve improved *a lot*.",
+        "You’ve passed the ultimate test: building AND surviving a JavaScript game.",
+        "This game isn’t just fun — it’s functionally awesome.",
+        "What’s the runtime complexity of awesomeness? O(you).",
+        "Don’t forget me when you’re CTO.",
+        "Error 404: Apprenticeship not found. You did it!",
+        "You're like a well-named variable — meaningful and reliable.",
+        "Did you optimize your dreams for performance too?",
+        "If coding were a game, you just hit the boss level.",
+        "No more imposter syndrome. Just programmer pride.",
+        "You’re not just a dev. You’re a dev who shipped.",
+        "You used to `console.log()` bugs. Now you log victories.",
+        "Let’s `merge` this branch of your life with greatness.",
+        "This apprenticeship was your sandbox. Now it’s production time.",
+        "The code of success: curiosity + grit + caffeine.",
+        "Your apprenticeship is over, but your commits live on.",
+        "You’ve graduated from for-loops to foresight.",
+        "I’m not crying. My fan is just overheating.",
+        "Just promise me one thing: always write tests.",
+        "Stack Overflow better watch out. You’re coming.",
+        "You came. You coded. You conquered.",
+        "Let’s be real — I’m just an NPC in the game of your life.",
+        "Achievement unlocked: Survived mentorship with Chris.",
+        "Your future codebases thank you for today.",
+        "I taught you everything I know. The rest is up to you.",
+        "Now go out there and cause some meaningful merge conflicts.",
+    ];
+    this.wasNearChris = false; // Tracks whether player was previously near Chris
+
+
     this.statsOverlay = new StatsOverlay(this);
     this.scene.get('MusicManager').stopMusic();
     if (!this.scene.isActive('MusicManager')) {
@@ -133,15 +181,43 @@ class WorkDay extends Phaser.Scene {
     );
 
     // Add the avatar image at a chosen position
-    this.avatar = this.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+    this.avatar = this.physics.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+    this.avatar.body.setAllowGravity(false); // Make sure Chris doesn’t fall
+    this.avatar.body.immovable = true;       // Chris should not move on collision
+
 
 
     // Add a text box for interaction (hidden by default)
-    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "Hey there. Long day?", this.textStyle).setOrigin(0.5).setVisible(false);
+    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "", this.textStyle).setOrigin(0.5).setVisible(false);
+
 
     // Enable overlap check between player and avatar
     this.physics.add.overlap(this.player, this.avatar, () => {
-      this.avatarText.setVisible(true);
+      const nearAvatar = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y,
+        this.avatar.x, this.avatar.y
+      ) < 50;
+
+    if (nearAvatar && !this.wasNearChris) {
+        this.wasNearChris = true;
+
+        const randomIndex = Phaser.Math.Between(0, this.chrisLines.length - 1);
+        const randomLine = this.chrisLines[randomIndex];
+
+        if (randomLine && randomLine.trim() !== "") {
+          console.log("Chris says:", randomLine);
+          this.avatarText.setText(randomLine);
+          this.avatarText.setVisible(true);
+        } else {
+          console.warn("Empty or undefined Chris line!");
+          this.avatarText.setText("..."); // fallback
+          this.avatarText.setVisible(true);
+        }
+
+      } else if (!nearAvatar && this.wasNearChris) {
+        this.wasNearChris = false;
+        this.avatarText.setVisible(false);
+      }
     }, null, this);
   }
 
@@ -220,11 +296,23 @@ class WorkDay extends Phaser.Scene {
       }
 
         // Respawn the player
-        this.player.setPosition(800, 300);
+        //this.player.setPosition(500, 300);
 
         // Increment the workday count
         StatsManager.incrementWorkDayTaskNumber();
         this.createPlayer(); // Recreate the player to show the correct text
+        this.createCollisions(this.player, [
+          this.floor,
+          this.floorDeco,
+          this.separators,
+          this.deskRight,
+          this.deskLeft,
+          this.desktops,
+          this.deskDeco,
+          this.wall,
+          this.wallDeco,
+          this.tableDeco,
+        ]);
       } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
           console.log("Player chose to goof off!");
           StatsManager.incrementMP();
@@ -253,10 +341,22 @@ class WorkDay extends Phaser.Scene {
       this.avatar.x, this.avatar.y
     ) < 50;
 
-    const wasVisible = this.avatarText.visible;
-    if (nearAvatar && !wasVisible) {
+    if (nearAvatar && !this.wasNearChris) {
+      this.wasNearChris = true;
+
+      // Pick a new random line index that's not the same as last time
+      let newIndex;
+      do {
+        newIndex = Phaser.Math.Between(0, this.chrisLines.length - 1);
+      } while (newIndex === this.currentChrisLineIndex && this.chrisLines.length > 1);
+
+      this.currentChrisLineIndex = newIndex;
+      const newLine = this.chrisLines[this.currentChrisLineIndex];
+
+      this.avatarText.setText(newLine);
       this.avatarText.setVisible(true);
-    } else if (!nearAvatar && wasVisible) {
+    } else if (!nearAvatar && this.wasNearChris) {
+      this.wasNearChris = false;
       this.avatarText.setVisible(false);
     }
   }
@@ -269,7 +369,7 @@ class WorkDay extends Phaser.Scene {
   }
 
   createPlayer() {
-    this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
+    this.player = this.physics.add.sprite(500, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
 
     if (!this.anims.exists("walk")){
@@ -298,41 +398,58 @@ class WorkDay extends Phaser.Scene {
 
     //this.cameras.main.startFollow(this.player);
 
-    // Display a short-timed text box over Tom's head based on workday count
-    const workDayTaskNumber = StatsManager.getWorkDayTaskNumber();
-    console.log("Current WorkDay Count in createPlayer:", workDayTaskNumber);
+  const currentDay = StatsManager.getWorkDayCount(); // 1–5
+  const workDay = currentDay - 1; // Adjust to 0–4
+  console.log("Current workday in createPlayer:", workDay);
 
-    let textToDisplay = "";
-    switch (workDayTaskNumber) {
-      case 0:
-        textToDisplay = "Tom, you better get working! \nYour desk is collecting dust.";
-        break;
-      case 1:
-        textToDisplay = "Ahhhhhhh \nmuch better.";
-        break;
-      case 2:
-        textToDisplay = "Is that a cat over there?";
-        break;
-      case 3:
-        textToDisplay = "We should come up with a name for the cat.";
-        break;
-      default:
-        textToDisplay = ""; // No text for other counts
-    }
+  const taskNum = StatsManager.getWorkDayTaskNumber(); // 0–2
+  console.log("Current task count in createPlayer:", taskNum);
 
-    if (textToDisplay) {
-      const spawnText = this.add.text(
-        this.player.x, // Position the text at the player's X position
-        this.player.y - 50, // Position the text slightly above the player's head
-        textToDisplay, // The text to display
-        this.textStyle
-      ).setOrigin(0.5); // Center the text
+  // Defensive check: make sure workDay and taskNum are valid
+  if (workDay >= 0 && workDay < 5 && taskNum >= 0 && taskNum < 3) {
+    const bossYells = {
+      0: [
+        "Tom, you better get working! Your desk is collecting dust.",
+        "Don’t forget the onboarding checklist this time.",
+        "And stop drinking so much coffee!",
+      ],
+      1: [
+        "We have deadlines, Tom. Dead. Lines.",
+        "Did you even clock in today?",
+        "You're not paid to stare at your computer screen!",
+      ],
+      2: [
+        "That report better be done before lunch.",
+        "Why is your desk always a mess?",
+        "You're not the office cat whisperer, Tom!",
+      ],
+      3: [
+        "The printer is not your friend. Stop hugging it.",
+        "We are a *team*, Tom. Not a one-man circus.",
+        "Did you do your best today Tom?",
+      ],
+      4: [
+        "It’s Friday. Try *not* to mess this one up.",
+        "HR is watching, Tom. Smile more.",
+        "Your performance review is soon. Be afraid.",
+      ],
+    };
 
-      // Use a delayed call to hide or destroy the text after 2 seconds
-      this.time.delayedCall(6000, () => {
-        spawnText.destroy(); // Remove the text from the scene
-      });
-    }
+    const line = bossYells[workDay][taskNum];
+    const spawnText = this.add.text(
+      this.scale.width - 300,  // X: near right edge with some padding
+      40,                     // Y: top with some padding
+      line,
+      this.textStyle
+    ).setOrigin(0.5);
+
+    this.time.delayedCall(6000, () => {
+      spawnText.destroy();
+    });
+  } else {
+    console.warn("No boss yell found for day", workDay, "and task", taskNum);
+  }
+
   }
 
   playerMovement() {
