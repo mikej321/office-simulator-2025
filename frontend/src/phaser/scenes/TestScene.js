@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import WebFont from "webfontloader";
 import SpeechBubble from "../../factories/speechBubble";
 import PauseMenu from "../../factories/pauseMenu";
 import { saveProgress } from "../../utils/saveGame";
@@ -23,7 +22,6 @@ class TestScene extends Phaser.Scene {
       "tileset",
       "/office-simulator-2025/assets/asset-export-final-resized.png"
     );
-    // Atlases for interactables
     this.load.atlas(
       "printer",
       "/office-simulator-2025/assets/attachments/printer_resized.png",
@@ -72,7 +70,6 @@ class TestScene extends Phaser.Scene {
   }
 
   create() {
-    // Check if accessed through cheats (by convention, playerName 'Cheat3r' and playerStats in localStorage)
     const playerName = localStorage.getItem("playerName");
     const playerStats = localStorage.getItem("playerStats");
     if (playerName === "Cheat3r") {
@@ -81,15 +78,6 @@ class TestScene extends Phaser.Scene {
         playerStats
       );
     }
-
-    /* A transition occurs here. A delay is added
-    to force the scene to wait until the last scene is finished
-    fading out */
-    // this.cameras.main.setAlpha(0); // starts it out fully invisible
-    // this.time.delayedCall(1100, () => {
-    //   this.cameras.main.setAlpha(1);
-    //   this.cameras.main.fadeIn(1000);
-    // });
 
     this.map = this.make.tilemap({
       key: "tilemap",
@@ -102,195 +90,46 @@ class TestScene extends Phaser.Scene {
     this.textures
       .get("asset-export-final-resized")
       .setFilter(Phaser.Textures.FilterMode.NEAREST);
-    // This is the code that fixes the issue
 
-    this.floor = this.map.createLayer("Floor", this.tileset, 0, 0);
-    this.floorDeco = this.map.createLayer(
-      "Floor Decorations",
-      this.tileset,
-      0,
-      0
-    );
-
-    this.separators = this.map.createLayer(
-      "Cubicle Separators",
-      this.tileset,
-      0,
-      0
-    );
-    this.deskRight = this.map.createLayer(
-      "Cubicle Desk Right",
-      this.tileset,
-      0,
-      0
-    );
-
-    this.deskLeft = this.map.createLayer(
-      "Cubicle Desk Left",
-      this.tileset,
-      0,
-      0
-    );
-    this.desktops = this.map.createLayer("Desktops", this.tileset, 0, 0);
-    this.deskDeco = this.map.createLayer(
-      "Desktop Decorations",
-      this.tileset,
-      0,
-      0
-    );
-    this.wall = this.map.createLayer("Wall", this.tileset, 0, 0);
-    this.wallDeco = this.map.createLayer(
-      "Wall Decorations",
-      this.tileset,
-      0,
-      0
-    );
-    this.tableDeco = this.map.createLayer(
-      "Table Decorations",
-      this.tileset,
-      0,
-      0
-    );
-
-    this.interactables = this.physics.add.staticGroup();
-    this.sensors = this.physics.add.staticGroup();
-    this.printerGroup = this.add.group();
-
-    [
-      "Blue Chair",
-      "Red Chair",
-      "Green Chair",
-      "Orange Chair",
-      "Vending Machine",
-      "Door",
-      "Printer",
-      "Door Sensor",
-      "Vending Sensor",
-      "Printer Sensor",
-    ].forEach((layerName) => {
-      this.map.getObjectLayer(layerName).objects.forEach((obj) => {
-        const isTileObject = obj.gid !== undefined;
-        const objects = this.map.getObjectLayer(layerName).objects;
-        const frame = obj.properties.find((p) => p.name === "frame")?.value;
-        const flipX = !!obj.properties.find((p) => p.name === "flipX")?.value;
-        const centerX = obj.x + obj.width / 2;
-        const centerY = isTileObject
-          ? obj.y - obj.height / 2
-          : obj.y + obj.height / 2;
-
-        if (layerName === "Printer") {
-          objects.forEach((obj, idx) => {
-            const sprite = this.interactables
-              .create(
-                obj.x + obj.width / 2,
-                obj.y - obj.height / 2,
-                "printer",
-                obj.properties.find((p) => p.name === "frame").value
-              )
-              .setOrigin(0.5);
-
-            this.objectNudge(sprite, -6, 37);
-
-            sprite.body.setSize(obj.width, obj.height);
-            sprite.body.setOffset(
-              (sprite.width - obj.width) / 2,
-              (sprite.height - obj.height) / 2
-            );
-
-            this.printerGroup.add(sprite);
-
-            const zoneObj =
-              this.map.getObjectLayer("Printer Sensor").objects[idx];
-            const zone = this.add
-              .zone(
-                zoneObj.x + zoneObj.width / 2,
-                zoneObj.y + zoneObj.height / 2,
-                zoneObj.width,
-                zoneObj.height
-              )
-              .setOrigin(0.5);
-            this.physics.add.existing(zone, true);
-            zone.name = "Printer Sensor";
-            zone.linkedSprite = sprite;
-            this.sensors.add(zone);
-          });
-
-          return;
-        }
-        if (layerName.includes("Sensor")) {
-          const zone = this.add
-            .zone(centerX, centerY, obj.width, obj.height)
-            .setOrigin(0.5);
-
-          zone.sensorType = obj.name;
-          this.physics.add.existing(zone, true);
-          zone.body.debugShowBody = false;
-          zone.name = obj.name;
-          this.sensors.add(zone);
-
-          return;
-        }
-
-        const sprite = this.interactables
-          .create(
-            centerX,
-            centerY,
-            layerName.toLowerCase().replace(" ", "-"),
-            frame
-          )
-          .setOrigin(0.5)
-          .setFlipX(flipX);
-
-        /* All of the position nudges are placed by using a custom function 'objectNudge'.
-        The objectNudge takes 4 parameters
-        
-        obj: In this case, it'd be the created sprite above
-        propertyName (optional): This is an optional parameter for doing conditionals based on if
-        the property exists
-        x: How far you want to nudge it on the x axis
-        y: How far you want to nudge it on the y axis
-
-        */
-        switch (layerName) {
-          case "Red Chair":
-            this.objectNudge(sprite, 9, 2, flipX);
-            break;
-          case "Blue Chair":
-            this.objectNudge(sprite, 9, 3, flipX);
-            break;
-          case "Orange Chair":
-            this.objectNudge(sprite, 9, 2, flipX);
-            break;
-          case "Green Chair":
-            this.objectNudge(sprite, 9, -2, flipX);
-            break;
-          case "Door":
-            this.objectNudge(sprite, 0, 18);
-            break;
-          default:
-            break;
-        }
-
-        /* This is the code that's responsible for shrinking the sprite's canvas body
-        down to the proper size. Without it, it would create invisible walls that prevent
-        the player from walking */
-        sprite.body.setSize(obj.width, obj.height);
-        sprite.body.setOffset(
-          (sprite.width - obj.width) / 2,
-          (sprite.height - obj.height) / 2
-        );
-
-        this.physics.add.existing(sprite, true);
-
-        this.interactables.add(sprite);
-      });
+    this.map.getObjectLayer("Objects").objects.forEach((obj) => {
+      const { x, y, name: layerName, flipX } = obj;
+      const sprite = this.add.sprite(
+        x,
+        y,
+        layerName.toLowerCase().replace(/ /g, "-")
+      );
+      switch (layerName) {
+        case "Red Chair":
+          this.objectNudge(sprite, 9, 2, flipX);
+          break;
+        case "Blue Chair":
+          this.objectNudge(sprite, 9, 3, flipX);
+          break;
+        case "Orange Chair":
+          this.objectNudge(sprite, 9, 2, flipX);
+          break;
+        case "Green Chair":
+          this.objectNudge(sprite, 9, -2, flipX);
+          break;
+        case "Door":
+          this.objectNudge(sprite, 0, 18);
+          break;
+        default:
+          break;
+      }
+      sprite.body.setSize(obj.width, obj.height);
+      sprite.body.setOffset(
+        (sprite.width - obj.width) / 2,
+        (sprite.height - obj.height) / 2
+      );
+      this.physics.add.existing(sprite, true);
+      this.interactables.add(sprite);
     });
 
     this.createPlayer();
 
     this.physics.add.collider(this.player, this.interactables);
 
-    // Setting the e key up for button presses
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     this.layerArr = [
@@ -313,10 +152,8 @@ class TestScene extends Phaser.Scene {
       this.map.heightInPixels
     );
 
-    // Ensures the player cant move beyond the game world
     this.player.setCollideWorldBounds(true);
 
-    // World Boundaries
     this.physics.world.setBounds(
       0,
       0,
@@ -324,7 +161,6 @@ class TestScene extends Phaser.Scene {
       this.map.heightInPixels - 7
     );
 
-    // Camera Boundaries
     this.cameras.main.setBounds(
       0,
       0,
@@ -338,14 +174,11 @@ class TestScene extends Phaser.Scene {
       this.map.widthInPixels,
       this.map.heightInPixels
     );
-
-    // this.cameras.main.setZoom(1.5);
 
     this.cameras.main.roundPixels = true;
 
     this.createCollisions(this.player, this.layerArr);
 
-    // Object Sprite Definitions for later usage
     this.doorSprite = this.interactables
       .getChildren()
       .find((child) => child.texture.key === "door");
@@ -353,7 +186,6 @@ class TestScene extends Phaser.Scene {
     this.printerSprite = this.interactables
       .getChildren()
       .find((child) => child.texture.key === "printer");
-    // Object Animations
 
     this.anims.create({
       key: "exit",
@@ -377,7 +209,6 @@ class TestScene extends Phaser.Scene {
       repeat: 0,
     });
 
-    // flags for sensors
     this.currentSensor = null;
     this.bubble = null;
 
@@ -385,9 +216,6 @@ class TestScene extends Phaser.Scene {
       this.player,
       this.sensors,
       (player, zone) => {
-        // console.log("entered sensor named", zone.name);
-
-        // If in a zone, do nothing
         if (this.bubble) return;
         if (this.currentSensor === zone) return;
 
@@ -440,8 +268,6 @@ class TestScene extends Phaser.Scene {
       this
     );
 
-    // Clock setup
-
     this.clockText = this.add
       .text(235, 32, "", {
         fontFamily: "Orbitron",
@@ -454,7 +280,6 @@ class TestScene extends Phaser.Scene {
     this.gameTime = new Date();
     this.gameTime.setHours(9, 0, 0, 0);
 
-    // 1 sec = 1 game minute
     const timeScale = 120;
 
     this.updateClock();
@@ -479,7 +304,7 @@ class TestScene extends Phaser.Scene {
             this,
             result.saved ? "Progress Saved!" : "No Progress to Save"
           );
-        } catch (e) {
+        } catch {
           showPopup(this, "Save failed!");
         }
       },
@@ -575,14 +400,11 @@ class TestScene extends Phaser.Scene {
   }
 
   updateClock() {
-    const now = new Date();
     const h = String(this.gameTime.getHours()).padStart(2, "0");
     const m = String(this.gameTime.getMinutes()).padStart(2, "0");
-    const s = String(this.gameTime.getSeconds()).padStart(2, "0");
     this.clockText.setText(`${h}:${m}`);
   }
 
-  // Custom Debug Box function. Place it anywhere with a sprite inside to generate a red box
   debugBox(sprite) {
     this.add
       .rectangle(
@@ -640,8 +462,6 @@ class TestScene extends Phaser.Scene {
 
     this.player.setSize(32, 32);
 
-    // Sets collision detection for the world boundary
-
     this.anims.create({
       key: "walk",
       frames: this.anims.generateFrameNames("player", {
@@ -679,7 +499,6 @@ class TestScene extends Phaser.Scene {
   }
 
   playerMovement() {
-    // Creates the cursor for player input
     this.cursor = this.input.keyboard.createCursorKeys();
 
     if (this.cursor.left.isDown) {
