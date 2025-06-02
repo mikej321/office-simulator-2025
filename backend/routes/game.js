@@ -1,10 +1,21 @@
+/**
+ * Game routes for saving and loading game state
+ * Handles:
+ * - Saving character stats and game state
+ * - Loading latest save data
+ * - Updating game progress
+ */
+
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const authenticateJWT = require("../middleware/authenticateJWT");
 const prisma = new PrismaClient();
 
-// GET /api/game/save/latest
+/**
+ * GET /api/game/save/latest
+ * Retrieves the latest save data for a character
+ */
 router.get("/save/latest", authenticateJWT, async (req, res) => {
   try {
     const { characterId } = req.query;
@@ -12,8 +23,10 @@ router.get("/save/latest", authenticateJWT, async (req, res) => {
       return res.status(400).json({ message: "Missing characterId" });
     }
 
+    // Find character with related data
     const character = await prisma.character.findUnique({
       where: {
+        // Convert characterId to number because query params are strings
         id: parseInt(characterId),
       },
       include: {
@@ -26,6 +39,7 @@ router.get("/save/latest", authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: "Character not found" });
     }
 
+    // The spread operator (...) combines objects    
     res.json({
       ...character.stats,
       ...character.gameState,
@@ -36,7 +50,19 @@ router.get("/save/latest", authenticateJWT, async (req, res) => {
   }
 });
 
-// POST /api/game/save
+/**
+ * POST /api/game/save
+ * Saves character stats and game state
+ *
+ * @body {number} characterId - The ID of the character to save
+ * @body {number} mentalPoints - Character's mental points
+ * @body {number} energyLevel - Character's energy level
+ * @body {number} motivationLevel - Character's motivation level
+ * @body {number} focusLevel - Character's focus level
+ * @body {number} workDayCount - Current work day count
+ * @body {number} actionsUsed - Number of actions used
+ * @returns {Object} Success message
+ */
 router.post("/save", authenticateJWT, async (req, res) => {
   try {
     const {
@@ -46,6 +72,7 @@ router.post("/save", authenticateJWT, async (req, res) => {
       motivationLevel,
       focusLevel,
       workDayCount,
+      actionsUsed,
     } = req.body;
     if (!characterId)
       return res.status(400).json({ message: "Missing characterId" });
@@ -53,6 +80,7 @@ router.post("/save", authenticateJWT, async (req, res) => {
     // Update stats
     await prisma.stats.update({
       where: {
+        // Convert characterId to number because it might be a string
         characterId: parseInt(characterId),
       },
       data: {
@@ -70,6 +98,7 @@ router.post("/save", authenticateJWT, async (req, res) => {
       },
       data: {
         workDayCount,
+        actionsUsed,
         lastSaved: new Date(),
       },
     });

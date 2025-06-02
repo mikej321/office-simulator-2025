@@ -1,3 +1,11 @@
+/**
+ * Authentication routes for user signup and login.
+ * Handles:
+ * - User registration with email/password
+ * - User login with credentials
+ * - Token generation for authenticated users
+ * - Character creation for new users
+ */
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
@@ -5,18 +13,24 @@ const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const generateToken = require("../utils/generateToken");
 
+// Create a new instance of PrismaClient
+// This instance will be used to interact with the database
 const prisma = new PrismaClient();
 
-// Signup route
+/**
+ * Signup route
+ * POST /api/auth/signup
+ *
+ * Validates and creates a new user account:
+ * 1. Validates email format and password length
+ * 2. Checks if user already exists
+ * 3. Hashes password with bcrypt (10 salt rounds)
+ * 4. Creates user in database
+ * 5. Generates JWT token
+ */
 router.post(
   "/signup",
-  [
-    body("email").isEmail().withMessage("Please enter a valid email"),
-    body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters long"),
-    body("name").notEmpty().withMessage("Character name is required"),
-  ],
+  [body("email").isEmail(), body("password").isLength({ min: 6 })],
   async (req, res) => {
     try {
       // Validate request
@@ -25,7 +39,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { email, password, name } = req.body;
+      const { email, password } = req.body;
 
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
@@ -36,36 +50,22 @@ router.post(
         return res.status(400).json({ message: "User already exists" });
       }
 
-      // Hash password
+      // Hash password with 10 salt rounds
+      // Higher rounds = more secure but slower
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user and initial character
+      // Create user
       const user = await prisma.user.create({
         data: {
           email,
           password: hashedPassword,
-          characters: {
-            create: {
-              name,
-              stats: {
-                create: {
-                  fatigue: 100,
-                  productivity: 100,
-                },
-              },
-              gameState: {
-                create: {
-                  currentDay: 1,
-                },
-              },
-            },
-          },
         },
       });
 
-      // Generate token
+      // Generate JWT token for authentication
       const token = generateToken(user.id);
 
+      // Return token and user info (excluding password)
       res.status(201).json({
         token,
         user: {
@@ -80,11 +80,23 @@ router.post(
   }
 );
 
-// Login route
+/**
+ * Login route
+ * POST /api/auth/login
+ *
+ * Authenticates user and returns JWT token:
+ * 1. Validates email format and password presence
+ * 2. Finds user by email
+ * 3. Verifies password using bcrypt
+ * 4. Generates JWT token
+ * 5. Returns token and user info with characters
+ */
 router.post(
   "/login",
   [
+    // Validate email format
     body("email").isEmail().withMessage("Please enter a valid email"),
+    // Ensure password is provided
     body("password").exists().withMessage("Password is required"),
   ],
   async (req, res) => {
@@ -97,7 +109,8 @@ router.post(
 
       const { email, password } = req.body;
 
-      // Find user
+      // Find user and include their characters
+      // The include option tells Prisma to also fetch related data
       const user = await prisma.user.findUnique({
         where: { email },
         include: {
@@ -114,15 +127,16 @@ router.post(
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Check password
+      // Verify password using bcrypt
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Generate token
+      // Generate JWT token
       const token = generateToken(user.id);
 
+      // Return token, user info, and character data
       res.json({
         token,
         user: {

@@ -51,6 +51,8 @@ model GameState {
   workDayCount        Int       @default(0)
   workDayLimit        Int       @default(5)
   workDayLimitReached Boolean   @default(false)
+  actionsUsed         Int       @default(0)
+  currentScene        String    @default("TestScene")
   characterId         Int       @unique
   character           Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
   lastSaved           DateTime  @default(now())

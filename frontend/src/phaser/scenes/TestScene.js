@@ -4,7 +4,7 @@ import SpeechBubble from "../../factories/speechBubble";
 import PauseMenu from "../../factories/pauseMenu";
 import { saveProgress } from "../../utils/saveGame";
 import { showPopup } from "../../utils/showPopup";
-import { getCurrentStatsWithCharacterId } from "../../utils/gameState";
+import { getCharacterSaveData } from "../../utils/gameState";
 
 class TestScene extends Phaser.Scene {
   constructor() {
@@ -406,7 +406,7 @@ class TestScene extends Phaser.Scene {
       onSave: async () => {
         const token = localStorage.getItem("token");
         console.log("Token used for saveProgress:", token);
-        const currentStats = getCurrentStatsWithCharacterId(this);
+        const currentStats = getCharacterSaveData(this);
         try {
           const result = await saveProgress(currentStats, token);
           showPopup(

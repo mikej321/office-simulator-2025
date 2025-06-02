@@ -63,7 +63,7 @@ The Phaser registry is our single source of truth for character stats and progre
 3. **Saving Progress:**
 
    - Registry values are written to SQLite
-   - Use `getCurrentStatsWithCharacterId` utility
+   - Use `getCharacterSaveData` utility
 
 4. **Loading a Character:**
    - SQLite values are loaded into registry
@@ -80,8 +80,8 @@ char.mentalPoints += 1;
 this.game.registry.set("activeCharacter", char);
 
 // Getting current stats for saving
-import { getCurrentStatsWithCharacterId } from "../utils/gameState";
-const currentStats = getCurrentStatsWithCharacterId(this);
+import { getCharacterSaveData } from "../utils/gameState";
+const currentStats = getCharacterSaveData(this);
 ```
 
 ## Pause Menu Implementation
@@ -95,7 +95,7 @@ import PauseMenu from "../factories/pauseMenu";
 this.pauseMenu = new PauseMenu(this, {
   onSave: async () => {
     const token = localStorage.getItem("token");
-    const currentStats = getCurrentStatsWithCharacterId(this);
+    const currentStats = getCharacterSaveData(this);
     await saveProgress(currentStats, token);
   },
   onBack: () => {
@@ -142,7 +142,7 @@ this.game.registry.set("activeCharacter", char);
 
 // 2. Save progress
 const token = localStorage.getItem("token");
-const currentStats = getCurrentStatsWithCharacterId(this);
+const currentStats = getCharacterSaveData(this);
 await saveProgress(currentStats, token);
 ```
 

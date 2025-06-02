@@ -1,6 +1,23 @@
 // gameState.js
 // Utility to get current stats with characterId for saving from Phaser registry
 
+import { getCurrentStats, getCurrentGameState } from "./gameStateRegistry";
+
+/**
+ * Retrieves complete save data for a character including stats and game state
+ * @param {number} characterId - The ID of the character
+ * @returns {Object} Complete character save data
+ */
+export const getCharacterSaveData = (characterId) => {
+  const stats = getCurrentStats(characterId);
+  const gameState = getCurrentGameState(characterId);
+
+  return {
+    ...stats,
+    ...gameState,
+  };
+};
+
 // This function takes a scene parameter and extracts character stats from the Phaser registry
 export function getCurrentStatsWithCharacterId(scene) {
   // Safely access the character from the registry using chained && operators
@@ -10,7 +27,7 @@ export function getCurrentStatsWithCharacterId(scene) {
     scene.game.registry &&
     scene.game.registry.get("activeCharacter");
 
-    console.log("Active character from registry:", JSON.stringify(char, null, 2));
+  console.log("Active character from registry:", JSON.stringify(char, null, 2));
 
   // If no character is found, return an empty object
   if (!char) return {};

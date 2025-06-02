@@ -211,7 +211,7 @@ class GameScene extends Phaser.Scene {
 
    ```javascript
    // From pause menu or auto-save
-   const currentStats = getCurrentStatsWithCharacterId(this);
+   const currentStats = getCharacterSaveData(this);
    await saveProgress(currentStats, token);
    ```
 
@@ -345,11 +345,11 @@ this.scene.resume();
 
 ### Game State Utilities
 
-1. **getCurrentStatsWithCharacterId**
+1. **getCharacterSaveData**
 
    ```javascript
    // Get current stats from registry
-   export function getCurrentStatsWithCharacterId(scene) {
+   export function getCharacterSaveData(scene) {
      const char = scene.game.registry.get("activeCharacter");
      return {
        characterId: char.id,
@@ -431,7 +431,7 @@ class GameScene extends Phaser.Scene {
     this.pauseMenu = new PauseMenu(this, {
       onSave: async () => {
         const token = localStorage.getItem("token");
-        const currentStats = getCurrentStatsWithCharacterId(this);
+        const currentStats = getCharacterSaveData(this);
         await saveProgress(currentStats, token);
       },
     });
@@ -454,7 +454,7 @@ char.stats.energyLevel -= 1;
 this.game.registry.set("activeCharacter", char);
 
 // Save progress
-const currentStats = getCurrentStatsWithCharacterId(this);
+const currentStats = getCharacterSaveData(this);
 await saveProgress(currentStats, token);
 ```
 
