@@ -11,6 +11,8 @@ class WorkDay extends Phaser.Scene {
     });
   }
 
+  currentSensor = null;
+  bubble = null;
   currentChrisLineIndex = null;
 
   init(){
@@ -38,6 +40,8 @@ class WorkDay extends Phaser.Scene {
   }
 
   create() {
+    
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     this.chrisLines = [
         "Debugging is like being the detective in a crime movie where you're also the murderer.",
         "Did you try turning it off and on again?",
@@ -113,21 +117,121 @@ class WorkDay extends Phaser.Scene {
     const offsetY = (this.scale.height - gameHeight) / 2;
 
     // Create the tilemap and position it in the center
-    const map = this.make.tilemap({ key: "tilemap" });
-    this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
+    this.map = this.make.tilemap({ key: "tilemap" });
+
+    this.tileset = this.map.addTilesetImage("asset-export-final-resized", "tileset");
     this.textures.get("asset-export-final-resized").setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // Create layers and position them relative to the offsets
-    this.floor = map.createLayer("Floor", this.tileset, offsetX, offsetY);
-    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
-    this.separators = map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
-    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
-    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
-    this.desktops = map.createLayer("Desktops", this.tileset, offsetX, offsetY);
-    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
-    this.wall = map.createLayer("Wall", this.tileset, offsetX, offsetY);
-    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
-    this.tableDeco = map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+    this.floor = this.map.createLayer("Floor", this.tileset, offsetX, offsetY);
+    this.floorDeco = this.map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
+    this.separators = this.map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
+    this.deskRight = this.map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
+    this.deskLeft = this.map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
+    this.desktops = this.map.createLayer("Desktops", this.tileset, offsetX, offsetY);
+    this.deskDeco = this.map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
+    this.wall = this.map.createLayer("Wall", this.tileset, offsetX, offsetY);
+    this.wallDeco = this.map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
+    this.tableDeco = this.map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+
+    this.interactables = this.physics.add.staticGroup();
+    this.sensors = this.physics.add.staticGroup();
+    this.printerGroup = this.add.group();
+
+    [
+      "Blue Chair",
+      "Red Chair",
+      "Green Chair",
+      "Orange Chair",
+      "Vending Machine",
+      "Door",
+      "Printer",
+      "Door Sensor",
+      "Vending Sensor",
+      "Printer Sensor",
+    ].forEach((layerName) => {
+      const objects = this.map.getObjectLayer(layerName)?.objects || [];
+      objects.forEach((obj, idx) => {
+        const isTileObject = obj.gid !== undefined;
+        const frame = obj.properties?.find((p) => p.name === "frame")?.value;
+        const flipX = !!obj.properties?.find((p) => p.name === "flipX")?.value;
+        const centerX = offsetX + obj.x + obj.width / 2;
+        const centerY = offsetY + (isTileObject
+          ? obj.y - obj.height / 2
+          : obj.y + obj.height / 2);
+
+
+        if (layerName === "Printer") {
+          const sprite = this.interactables.create(
+            centerX,
+            centerY,
+            "printer",
+            frame
+          ).setOrigin(0.5);
+
+          this.objectNudge(sprite, -6, 37);
+          sprite.body.setSize(obj.width, obj.height);
+          sprite.body.setOffset(
+            (sprite.width - obj.width) / 2,
+            (sprite.height - obj.height) / 2
+          );
+
+          this.printerGroup.add(sprite);
+
+          const zoneObj = this.map.getObjectLayer("Printer Sensor").objects[idx];
+          const zone = this.add.zone(
+            offsetX + zoneObj.x + zoneObj.width / 2,
+            offsetY + zoneObj.y + zoneObj.height / 2,
+            zoneObj.width,
+            zoneObj.height
+          ).setOrigin(0.5);
+          this.physics.add.existing(zone, true);
+          zone.name = "Printer Sensor";
+          zone.linkedSprite = sprite;
+          this.sensors.add(zone);
+
+          return;
+        }
+
+        if (layerName.includes("Sensor")) {
+          const zone = this.add.zone(centerX, centerY, obj.width, obj.height).setOrigin(0.5);
+          zone.sensorType = obj.name;
+          this.physics.add.existing(zone, true);
+          zone.body.debugShowBody = false;
+          zone.name = obj.name;
+          this.sensors.add(zone);
+          return;
+        }
+
+        const sprite = this.interactables.create(
+          centerX,
+          centerY,
+          layerName.toLowerCase().replace(" ", "-"),
+          frame
+        ).setOrigin(0.5).setFlipX(flipX);
+
+        switch (layerName) {
+          case "Red Chair": this.objectNudge(sprite, 9, 2, flipX); break;
+          case "Blue Chair": this.objectNudge(sprite, 9, 3, flipX); break;
+          case "Orange Chair": this.objectNudge(sprite, 9, 2, flipX); break;
+          case "Green Chair": this.objectNudge(sprite, 9, -2, flipX); break;
+          case "Door": this.objectNudge(sprite, 0, 18); break;
+          default: break;
+        }
+
+        sprite.body.setSize(obj.width, obj.height);
+        sprite.body.setOffset((sprite.width - obj.width) / 2, (sprite.height - obj.height) / 2);
+        this.physics.add.existing(sprite, true);
+        this.interactables.add(sprite);
+      });
+    });
+    this.doorSprite = this.interactables
+  .getChildren()
+  .find((child) => child.texture.key === "door");
+
+this.printerSprite = this.interactables
+  .getChildren()
+  .find((child) => child.texture.key === "printer");
 
     // Add UI elements and position them relative to the offsets
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
@@ -219,6 +323,68 @@ class WorkDay extends Phaser.Scene {
         this.avatarText.setVisible(false);
       }
     }, null, this);
+
+    this.physics.add.overlap(
+    this.player,
+    this.sensors,
+    (player, zone) => {
+      if (this.bubble || this.currentSensor === zone) return;
+
+      let msg;
+      switch (zone.name) {
+        case "Door Sensor":
+          msg = `Press 'E' to leave work`;
+          break;
+        case "Vending Sensor":
+          msg = `Press 'E' to grab a drink`;
+          break;
+        case "Printer Sensor":
+          msg = `Press 'E' to print something`;
+          break;
+        default:
+          msg = "";
+      }
+
+      this.bubble = this.add.text(
+        this.player.x,
+        this.player.y - 30,
+        msg,
+        {
+          fontSize: "14px",
+          fill: "#fff",
+          backgroundColor: "#000",
+          padding: { x: 6, y: 3 },
+        }
+      ).setOrigin(0.5).setDepth(1000);
+
+      this.currentSensor = zone;
+    },
+    null,
+    this
+  );
+
+  this.anims.create({
+  key: "exit",
+  frames: this.anims.generateFrameNames("door", {
+    prefix: "door-",
+    start: 1,
+    end: 8,
+  }),
+  frameRate: 24,
+  repeat: 0,
+});
+
+this.anims.create({
+  key: "print",
+  frames: this.anims.generateFrameNames("printer", {
+    prefix: "printer-",
+    start: 1,
+    end: 8,
+  }),
+  frameRate: 8,
+  repeat: 0,
+});
+
   }
 
   update() {
@@ -239,6 +405,48 @@ class WorkDay extends Phaser.Scene {
     }
 
     this.playerMovement();
+    if (this.currentSensor && Phaser.Input.Keyboard.JustDown(this.eKey)) {
+  const sensor = this.currentSensor;
+
+  if (sensor.name === "Door Sensor" && this.doorSprite) {
+    this.doorSprite.play("exit");
+
+    this.time.delayedCall(3000, () => {
+      this.doorSprite.anims.playReverse("exit");
+    });
+    this.time.delayedCall(6000, () => {
+      StatsManager.incrementWorkDayCount();
+      this.scene.stop("WorkDay");
+      this.scene.start("HomeEvening");
+    });
+
+  } else if (sensor.name === "Printer Sensor" && sensor.linkedSprite) {
+    sensor.linkedSprite.play("print");
+  }
+
+  if (this.bubble) {
+    this.bubble.destroy();
+    this.bubble = null;
+  }
+
+  sensor.body.enable = false;
+  sensor.setVisible(false);
+
+  this.time.delayedCall(3000, () => {
+    sensor.body.enable = true;
+    sensor.setVisible(true);
+  });
+
+  this.currentSensor = null;
+}
+if (this.currentSensor && !this.physics.world.overlap(this.player, this.currentSensor)) {
+  if (this.bubble) {
+    this.bubble.destroy();
+    this.bubble = null;
+  }
+  this.currentSensor = null;
+}
+
 
     // Check if the player is within the interactable area
     const distance = Phaser.Math.Distance.Between(
@@ -450,6 +658,46 @@ class WorkDay extends Phaser.Scene {
     console.warn("No boss yell found for day", workDay, "and task", taskNum);
   }
 
+  this.physics.add.overlap(
+  this.player,
+  this.sensors,
+  (player, zone) => {
+    if (this.bubble || this.currentSensor === zone) return;
+
+    let msg;
+    switch (zone.name) {
+      case "Door Sensor":
+        msg = `Press 'E' to leave work`;
+        break;
+      case "Vending Sensor":
+        msg = `Press 'E' to grab a drink`;
+        break;
+      case "Printer Sensor":
+        msg = `Press 'E' to print something`;
+        break;
+      default:
+        msg = "";
+    }
+
+    this.bubble = this.add.text(
+      this.player.x,
+      this.player.y - 30,
+      msg,
+      {
+        fontSize: "14px",
+        fill: "#fff",
+        backgroundColor: "#000",
+        padding: { x: 6, y: 3 },
+      }
+    ).setOrigin(0.5).setDepth(1000);
+
+    this.currentSensor = zone;
+  },
+  null,
+  this
+);
+
+
   }
 
   playerMovement() {
@@ -494,6 +742,19 @@ class WorkDay extends Phaser.Scene {
       if (this.player.anims.currentAnim?.key !== "idle") {
         this.player.anims.play("idle", true);
       }
+    }
+  }
+
+  objectNudge(obj, objX, objY, propertyName = "") {
+    if (propertyName === "") {
+      obj.x += objX;
+      obj.y += objY;
+    } else if (propertyName) {
+      obj.x += objX;
+      obj.y -= objY;
+    } else {
+      obj.x -= objX;
+      obj.y -= objY;
     }
   }
 }
