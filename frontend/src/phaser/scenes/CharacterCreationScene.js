@@ -73,10 +73,6 @@ class CharacterCreationScene extends Phaser.Scene {
 
   startForm() {
     const { width, height } = this.scale;
-    this.add
-      .rectangle(width / 2, height / 2, 500, 600, 0x222222, 0.95)
-      .setOrigin(0.5);
-
     // Title
     this.titleText = this.add
       .text(width / 2, height / 2 - 250, "Job Application", {
@@ -137,7 +133,6 @@ class CharacterCreationScene extends Phaser.Scene {
         fontSize: "28px",
         color: "#ffffff",
         fontFamily: "Fredoka",
-        fixedWidth: nameBoxWidth - 24,
         maxLines: 1,
         backgroundColor: undefined,
         padding: { x: 0, y: 0 },
@@ -266,7 +261,26 @@ class CharacterCreationScene extends Phaser.Scene {
     if (this.activeInput === "name") return;
     this.activeInput = "name";
     this.nameInput.setColor("#ffff00");
+    this.nameInputBox.setStrokeStyle(2, 0xffff00);
     this.inputOverlay.visible = true;
+    // Create blinking cursor
+    if (this.cursor) {
+      this.cursor.destroy();
+    }
+    const textX = this.nameInput.x;
+    const textY = this.nameInput.y;
+    const textWidth = this.nameInput.text ? this.nameInput.width : 0;
+    this.cursor = this.add
+      .rectangle(textX + textWidth, textY, 2, 28, 0xffff00)
+      .setOrigin(0, 0.5);
+    this.cursor.blinkTween = this.tweens.add({
+      targets: this.cursor,
+      alpha: { from: 1, to: 0 },
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+    this.formStarted && this.children.bringToTop(this.cursor);
     // Remove any previous handler before adding a new one
     if (this.keyboardListener) {
       this.input.keyboard.off("keydown", this.keyboardListener);
@@ -283,6 +297,11 @@ class CharacterCreationScene extends Phaser.Scene {
         this.formData.name += event.key;
       }
       this.nameInput.setText(this.formData.name);
+      // Update cursor position
+      if (this.cursor) {
+        const textWidth = this.nameInput.text ? this.nameInput.width : 0;
+        this.cursor.x = this.nameInput.x + textWidth;
+      }
     };
     this.input.keyboard.on("keydown", this.keyboardListener);
   }
@@ -291,7 +310,12 @@ class CharacterCreationScene extends Phaser.Scene {
     if (this.activeInput !== "name") return;
     this.activeInput = null;
     this.nameInput.setColor("#ffffff");
+    this.nameInputBox.setStrokeStyle(2, 0xaaaaaa);
     this.inputOverlay.visible = false;
+    if (this.cursor) {
+      this.cursor.destroy();
+      this.cursor = null;
+    }
     if (this.keyboardListener) {
       this.input.keyboard.off("keydown", this.keyboardListener);
       this.keyboardListener = null;

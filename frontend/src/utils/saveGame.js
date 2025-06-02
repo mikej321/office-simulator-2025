@@ -29,11 +29,15 @@ export const saveProgress = async (currentStats) => {
     }
 
     // Fetch the last saved stats from the backend (GET request)
-    const response = await fetch("/api/game/save/latest", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const characterId = currentStats.characterId;
+    const response = await fetch(
+      `/api/game/save/latest?characterId=${characterId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
