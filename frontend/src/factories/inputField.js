@@ -1,24 +1,5 @@
-/**
- * InputField factory class for creating interactive text input fields with cursor.
- * Used across different scenes for consistent input behavior.
- */
 class InputField {
-  /**
-   * Creates a new InputField instance.
-   * @param {Phaser.Scene} scene - The scene to add the input field to
-   * @param {Object} options - Configuration options
-   * @param {number} options.x - X position of the input field
-   * @param {number} options.y - Y position of the input field
-   * @param {number} options.width - Width of the input box
-   * @param {number} options.height - Height of the input box
-   * @param {string} options.label - Label text for the input field
-   * @param {string} options.initialValue - Initial value of the input
-   * @param {boolean} [options.isPassword=false] - Whether this is a password field
-   * @param {number} [options.maxLength=32] - Maximum length of input
-   * @param {Function} [options.onChange] - Callback when input changes
-   * @param {boolean} [options.showLabel=true] - Whether to show the label
-   * @param {boolean} [options.centerText=false] - Whether to center the text in the box
-   */
+ 
   constructor(scene, options) {
     this.scene = scene;
     this.options = {
@@ -38,10 +19,6 @@ class InputField {
     this.createInputField();
   }
 
-  /**
-   * Creates the input field UI elements.
-   * @private
-   */
   createInputField() {
     const { x, y, width, height, label, showLabel, centerText } = this.options;
 
@@ -90,9 +67,7 @@ class InputField {
     this.text.on("pointerdown", () => this.focus());
   }
 
-  /**
-   * Focuses the input field and sets up keyboard input.
-   */
+  //Focuses the input field
   focus() {
     if (this.active) return;
     this.active = true;
@@ -147,9 +122,7 @@ class InputField {
     this.scene.input.keyboard.on("keydown", this.keyboardListener);
   }
 
-  /**
-   * Removes focus from the input field.
-   */
+  //Removes focus from the input field
   blur() {
     if (!this.active) return;
     this.active = false;
@@ -165,10 +138,7 @@ class InputField {
     }
   }
 
-  /**
-   * Updates the displayed text.
-   * @private
-   */
+  //Updates the displayed text
   updateText() {
     this.text.setText(
       this.options.isPassword ? "•".repeat(this.value.length) : this.value
@@ -184,26 +154,18 @@ class InputField {
     }
   }
 
-  /**
-   * Gets the current value of the input field.
-   * @returns {string} The current input value
-   */
+  //Gets the current value of the input field
   getValue() {
     return this.value;
   }
 
-  /**
-   * Sets the value of the input field.
-   * @param {string} value - The new value
-   */
+  //Sets the value of the input field
   setValue(value) {
     this.value = value;
     this.updateText();
   }
 
-  /**
-   * Destroys the input field and cleans up resources.
-   */
+  //Destroys the input field and cleans up resources
   destroy() {
     this.blur();
     if (this.box) this.box.destroy();
