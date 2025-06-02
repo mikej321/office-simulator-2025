@@ -1,24 +1,42 @@
 // gameState.js
-// Utility to get current stats with characterId for saving from Phaser registry
-
-import { getCurrentStats, getCurrentGameState } from "./gameStateRegistry";
+// Utility functions for managing character stats and game state in the Phaser registry
 
 /**
- * Retrieves complete save data for a character including stats and game state
- * @param {number} characterId - The ID of the character
- * @returns {Object} Complete character save data
+ * Retrieves current character data from the registry for saving to backend
+ * This function is specifically used in the save flow to:
+ * 1. Get current stats from registry
+ * 2. Compare with last saved stats from SQLite
+ * 3. Save only if changes are detected
+ *
+ * @param {Phaser.Scene} scene - The current scene
+ * @returns {Object} Complete character data for save comparison
  */
-export const getCharacterSaveData = (characterId) => {
-  const stats = getCurrentStats(characterId);
-  const gameState = getCurrentGameState(characterId);
+export const getCharacterSaveData = (scene) => {
+  // Safely access the character from the registry using chained && operators
+  const char =
+    scene.game &&
+    scene.game.registry &&
+    scene.game.registry.get("activeCharacter");
+
+  // If no character is found, return an empty object
+  if (!char) return {};
 
   return {
-    ...stats,
-    ...gameState,
+    ...char.stats,
+    ...char.gameState,
   };
 };
 
-// This function takes a scene parameter and extracts character stats from the Phaser registry
+/**
+ * Retrieves current character stats for gameplay use
+ * This function is used during gameplay to:
+ * 1. Get current stats for UI display
+ * 2. Check stat values for game logic
+ * 3. Update stats during gameplay
+ *
+ * @param {Phaser.Scene} scene - The current scene
+ * @returns {Object} Current character stats and game state
+ */
 export function getCurrentStatsWithCharacterId(scene) {
   // Safely access the character from the registry using chained && operators
   // This prevents errors if any part of the chain is undefined
@@ -50,6 +68,6 @@ export function getCurrentStatsWithCharacterId(scene) {
     motivationLevel,
     focusLevel,
     workDayCount,
-    actionsUsed, // Include actions used in the return
+    actionsUsed,
   };
 }

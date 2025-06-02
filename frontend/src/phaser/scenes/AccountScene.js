@@ -3,6 +3,8 @@ import WebFont from "webfontloader";
 
 class AccountScene extends Phaser.Scene {
   constructor() {
+    // Calls the Phaser.Scene constructor with the scene key "AccountScene"
+    // Registers this scene with Phaser's scene manager
     super({
       key: "AccountScene",
     });

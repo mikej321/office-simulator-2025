@@ -58,12 +58,12 @@ export const saveProgress = async (currentStats) => {
 
     // Save to backend (POST request)
     const saveResponse = await fetch("/api/game/save", {
-      method: "POST", 
+      method: "POST",
       headers: {
-        "Content-Type": "application/json", 
-        Authorization: `Bearer ${token}`, 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(currentStats), 
+      body: JSON.stringify(currentStats),
     });
 
     if (!saveResponse.ok) {
