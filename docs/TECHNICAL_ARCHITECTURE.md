@@ -15,6 +15,7 @@ This document provides a comprehensive overview of the Office Simulator 2025 arc
 7. [Save System](#save-system)
 8. [Scene Management](#scene-management)
 9. [Utilities and Helpers](#utilities)
+10. [Cheat System](#cheat-system)
 
 ## Frontend Architecture
 
@@ -494,6 +495,16 @@ await saveProgress(currentStats, token);
 2. Verify state management
 3. Check save functionality
 4. Test error handling
+
+## Cheat System
+
+The game includes a developer cheat system accessible from the Player Menu. When the 'Cheat' button is used:
+
+- The user is prompted to enter a scene name.
+- If the scene exists, the game sets `localStorage.playerName` to `"Cheat3r"` and `localStorage.playerStats` to a basic stats object (mentalPoints, energyLevel, motivationLevel, focusLevel, workDayCount).
+- The game then loads the requested scene via PreloadScene, ensuring all assets are loaded.
+- Any scene can detect if it was accessed via cheat by checking if `localStorage.playerName === "Cheat3r"` and can read the basic stats from `localStorage.playerStats`.
+- This system is designed to never interfere with normal play, as the cheat values are only set for cheat sessions.
 
 ---
 

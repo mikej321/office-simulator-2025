@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
+import InputField from "../../factories/inputField";
 
 class PlayerMenuScene extends Phaser.Scene {
   constructor() {
@@ -76,17 +77,36 @@ class PlayerMenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.menuContainer.add([this.newGameButton, this.loadGameButton]);
+    // Cheat button
+    this.cheatButton = this.add
+      .text(0, 100, "Cheat!", {
+        fontSize: "24px",
+        color: "#ffaa00",
+        fontFamily: "Chewy",
+        fontStyle: "italic",
+        backgroundColor: "#222",
+        padding: { x: 10, y: 5 },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    this.menuContainer.add([
+      this.newGameButton,
+      this.loadGameButton,
+      this.cheatButton,
+    ]);
 
     // Hover effects
-    [this.newGameButton, this.loadGameButton].forEach((button) => {
-      button.on("pointerover", () => {
-        this.input.setDefaultCursor("pointer");
-      });
-      button.on("pointerout", () => {
-        this.input.setDefaultCursor("default");
-      });
-    });
+    [this.newGameButton, this.loadGameButton, this.cheatButton].forEach(
+      (button) => {
+        button.on("pointerover", () => {
+          this.input.setDefaultCursor("pointer");
+        });
+        button.on("pointerout", () => {
+          this.input.setDefaultCursor("default");
+        });
+      }
+    );
 
     // New Game click handler
     this.newGameButton.on("pointerdown", () => {
@@ -96,6 +116,11 @@ class PlayerMenuScene extends Phaser.Scene {
     // Load Game click handler
     this.loadGameButton.on("pointerdown", () => {
       this.scene.start("LoadGameScene");
+    });
+
+    // Cheat button click handler
+    this.cheatButton.on("pointerdown", () => {
+      this.showCheatPopup();
     });
 
     // Sign Out button at the bottom
@@ -123,6 +148,133 @@ class PlayerMenuScene extends Phaser.Scene {
 
     // Listen for resize events
     this.scale.on("resize", this.resize, this);
+  }
+
+  showCheatPopup() {
+    const { width, height } = this.scale;
+
+    // Popup background
+    this.cheatPopup = this.add.container(width / 2, height / 2);
+    const popupBg = this.add
+      .rectangle(0, 0, 400, 200, 0x222222, 1)
+      .setOrigin(0.5)
+      .setStrokeStyle(2, 0xffffff);
+
+    // InputField for scene name (no label, centered text)
+    this.cheatInput = new InputField(this, {
+      x: 0,
+      y: -30,
+      width: 240,
+      height: 44,
+      label: "",
+      initialValue: "",
+      showLabel: false,
+      centerText: true,
+      onChange: () => {
+        this.cheatFeedback.setText("");
+      },
+    });
+
+    // Submit button
+    const submitBtn = this.add
+      .text(-50, 40, "Go!", {
+        fontSize: "24px",
+        color: "#00ff00",
+        fontFamily: "Chewy",
+        backgroundColor: "#333",
+        padding: { x: 10, y: 5 },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    submitBtn.on("pointerover", () => this.input.setDefaultCursor("pointer"));
+    submitBtn.on("pointerout", () => this.input.setDefaultCursor("default"));
+    submitBtn.on("pointerdown", () => this.handleCheatSubmit());
+
+    // Cancel button
+    const cancelBtn = this.add
+      .text(50, 40, "Cancel", {
+        fontSize: "24px",
+        color: "#ff5555",
+        fontFamily: "Chewy",
+        backgroundColor: "#333",
+        padding: { x: 10, y: 5 },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    cancelBtn.on("pointerover", () => this.input.setDefaultCursor("pointer"));
+    cancelBtn.on("pointerout", () => this.input.setDefaultCursor("default"));
+    cancelBtn.on("pointerdown", () => {
+      this.closeCheatPopup();
+      // Optionally, you can also reset any cheat state here
+    });
+
+    // Feedback text
+    this.cheatFeedback = this.add
+      .text(0, 80, "", {
+        fontSize: "20px",
+        color: "#ff5555",
+        fontFamily: "Fredoka",
+      })
+      .setOrigin(0.5);
+
+    // Close popup on background click
+    popupBg.setInteractive();
+    popupBg.on("pointerdown", () => this.closeCheatPopup());
+
+    // Only add box and text (not label) to the popup
+    this.cheatPopup.add([
+      popupBg,
+      this.cheatInput.box,
+      this.cheatInput.text,
+      submitBtn,
+      cancelBtn,
+      this.cheatFeedback,
+    ]);
+    this.children.bringToTop(this.cheatPopup);
+
+    // Focus input (should show blinking cursor)
+    this.cheatInput.focus();
+    if (this.cheatInput.cursor) {
+      this.cheatPopup.add(this.cheatInput.cursor);
+    }
+  }
+
+  closeCheatPopup() {
+    if (this.cheatInput) this.cheatInput.destroy();
+    if (this.cheatPopup) this.cheatPopup.destroy();
+  }
+
+  handleCheatSubmit() {
+    const sceneName = this.cheatInput.getValue().trim();
+    if (!sceneName) {
+      this.cheatFeedback.setText("Enter a scene name.");
+      return;
+    }
+
+    // Check if the scene exists
+    if (this.scene.manager.keys[sceneName]) {
+      // Set base player data for cheat session only
+      const basicStats = {
+        mentalPoints: 5,
+        energyLevel: 5,
+        motivationLevel: 5,
+        focusLevel: 5,
+        workDayCount: 1,
+      };
+      localStorage.setItem("playerName", "Cheat3r");
+      localStorage.setItem("playerStats", JSON.stringify(basicStats));
+
+      this.cheatFeedback.setColor("#00ff00").setText("success!");
+      this.time.delayedCall(500, () => {
+        this.closeCheatPopup();
+        // Use PreloadScene to load assets before starting the target scene
+        this.scene.start("PreloadScene", { targetScene: sceneName });
+      });
+    } else {
+      this.cheatFeedback.setColor("#ff5555").setText("wrong cheat code");
+    }
   }
 
   resize(gameSize) {

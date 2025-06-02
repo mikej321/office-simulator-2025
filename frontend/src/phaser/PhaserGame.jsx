@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Phaser from "phaser";
-import BootScene from "./scenes/BootScene";
+import BootScene from "./BootScene";
 import PreloadScene from "./scenes/PreloadScene";
 import GameScene from "./scenes/GameScene";
 import MainMenuScene from "./scenes/MainMenuScene";
@@ -9,6 +9,7 @@ import AccountScene from "./scenes/AccountScene";
 import PlayerMenuScene from "./scenes/PlayerMenuScene";
 import CharacterCreationScene from "./scenes/CharacterCreationScene";
 import LoadGameScene from "./scenes/LoadGameScene";
+import IntroScene from "./scenes/IntroScene";
 
 /**
  * PhaserGame is a React component that initializes and manages the Phaser game instance.
@@ -70,6 +71,7 @@ const PhaserGame = () => {
           CharacterCreationScene, // Create new character
           TestScene, // Testing environment
           GameScene, // Main game scene
+          IntroScene, // Intro scene
         ],
       };
 

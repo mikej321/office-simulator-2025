@@ -48,6 +48,17 @@ class IntroScene extends Phaser.Scene {
   }
 
   create() {
+    // Check if accessed through cheats (by convention, playerName 'Cheat3r' and playerStats in localStorage)
+    const playerName = localStorage.getItem("playerName");
+    const playerStats = localStorage.getItem("playerStats");
+    if (playerName === "Cheat3r") {
+      console.log(
+        `IntroScene accessed through Cheat3r - following stats were loaded (basic):`,
+        playerStats
+      );
+    } else {
+      console.log("IntroScene: no cheat code detected");
+    }
     // This will be played for scaling at the very beginning of the scene
     this.updateCanvas();
   }

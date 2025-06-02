@@ -13,9 +13,75 @@ class TestScene extends Phaser.Scene {
     });
   }
 
-  preload() {}
+  preload() {
+    // Tilemap and tileset
+    this.load.tilemapTiledJSON(
+      "tilemap",
+      "/office-simulator-2025/assets/newer-test-office-resized.tmj"
+    );
+    this.load.image(
+      "tileset",
+      "/office-simulator-2025/assets/asset-export-final-resized.png"
+    );
+    // Atlases for interactables
+    this.load.atlas(
+      "printer",
+      "/office-simulator-2025/assets/attachments/printer_resized.png",
+      "/office-simulator-2025/assets/attachments/printer_resized.json"
+    );
+    this.load.atlas(
+      "blue-chair",
+      "/office-simulator-2025/assets/attachments/blue_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/blue_chair_resized.json"
+    );
+    this.load.atlas(
+      "orange-chair",
+      "/office-simulator-2025/assets/attachments/orange_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/orange_chair_resized.json"
+    );
+    this.load.atlas(
+      "green-chair",
+      "/office-simulator-2025/assets/attachments/green_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/green_chair_resized.json"
+    );
+    this.load.atlas(
+      "red-chair",
+      "/office-simulator-2025/assets/attachments/red_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/red_chair_resized.json"
+    );
+    this.load.atlas(
+      "desktop_pc",
+      "/office-simulator-2025/assets/attachments/Desktop_PC.png",
+      "/office-simulator-2025/assets/attachments/Desktop_PC.json"
+    );
+    this.load.atlas(
+      "door",
+      "/office-simulator-2025/assets/attachments/Door_resized.png",
+      "/office-simulator-2025/assets/attachments/Door_resized.json"
+    );
+    this.load.atlas(
+      "vending-machine",
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.png",
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.json"
+    );
+    this.load.atlas(
+      "player",
+      "/office-simulator-2025/assets/player-sprite.png",
+      "/office-simulator-2025/assets/player-sprite.json"
+    );
+  }
 
   create() {
+    // Check if accessed through cheats (by convention, playerName 'Cheat3r' and playerStats in localStorage)
+    const playerName = localStorage.getItem("playerName");
+    const playerStats = localStorage.getItem("playerStats");
+    if (playerName === "Cheat3r") {
+      console.log(
+        `TestScene accessed through Cheat3r - following stats were loaded (basic):`,
+        playerStats
+      );
+    }
+
     /* A transition occurs here. A delay is added
     to force the scene to wait until the last scene is finished
     fading out */

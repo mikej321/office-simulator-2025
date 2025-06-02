@@ -217,6 +217,25 @@ Common issues and solutions:
    - Check if ESC key is properly bound
    - Ensure scene is not paused already
 
+## Checklist: Making Your Scene Cheatable
+
+- [ ] Register your scene in the Phaser scene array (PhaserGame.jsx)
+- [ ] Ensure your scene has a `preload()` method that loads all required assets (tilemaps, atlases, etc.)
+- [ ] In your scene's `create()` method, check for cheat access:
+  ```js
+  const playerName = localStorage.getItem("playerName");
+  const playerStats = localStorage.getItem("playerStats");
+  if (playerName === "Cheat3r") {
+    console.log(
+      `${this.scene.key} accessed through Cheat3r - stats:`,
+      playerStats
+    );
+    // Optionally, use playerStats to set up the scene
+  }
+  ```
+- [ ] (Optional) Add logic to use `playerStats` for initializing the player or scene state if accessed via cheat
+- [ ] (Optional) Add a message or log for non-cheat access for clarity
+
 ---
 
 By following these guidelines and using the checklist, developers can ensure consistent implementation of state management, authentication, and pause functionality across all scenes.
