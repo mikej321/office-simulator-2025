@@ -1,21 +1,9 @@
-/**
- * Game routes for saving and loading game state
- * Handles:
- * - Saving character stats and game state
- * - Loading latest save data
- * - Updating game progress
- */
-
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const authenticateJWT = require("../middleware/authenticateJWT");
 const prisma = new PrismaClient();
 
-/**
- * GET /api/game/save/latest
- * Retrieves the latest save data for a character
- */
 router.get("/save/latest", authenticateJWT, async (req, res) => {
   try {
     const { characterId } = req.query;
@@ -50,19 +38,6 @@ router.get("/save/latest", authenticateJWT, async (req, res) => {
   }
 });
 
-/**
- * POST /api/game/save
- * Saves character stats and game state
- *
- * @body {number} characterId - The ID of the character to save
- * @body {number} mentalPoints - Character's mental points
- * @body {number} energyLevel - Character's energy level
- * @body {number} motivationLevel - Character's motivation level
- * @body {number} focusLevel - Character's focus level
- * @body {number} workDayCount - Current work day count
- * @body {number} actionsUsed - Number of actions used
- * @returns {Object} Success message
- */
 router.post("/save", authenticateJWT, async (req, res) => {
   try {
     const {
