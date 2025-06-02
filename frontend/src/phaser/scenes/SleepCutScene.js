@@ -29,7 +29,7 @@ export default class SleepCutscene extends Phaser.Scene {
         const cutscene = this.add.sprite(400, 300, "sleepcutscene");
 
         // Adjust scale to fit screen (experiment with this)
-        cutscene.setScale(0.5); // Try 0.5 first; adjust as needed
+        cutscene.setScale(1); //adjust as needed
 
         cutscene.setOrigin(0.5);
         cutscene.play("sleep");
@@ -44,5 +44,4 @@ export default class SleepCutscene extends Phaser.Scene {
             }
         });
     }
-
 }

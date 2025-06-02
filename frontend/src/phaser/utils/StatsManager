@@ -2,7 +2,7 @@ class StatsManager  {
     
     static wins = 0;
     static losses = 0;
-    static mentalPoints = 0;
+    static mentalPoints = 3; // Starting mental points
     static projectProgress = 0;
     static maxProjectProgress = 10; // Set a maximum for project progress
     static energyLevel = 3;
@@ -10,7 +10,7 @@ class StatsManager  {
     static focusLevel = 3;
     static playGame = false;
     static workDayTaskNumber = 0; // Track the number of iterations
-    static workDayCount = 0; // Track the number of work days
+    static workDayCount = 6; // Track the number of work days
     static workDayLimit = 5; // Set a limit for work days
     static workDayLimitReached = false;
 

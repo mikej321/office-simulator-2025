@@ -47,6 +47,7 @@ class TutorialScene extends Phaser.Scene {
 
     // UI Elements
     this.dialogBg = this.add.rectangle(580, 520, 600, 90, 0xffffff).setOrigin(0.5);
+    this.dialogBg.setStrokeStyle(2, 0x000000);
     this.dialogText = this.add.text(580, 520, this.tutorialText[0], {
         fontSize: "22px",
         fontStyle: "bold",

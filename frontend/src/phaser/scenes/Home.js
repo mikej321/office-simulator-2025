@@ -12,10 +12,29 @@ class Home extends Phaser.Scene {
     this.interactionInProgress = false;
   }
 
+  init() {
+    this.textStyle = {
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#1c0d00",              // warm black text
+      backgroundColor: "#ffffff",    // white background
+      padding: { x: 14, y: 8 },       // generous spacing
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#ff7a00",             // dark orange shadow glow (emulates a border glow)
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
+    };
+  }
+
   preload() {
     this.load.image("tiles", "assets/InteriorTilesLITE.png");
     this.load.tilemapTiledJSON("map", "assets/map.json");
-    
   }
 
   create() {
@@ -66,12 +85,7 @@ class Home extends Phaser.Scene {
     });
 
     this.interactHint = this.add
-      .text(0, 0, "E", {
-        fontSize: "20px",
-        fill: "#fff",
-        backgroundColor: "#000",
-        padding: { x: 6, y: 2 },
-      })
+      .text(0, 0, "E", this.textStyle)
       .setOrigin(0.5)
       .setVisible(false)
       .setDepth(999)
@@ -204,16 +218,8 @@ class Home extends Phaser.Scene {
   confirmInteraction(name, actionText) {
     this.interactionInProgress = true;
 
-    const style = {
-      fontSize: "16px",
-      fill: "#fff",
-      backgroundColor: "#222",
-      padding: { x: 12, y: 6 },
-      wordWrap: { width: 300 },
-    };
-
     const box = this.add
-      .text(this.player.x, this.player.y - 50, `${actionText}? (Y/N)`, style)
+      .text(this.player.x, this.player.y - 50, `${actionText}? (Y/N)`, this.textStyle)
       .setOrigin(0.5);
 
     const yesKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y);
@@ -295,13 +301,13 @@ class Home extends Phaser.Scene {
   }
 
     if (this.taskCount >= this.maxTasks || name === "bed") {
-      this.time.delayedCall(7000, () => {
+      this.time.delayedCall(5000, () => {
       this.scene.stop("Home");
       this.taskCount = 0;
       this.scene.start("WorkDay");
     });
     } else {
-      this.time.delayedCall(7000, () => {
+      this.time.delayedCall(5000, () => {
         this.scene.restart();
       });
     }
@@ -350,20 +356,13 @@ class Home extends Phaser.Scene {
   }
 
   showMessage(text, duration = 7000) {
-    const style = {
-      fontSize: "16px",
-      fill: "#fff",
-      backgroundColor: "#000",
-      padding: { x: 10, y: 5 },
-    };
-
     // Destroy existing message if still showing
     if (this.activeMessage) {
       this.activeMessage.destroy();
     }
 
     this.activeMessage = this.add
-      .text(this.player.x, this.player.y - 40, text, style)
+      .text(this.player.x, this.player.y - 40, text, this.textStyle)
       .setOrigin(0.5)
       .setDepth(999);
 
@@ -375,31 +374,34 @@ class Home extends Phaser.Scene {
     });
   }
 
-  displayGoodMorning() {
-    const style = {
-      fontSize: "24px",
-      fill: "#fff",
-      backgroundColor: "#000",
-      padding: { x: 20, y: 10 },
-    };
+displayGoodMorning() {
+  const morningStyle = {
+    ...this.textStyle,
+    fontSize: "30px",
+  };
+  const msg = this.add
+    .text(this.scale.width / 2, 80, "Good morning!", morningStyle)
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(999)
+    .setAlpha(0)
+    .setScale(0.8);
 
-    const msg = this.add
-      .text(this.scale.width / 2, 80, "Good morning!", style)
-      .setOrigin(0.5)
-      .setScrollFactor(0) // So it stays fixed on screen
-      .setDepth(999)
-      .setAlpha(0);
+  // Animate it to pop in gently
+  this.tweens.add({
+    targets: msg,
+    alpha: 1,
+    scale: 1,
+    duration: 700,
+    ease: 'Back.Out',
+    yoyo: true,
+    hold: 2000,
+    onComplete: () => msg.destroy(),
+  });
 
-    // Fade in, then fade out after delay
-    this.tweens.add({
-      targets: msg,
-      alpha: 1,
-      duration: 1000,
-      yoyo: true,
-      hold: 2000,
-      ease: 'Power1',
-      onComplete: () => msg.destroy()
-    });
-  }
+  // Optional: soft jingle sound
+  // this.sound.play('morningChime');
+}
+
 }
 export default Home;

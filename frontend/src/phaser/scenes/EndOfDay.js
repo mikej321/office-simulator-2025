@@ -90,10 +90,21 @@ class EndOfDay extends Phaser.Scene {
 
       // Create the "Press E to work for the day" text but make it invisible initially
     this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to go home for the day", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#1c0d00",              // warm black text
+      backgroundColor: "#ffffff",    // white background
+      padding: { x: 14, y: 8 },       // generous spacing
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#999999",             // dark gray glow
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
     }).setOrigin(0.5); // Center the text
     this.interactionText.setVisible(false); // Hide it initially
 
@@ -124,11 +135,7 @@ class EndOfDay extends Phaser.Scene {
     const offsetX = (this.scale.width - gameWidth) / 2;
     const offsetY = (this.scale.height - gameHeight) / 2;
 
-    //Tracks the player's position
-    //console.log(`Player X: ${this.player.x}, Player Y: ${this.player.y}`);
-
- 
-
+  
     // Check if the player is within the interactable area
     const distance = Phaser.Math.Distance.Between(
       this.player.x,

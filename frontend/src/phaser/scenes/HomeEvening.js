@@ -12,6 +12,26 @@ class HomeEvening extends Phaser.Scene {
     this.interactionInProgress = false;
   }
 
+  init() {
+    this.textStyle = {
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#dcd6f7",              // soft lavender text
+      backgroundColor: "#2a1a40",    // rich indigo background
+      padding: { x: 14, y: 8 },
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#6c4ab6",            // moody purple shadow glow
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
+    };
+  }
+
   preload() {
     this.load.image("tiles", "assets/InteriorTilesLITE.png");
     this.load.tilemapTiledJSON("map", "assets/map.json");
@@ -27,7 +47,7 @@ class HomeEvening extends Phaser.Scene {
     this.interactionInProgress = false;
 
     this.cameras.main.setAlpha(0);
-    this.time.delayedCall(7000, () => {
+    this.time.delayedCall(500, () => {
       this.cameras.main.setAlpha(1);
       this.cameras.main.fadeIn(1000);
       this.displayGoodEvening();
@@ -59,12 +79,7 @@ class HomeEvening extends Phaser.Scene {
     });
 
     this.interactHint = this.add
-      .text(0, 0, "E", {
-        fontSize: "20px",
-        fill: "#fff",
-        backgroundColor: "#000",
-        padding: { x: 6, y: 2 },
-      })
+      .text(0, 0, "E", this.textStyle)
       .setOrigin(0.5)
       .setVisible(false)
       .setDepth(999)
@@ -194,16 +209,8 @@ class HomeEvening extends Phaser.Scene {
   confirmInteraction(name, actionText) {
     this.interactionInProgress = true;
 
-    const style = {
-      fontSize: "16px",
-      fill: "#fff",
-      backgroundColor: "#222",
-      padding: { x: 12, y: 6 },
-      wordWrap: { width: 300 },
-    };
-
     const box = this.add
-      .text(this.player.x, this.player.y - 50, `${actionText}? (Y/N)`, style)
+      .text(this.player.x, this.player.y - 50, `${actionText}? (Y/N)`, this.textStyle)
       .setOrigin(0.5);
 
     const yesKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y);
@@ -274,13 +281,13 @@ class HomeEvening extends Phaser.Scene {
 
     if (this.taskCount >= this.maxTasks || name === "bed") {
       StatsManager.incrementWorkDayCount();
-      this.time.delayedCall(7000, () => {
+      this.time.delayedCall(5000, () => {
         this.scene.stop("HomeEvening");
         this.taskCount = 0;
         this.scene.start("SleepCutscene");
       });
     } else {
-      this.time.delayedCall(7000, () => {
+      this.time.delayedCall(5000, () => {
         this.scene.restart();
       });
     }
@@ -329,19 +336,13 @@ class HomeEvening extends Phaser.Scene {
   }
 
   showMessage(text, duration = 7000) {
-    const style = {
-      fontSize: "16px",
-      fill: "#fff",
-      backgroundColor: "#000",
-      padding: { x: 10, y: 5 },
-    };
 
     if (this.activeMessage) {
       this.activeMessage.destroy();
     }
 
     this.activeMessage = this.add
-      .text(this.player.x, this.player.y - 40, text, style)
+      .text(this.player.x, this.player.y - 40, text, this.textStyle)
       .setOrigin(0.5)
       .setDepth(999);
 
@@ -354,29 +355,33 @@ class HomeEvening extends Phaser.Scene {
   }
 
   displayGoodEvening() {
-    const style = {
-      fontSize: "24px",
-      fill: "#fff",
-      backgroundColor: "#000",
-      padding: { x: 20, y: 10 },
+    const eveningStyle = {
+      ...this.textStyle,
+      fontSize: "30px",
     };
 
     const msg = this.add
-      .text(this.scale.width / 2, 80, "Good evening!", style)
+      .text(this.scale.width / 2, 80, "Good evening!", eveningStyle)
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(999)
-      .setAlpha(0);
+      .setAlpha(0)
+      .setScale(0.8);
 
     this.tweens.add({
       targets: msg,
       alpha: 1,
-      duration: 1000,
+      scale: 1,
+      duration: 700,
+      ease: 'Back.Out',
       yoyo: true,
       hold: 2000,
-      ease: 'Power1',
-      onComplete: () => msg.destroy()
+      onComplete: () => msg.destroy(),
     });
+
+    // Optional cozy sound
+    // this.sound.play('eveningChime');
   }
+
 }
 export default HomeEvening;

@@ -11,10 +11,28 @@ class WorkDay extends Phaser.Scene {
     });
   }
 
+  init(){
+    this.textStyle = {
+      fontFamily: "Fredoka",
+      fontSize: "18px",
+      color: "#1c0d00",              // warm black text
+      backgroundColor: "#ffffff",    // white background
+      padding: { x: 14, y: 8 },       // generous spacing
+      align: "center",
+      wordWrap: { width: 300 },
+      shadow: {
+        offsetX: 1,
+        offsetY: 1,
+        color: "#999999",             // dark gray glow
+        blur: 0,
+        stroke: false,
+        fill: true,
+      },
+    };
+  }
+
   preload() {
     this.load.image("avatarTall", "assets/avatar-tall.png");
-
-
   }
 
   create() {
@@ -29,13 +47,6 @@ class WorkDay extends Phaser.Scene {
     // Reset the workday count if starting fresh
     if (StatsManager.getWorkDayTaskNumber() === 0) {
       StatsManager.resetWorkDayTaskNumber();
-    }
-
-    if (StatsManager.getMP() === 0) {
-      console.log("Mental Health is at 0. He died of stress related causes.");
-      this.scene.stop("WorkDay");
-      this.scene.start("BigTom");
-      return;
     }
 
     // Fade-in transition
@@ -102,20 +113,10 @@ class WorkDay extends Phaser.Scene {
     ]);
 
     // Create interaction text
-    this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5);
+    this.interactionText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight - 50, "Press E to work for the day", this.textStyle).setOrigin(0.5);
     this.interactionText.setVisible(false);
 
-    this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5);
+    this.choiceText = this.add.text(offsetX + gameWidth / 2, offsetY + gameHeight / 2, "Q: Work for the day\nR: Goof off", this.textStyle).setOrigin(0.5);
     this.choiceText.setVisible(false);
 
     // Define the interactable area
@@ -136,12 +137,7 @@ class WorkDay extends Phaser.Scene {
 
 
     // Add a text box for interaction (hidden by default)
-    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "Hey there. Long day?", {
-      fontSize: "16px",
-      fill: "#ffffff",
-      backgroundColor: "#000000",
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5).setVisible(false);
+    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "Hey there. Long day?", this.textStyle).setOrigin(0.5).setVisible(false);
 
     // Enable overlap check between player and avatar
     this.physics.add.overlap(this.player, this.avatar, () => {
@@ -329,12 +325,7 @@ class WorkDay extends Phaser.Scene {
         this.player.x, // Position the text at the player's X position
         this.player.y - 50, // Position the text slightly above the player's head
         textToDisplay, // The text to display
-        {
-          fontSize: "16px",
-          fill: "#ffffff",
-          backgroundColor: "#000000",
-          padding: { x: 10, y: 5 },
-        }
+        this.textStyle
       ).setOrigin(0.5); // Center the text
 
       // Use a delayed call to hide or destroy the text after 2 seconds

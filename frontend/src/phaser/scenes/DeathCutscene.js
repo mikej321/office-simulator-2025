@@ -13,28 +13,48 @@ export default class DeathCutscene extends Phaser.Scene {
     });
   }
 
-    create() {
-        this.anims.create({
-            key: "death",
-            frames: this.anims.generateFrameNumbers("deathcutscene", {
-            start: 0,
-            end: 65,
-            }),
-            frameRate: 10,
-            repeat: 0,
-        });
+  create() {
+    const musicManager = this.scene.get('MusicManager');
+    musicManager.stopMusic(); // stop all music
 
-        const cutscene = this.add.sprite(400, 300, "deathcutscene");
+    console.log(this.textures.get('deathcutscene').frameTotal); // should be 66
 
-        // Adjust scale to fit screen (experiment with this)
-        cutscene.setScale(0.5); // Try 0.5 first; adjust as needed
+    this.anims.create({
+      key: "death",
+      frames: this.generateRowMajorOrder(11, 6), // columns, rows
+      frameRate: 10,
+      repeat: 0
+    });
 
-        cutscene.setOrigin(0.5);
-        cutscene.play("death");
 
-        cutscene.on("animationcomplete", () => {
-            this.scene.start("MainMenuScene");
-        });
+    const cutscene = this.add.sprite(400, 300, "deathcutscene");
+
+
+    // Adjust scale to fit screen (experiment with this)
+    cutscene.setScale(1.5); //adjust as needed
+
+    cutscene.setOrigin(0.5);
+    cutscene.setFrame(0); // Try 0–65 to test visibility
+    cutscene.setVisible(true); // Ensure the sprite is visible
+    cutscene.setDepth(1000); // Ensure it renders above other elements
+    cutscene.play("death");
+
+    cutscene.on("animationcomplete", () => {
+        this.scene.start("MainMenuScene");
+    });
+  }
+
+  generateRowMajorOrder(columns, rows) {
+    const frames = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        const index = col * rows + row; // ← flips column-major to row-major
+        if (index < columns * rows) {
+          frames.push({ key: 'deathcutscene', frame: index });
+        }
+      }
     }
+    return frames;
+  }
 
 }

@@ -33,8 +33,8 @@ export default class MusicManager extends Phaser.Scene {
   }
 
   stopMusic() {
-    if (this.currentTrack && typeof this.currentTrack.stop === 'function') {
-      this.currentTrack.stop();
+    if (this.currentTrack && this.music[this.currentTrack]) {
+      this.music[this.currentTrack].stop();
       this.currentTrack = null;
     } else {
       console.warn('MusicManager: No valid track to stop');

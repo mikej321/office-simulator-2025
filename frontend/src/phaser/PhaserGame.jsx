@@ -13,8 +13,6 @@ import WonPong from "./scenes/WonPong";
 import MaxPong from './scenes/MaxPong';
 import EndOfDay from './scenes/EndOfDay';
 import EODStats from './scenes/EODStats';
-import BigTom from './scenes/BigTom';
-import GameOver from './scenes/GameOver';
 import Home from './scenes/Home';
 import HomeEvening from './scenes/HomeEvening';
 import SleepCutscene from "./scenes/SleepCutscene";
@@ -43,7 +41,7 @@ const PhaserGame = () => {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home, HomeEvening, SleepCutscene, MusicManager, OpeningScene, TutorialScene, VictoryCutscene, FiredCutscene, DeathCutscene ],
+          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats, Home, HomeEvening, SleepCutscene, MusicManager, OpeningScene, TutorialScene, VictoryCutscene, FiredCutscene, DeathCutscene ],
         };
   
         gameRef.current = new Phaser.Game(config);
