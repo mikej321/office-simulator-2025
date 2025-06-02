@@ -5,8 +5,17 @@ import PreloadScene from './scenes/PreloadScene';
 import GameScene from './scenes/GameScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import IntroScene from './scenes/IntroScene';
-import TestScene from './scenes/TestScene';
-import GlitchyScene from './scenes/glitchyScene';
+import WorkDay from './scenes/WorkDay';
+import Pong from "./scenes/Pong";
+import PongBackground from "./scenes/PongBackground";
+import LostPong from "./scenes/LostPong";
+import WonPong from "./scenes/WonPong";
+import MaxPong from './scenes/MaxPong';
+import EndOfDay from './scenes/EndOfDay';
+import EODStats from './scenes/EODStats';
+import BigTom from './scenes/BigTom';
+import GameOver from './scenes/GameOver';
+import Home from './scenes/home';
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -24,12 +33,14 @@ const PhaserGame = () => {
               gravity: { y: 0 },
                debug: true 
               },
+            arcade: { gravity: { y: 0 }, debug: true },
           },
           scale: {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
           scene: [BootScene, PreloadScene, MainMenuScene, TestScene, GlitchyScene],
+          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home ],
         };
   
         gameRef.current = new Phaser.Game(config);
@@ -45,5 +56,5 @@ const PhaserGame = () => {
 
     return null; 
   };
-
+  
 export default PhaserGame;
