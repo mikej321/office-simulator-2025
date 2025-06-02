@@ -1,0 +1,66 @@
+{ "frames": {
+   "idle_1": {
+    "frame": { "x": 0, "y": 0, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "idle_2": {
+    "frame": { "x": 0, "y": 0, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "idle_3": {
+    "frame": { "x": 0, "y": 0, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "idle_4": {
+    "frame": { "x": 0, "y": 0, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "idle_5": {
+    "frame": { "x": 94, "y": 0, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "idle_6": {
+    "frame": { "x": 0, "y": 34, "w": 94, "h": 34 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 26, "y": 30, "w": 94, "h": 34 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "archer_idle.png",
+  "format": "RGBA8888",
+  "size": { "w": 188, "h": 68 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

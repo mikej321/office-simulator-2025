@@ -1,0 +1,74 @@
+{ "frames": {
+   "death_1": {
+    "frame": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_2": {
+    "frame": { "x": 186, "y": 0, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_3": {
+    "frame": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_4": {
+    "frame": { "x": 372, "y": 0, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_5": {
+    "frame": { "x": 0, "y": 80, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_6": {
+    "frame": { "x": 186, "y": 80, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   },
+   "death_7": {
+    "frame": { "x": 372, "y": 80, "w": 186, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 186, "h": 80 },
+    "sourceSize": { "w": 186, "h": 80 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "archer_death.png",
+  "format": "RGBA8888",
+  "size": { "w": 558, "h": 160 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
