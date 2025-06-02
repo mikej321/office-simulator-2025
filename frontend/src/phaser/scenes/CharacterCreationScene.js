@@ -394,7 +394,7 @@ class CharacterCreationScene extends Phaser.Scene {
       this.game.registry.set("activeCharacter", data.character);
       this.submitButton.setText("Hired!");
       this.time.delayedCall(1000, () => {
-        this.scene.start("TestScene");
+        this.scene.start("OpeningScene");
       });
     } catch (error) {
       this.showError(error.message);
