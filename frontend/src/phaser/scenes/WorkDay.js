@@ -512,10 +512,13 @@ class WorkDay extends Phaser.Scene {
 
   update() {
     // Check if the workday loop is complete
-    if (StatsManager.getWorkDayCount() >= 3) {
+    if (StatsManager.getWorkDayCount() >= 3 && this.currentSensor && Phaser.Input.Keyboard.JustDown(this.eKey)) {
       console.log("Workday loop complete. Transitioning to EndOfDay.");
-      this.scene.stop("WorkDay");
-      this.scene.start("EndOfDay");
+      this.scene.transition({
+        target: "EndOfDay",
+        duration: 500,
+        moveAbove: true
+      })
       return;
     }
 
@@ -789,10 +792,10 @@ class WorkDay extends Phaser.Scene {
     let textToDisplay = "";
     switch (workDayCount) {
       case 0:
-        textToDisplay = "Tom, you better get working! \nYour desk is collecting dust.";
+        textToDisplay = "Tom, you better get working! \n\nYour desk is collecting dust.";
         break;
       case 1:
-        textToDisplay = "Ahhhhhhh \nmuch better.";
+        textToDisplay = "Ahhhhhhh \n\nmuch better.";
         break;
       case 2:
         textToDisplay = "Is that a cat over there?";
@@ -805,22 +808,37 @@ class WorkDay extends Phaser.Scene {
     }
 
     if (textToDisplay) {
-      const spawnText = this.add.text(
-        this.player.x, // Position the text at the player's X position
-        this.player.y - 50, // Position the text slightly above the player's head
-        textToDisplay, // The text to display
-        {
-          fontSize: "16px",
-          fill: "#ffffff",
-          backgroundColor: "#000000",
-          padding: { x: 10, y: 5 },
-        }
-      ).setOrigin(0.5); // Center the text
 
-      // Use a delayed call to hide or destroy the text after 2 seconds
-      this.time.delayedCall(6000, () => {
-        spawnText.destroy(); // Remove the text from the scene
-      });
+      const bubble = new SpeechBubble(
+          this,
+          this.player.x,
+          this.player.y - this.player.height / 2 - 10,
+          textToDisplay,
+          {},
+          250
+        );
+
+        bubble.show();
+        
+      this.time.delayedCall(2000, () => {
+        if (bubble) bubble.destroy();
+      })
+      // const spawnText = this.add.text(
+      //   this.player.x, // Position the text at the player's X position
+      //   this.player.y - 50, // Position the text slightly above the player's head
+      //   textToDisplay, // The text to display
+      //   {
+      //     fontSize: "16px",
+      //     fill: "#ffffff",
+      //     backgroundColor: "#000000",
+      //     padding: { x: 10, y: 5 },
+      //   }
+      // ).setOrigin(0.5); // Center the text
+
+      // // Use a delayed call to hide or destroy the text after 2 seconds
+      // this.time.delayedCall(2000, () => {
+      //   spawnText.destroy(); // Remove the text from the scene
+      // });
     }
   }
 
