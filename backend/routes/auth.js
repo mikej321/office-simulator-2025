@@ -1,11 +1,3 @@
-/**
- * Authentication routes for user signup and login.
- * Handles:
- * - User registration with email/password
- * - User login with credentials
- * - Token generation for authenticated users
- * - Character creation for new users
- */
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
@@ -14,16 +6,8 @@ const { body, validationResult } = require("express-validator");
 const generateToken = require("../utils/generateToken");
 const authenticateJWT = require("../middleware/authenticateJWT");
 
-// Create a new instance of PrismaClient
-// This instance will be used to interact with the database
 const prisma = new PrismaClient();
 
-/**
- * Verify token route
- * GET /api/auth/verify
- *
- * Verifies if a JWT token is valid and returns user data
- */
 router.get("/verify", authenticateJWT, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -55,17 +39,6 @@ router.get("/verify", authenticateJWT, async (req, res) => {
   }
 });
 
-/**
- * Signup route
- * POST /api/auth/signup
- *
- * Validates and creates a new user account:
- * 1. Validates email format and password length
- * 2. Checks if user already exists
- * 3. Hashes password with bcrypt (10 salt rounds)
- * 4. Creates user in database
- * 5. Generates JWT token
- */
 router.post(
   "/signup",
   [body("email").isEmail(), body("password").isLength({ min: 6 })],
@@ -118,17 +91,6 @@ router.post(
   }
 );
 
-/**
- * Login route
- * POST /api/auth/login
- *
- * Authenticates user and returns JWT token:
- * 1. Validates email format and password presence
- * 2. Finds user by email
- * 3. Verifies password using bcrypt
- * 4. Generates JWT token
- * 5. Returns token and user info with characters
- */
 router.post(
   "/login",
   [

@@ -4,7 +4,6 @@ import BootScene from "./BootScene";
 import PreloadScene from "./scenes/PreloadScene";
 import GameScene from "./scenes/GameScene";
 import MainMenuScene from "./scenes/MainMenuScene";
-import TestScene from "./scenes/TestScene";
 import AccountScene from "./scenes/AccountScene";
 import PlayerMenuScene from "./scenes/PlayerMenuScene";
 import CharacterCreationScene from "./scenes/CharacterCreationScene";
@@ -40,7 +39,6 @@ const PhaserGame = () => {
           PlayerMenuScene, 
           LoadGameScene, 
           CharacterCreationScene, 
-          TestScene, 
           GameScene, 
           IntroScene, 
         ],
