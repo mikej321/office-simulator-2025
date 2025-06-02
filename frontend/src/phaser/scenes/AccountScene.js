@@ -1,7 +1,17 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 
+/**
+ * AccountScene handles user authentication (signup and login) functionality.
+ * It provides a form interface for users to create new accounts or sign in to existing ones.
+ * The scene manages form input, validation, and API communication with the backend.
+ * @extends Phaser.Scene
+ */
 class AccountScene extends Phaser.Scene {
+  /**
+   * Creates an instance of AccountScene.
+   * Initializes form data and sets default mode to signup.
+   */
   constructor() {
     // Calls the Phaser.Scene constructor with the scene key "AccountScene"
     // Registers this scene with Phaser's scene manager
@@ -23,6 +33,10 @@ class AccountScene extends Phaser.Scene {
     this.mode = data?.mode || "signup";
   }
 
+  /**
+   * Preloads required assets and fonts for the scene.
+   * Uses WebFontLoader to load Google Fonts before proceeding.
+   */
   preload() {
     console.log("AccountScene preload started");
     // Use WebFontLoader to load fonts before proceeding
@@ -45,6 +59,10 @@ class AccountScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Creates the scene and sets up initial state.
+   * Waits for fonts to load before starting the menu.
+   */
   create() {
     console.log("AccountScene create started");
     this.formData = { email: "", password: "", characterName: "" };
@@ -78,6 +96,10 @@ class AccountScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Sets up the main menu UI including form fields, buttons, and interactive elements.
+   * Creates input fields for email and password, submit button, and error display.
+   */
   startMenu() {
     console.log("AccountScene startMenu called");
     const { width, height } = this.scale;
@@ -241,6 +263,11 @@ class AccountScene extends Phaser.Scene {
     this.scale.on("resize", this.resize, this);
   }
 
+  /**
+   * Focuses an input field and sets up keyboard input handling.
+   * Creates a blinking cursor and handles text input.
+   * @param {string} key - The key of the input field to focus ('email' or 'password')
+   */
   focusInputField(key) {
     if (this.activeInput === key) return;
     this.blurInputField();
@@ -306,6 +333,10 @@ class AccountScene extends Phaser.Scene {
     this.input.keyboard.on("keydown", this.keyboardListener);
   }
 
+  /**
+   * Removes focus from the currently active input field.
+   * Cleans up cursor and keyboard listeners.
+   */
   blurInputField() {
     if (!this.activeInput) return;
     this.inputTexts[this.activeInput].setColor("#ffffff");
@@ -322,6 +353,11 @@ class AccountScene extends Phaser.Scene {
     this.activeInput = null;
   }
 
+  /**
+   * Handles form submission for both signup and login.
+   * Validates form data and communicates with the backend API.
+   * Manages loading states and error handling.
+   */
   async handleSubmit() {
     console.log("Submit button clicked");
     // Validate form
@@ -400,11 +436,20 @@ class AccountScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Validates an email address format.
+   * @param {string} email - The email address to validate
+   * @returns {boolean} True if the email format is valid
+   */
   validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   }
 
+  /**
+   * Displays an error message to the user.
+   * @param {string} message - The error message to display
+   */
   showError(message) {
     this.errorText.setText(message);
     this.tweens.add({
@@ -415,6 +460,11 @@ class AccountScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Handles scene resizing.
+   * Updates positions of UI elements when the game window is resized.
+   * @param {Object} gameSize - The new game size dimensions
+   */
   resize(gameSize) {
     const width = gameSize.width;
     const height = gameSize.height;
@@ -428,7 +478,10 @@ class AccountScene extends Phaser.Scene {
     }
   }
 
-  // Clean up on shutdown
+  /**
+   * Cleans up resources when the scene is shut down.
+   * Removes focus from input fields and cleans up event listeners.
+   */
   shutdown() {
     this.blurInputField();
   }

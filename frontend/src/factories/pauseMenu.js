@@ -59,8 +59,16 @@ class PauseMenu {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.saveBtn.on("pointerdown", () => {
-      this.options.onSave();
+    this.saveBtn.on("pointerdown", async () => {
+      // Disable the save button to prevent multiple clicks
+      this.saveBtn.setStyle({ color: "#666666" });
+      this.saveBtn.setText("Saving...");
+      this.saveBtn.disableInteractive();
+
+      // Call the save function
+      await this.options.onSave();
+
+      // Hide the menu after save completes
       this.hide();
     });
 
