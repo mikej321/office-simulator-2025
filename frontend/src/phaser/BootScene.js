@@ -26,7 +26,9 @@ export default class BootScene extends Phaser.Scene {
         });
         if (response.ok) {
           // If token is valid, go directly to the player menu
-          this.scene.start("PlayerMenuScene");
+          if (this.scene && this.scene.manager) {
+            this.scene.start("PlayerMenuScene");
+          }
           return;
         }
       } catch (e) {
@@ -34,6 +36,8 @@ export default class BootScene extends Phaser.Scene {
       }
     }
     // If no token or invalid token, start with the main menu
-    this.scene.start("MainMenuScene");
+    if (this.scene && this.scene.manager) {
+      this.scene.start("MainMenuScene");
+    }
   }
 }
