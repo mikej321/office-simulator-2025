@@ -65,6 +65,17 @@ class AccountScene extends Phaser.Scene {
         }
       },
     });
+
+    // Add keyboard listener for password input
+    this.input.keyboard.on("keydown", (event) => {
+      if (
+        event.key === "Enter" &&
+        this.passwordInput &&
+        this.passwordInput.isFocused()
+      ) {
+        this.handleSubmit();
+      }
+    });
   }
 
   startMenu() {
@@ -168,7 +179,6 @@ class AccountScene extends Phaser.Scene {
             fontSize: "24px",
             color: "#ffffff",
             fontFamily: "Fredoka",
-            fixedWidth: boxWidth - 24,
             maxLines: 1,
           }
         )
@@ -236,7 +246,33 @@ class AccountScene extends Phaser.Scene {
     this.blurInputField();
     this.activeInput = key;
     this.inputTexts[key].setColor("#ffff00");
+    this.inputBoxes[key].setStrokeStyle(2, 0xffff00);
     this.inputOverlay.visible = true;
+
+    // Create blinking cursor
+    if (this.cursor) {
+      this.cursor.destroy();
+    }
+    const textX = this.inputTexts[key].x;
+    const textY = this.inputTexts[key].y;
+    // Use .width for actual text width (not fixedWidth)
+    const textWidth = this.inputTexts[key].text
+      ? this.inputTexts[key].width
+      : 0;
+    this.cursor = this.add
+      .rectangle(textX + textWidth, textY, 2, 24, 0xffff00)
+      .setOrigin(0, 0.5);
+    this.formContainer.add(this.cursor);
+
+    // Animate cursor
+    this.tweens.add({
+      targets: this.cursor,
+      alpha: { from: 1, to: 0 },
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+
     if (this.keyboardListener) {
       this.input.keyboard.off("keydown", this.keyboardListener);
       this.keyboardListener = null;
@@ -259,6 +295,13 @@ class AccountScene extends Phaser.Scene {
           ? "•".repeat((this.formData[key] || "").length)
           : this.formData[key]
       );
+      // Update cursor position to be right after the last character
+      if (this.cursor) {
+        const textWidth = this.inputTexts[key].text
+          ? this.inputTexts[key].width
+          : 0;
+        this.cursor.x = this.inputTexts[key].x + textWidth;
+      }
     };
     this.input.keyboard.on("keydown", this.keyboardListener);
   }
@@ -266,7 +309,12 @@ class AccountScene extends Phaser.Scene {
   blurInputField() {
     if (!this.activeInput) return;
     this.inputTexts[this.activeInput].setColor("#ffffff");
+    this.inputBoxes[this.activeInput].setStrokeStyle(2, 0xaaaaaa);
     this.inputOverlay.visible = false;
+    if (this.cursor) {
+      this.cursor.destroy();
+      this.cursor = null;
+    }
     if (this.keyboardListener) {
       this.input.keyboard.off("keydown", this.keyboardListener);
       this.keyboardListener = null;
@@ -321,18 +369,24 @@ class AccountScene extends Phaser.Scene {
       // Store the token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      // Show success message
+
+      // Show success message and start transition immediately
       this.submitButton.setText(
         this.mode === "signup" ? "Account Created!" : "Signed In!"
       );
       this.submitButton.setStyle({ color: "#00ff00" });
-      // Add a small delay before transitioning
-      this.time.delayedCall(1000, () => {
-        // Use standard Phaser scene transition
-        this.cameras.main.fade(1000, 0, 0, 0);
-        this.time.delayedCall(1000, () => {
-          this.scene.start("PlayerMenuScene");
-        });
+
+      // Start fade transition immediately with shorter duration
+      this.cameras.main.fade(500, 0, 0, 0);
+
+      // Add a success sound effect if available
+      if (this.sound.get("success")) {
+        this.sound.play("success");
+      }
+
+      // Transition to next scene after fade
+      this.time.delayedCall(500, () => {
+        this.scene.start("PlayerMenuScene");
       });
     } catch (error) {
       console.error(`Error during ${this.mode}:`, error);
