@@ -244,8 +244,8 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 305, 358, 359, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 305, 0, 387, 362, 363, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 337, 390, 391, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 337, 0, 0, 394, 395, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 358, 359, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 387, 362, 363, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 390, 391, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 394, 395, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -302,11 +302,11 @@
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 333, 334, 335, 336, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 593, 594, 595, 596, 597, 598, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 36, 37, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 625, 626, 627, 628, 629, 630, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 43, 44, 0,
-            0, 68, 69, 70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 657, 658, 659, 660, 661, 662, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 75, 76, 0,
-            0, 100, 101, 102, 98, 99, 0, 488, 489, 490, 0, 433, 434, 689, 690, 691, 692, 693, 694, 433, 434, 0, 428, 429, 430, 431, 360, 361, 106, 107, 108, 0,
-            0, 132, 133, 134, 130, 131, 0, 520, 521, 522, 0, 465, 466, 721, 722, 723, 724, 725, 726, 465, 466, 0, 460, 461, 462, 463, 392, 393, 138, 139, 140, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 43, 44, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 75, 76, 0,
+            0, 0, 0, 0, 98, 99, 0, 488, 489, 490, 0, 433, 434, 0, 0, 0, 0, 0, 0, 433, 434, 0, 428, 429, 430, 431, 360, 361, 106, 107, 108, 0,
+            0, 0, 0, 0, 130, 131, 0, 520, 521, 522, 0, 465, 466, 721, 722, 723, 724, 725, 726, 465, 466, 0, 460, 461, 462, 463, 392, 393, 138, 139, 140, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -347,12 +347,12 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 277, 278, 276, 0, 274, 277, 278, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 278, 342, 0, 279, 277, 278, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 225, 226, 0, 0, 0, 2147483812, 2147483811, 0, 0, 0, 0, 0, 0, 0, 0, 0, 161, 162, 0, 0, 0, 2147483876, 2147483875, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 257, 258, 0, 0, 0, 2147483844, 2147483843, 0, 0, 0, 0, 0, 0, 0, 0, 0, 193, 194, 0, 0, 0, 2147483908, 2147483907, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 2147484017, 0, 397, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147484046, 0, 399, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 277, 278, 279, 0, 276, 277, 278, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 278, 274, 0, 341, 277, 278, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 163, 164, 0, 0, 0, 2147483874, 2147483873, 0, 0, 0, 0, 0, 0, 0, 0, 0, 227, 228, 0, 0, 0, 2147483810, 2147483809, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 195, 196, 0, 0, 0, 2147483906, 2147483905, 0, 0, 0, 0, 0, 0, 0, 0, 0, 259, 260, 0, 0, 0, 2147483842, 2147483841, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 2147484045, 0, 369, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147484047, 0, 398, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -371,9 +371,451 @@
          "width":32,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":13,
+         "name":"Red Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":14,
+                 "name":"red",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"red-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":80,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":15,
+                 "name":"red",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"red-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":14,
+         "name":"Green Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":16,
+                 "name":"green",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"green-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":336,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":17,
+                 "name":"green",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"green-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":15,
+         "name":"Orange Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":18,
+                 "name":"orange",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"orange-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":19,
+                 "name":"orange",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"orange-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":336,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":12,
+         "name":"Blue Chair",
+         "objects":[
+                {
+                 "height":32,
+                 "id":10,
+                 "name":"blue",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"blue-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":11,
+                 "name":"blue",
+                 "properties":[
+                        {
+                         "name":"flipX",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"blue-chair-1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":80,
+                 "y":240
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":17,
+         "name":"Vending Machine",
+         "objects":[
+                {
+                 "height":64,
+                 "id":20,
+                 "name":"vending",
+                 "properties":[
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"vending-machine-1"
+                        }, 
+                        {
+                         "name":"pressed",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":16,
+                 "y":64
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":18,
+         "name":"Door",
+         "objects":[
+                {
+                 "height":64,
+                 "id":21,
+                 "name":"door",
+                 "properties":[
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"door-1"
+                        }, 
+                        {
+                         "name":"pressed",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":208,
+                 "y":48
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":19,
+         "name":"Printer",
+         "objects":[
+                {
+                 "height":32,
+                 "id":22,
+                 "name":"printer",
+                 "properties":[
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"printer-1"
+                        }, 
+                        {
+                         "name":"pressed",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":144,
+                 "y":304
+                }, 
+                {
+                 "height":32,
+                 "id":23,
+                 "name":"printer",
+                 "properties":[
+                        {
+                         "name":"frame",
+                         "type":"string",
+                         "value":"printer-1"
+                        }, 
+                        {
+                         "name":"pressed",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":368,
+                 "y":304
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":20,
+         "name":"Door Sensor",
+         "objects":[
+                {
+                 "height":16,
+                 "id":25,
+                 "name":"Door Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"door-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":208,
+                 "y":112
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":21,
+         "name":"Vending Sensor",
+         "objects":[
+                {
+                 "height":16,
+                 "id":27,
+                 "name":"Vending Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"vending-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":16,
+                 "y":128
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":22,
+         "name":"Printer Sensor",
+         "objects":[
+                {
+                 "height":16,
+                 "id":28,
+                 "name":"Printer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"printer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":144,
+                 "y":336
+                }, 
+                {
+                 "height":16,
+                 "id":29,
+                 "name":"Printer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"printer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":368,
+                 "y":336
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":12,
- "nextobjectid":9,
+ "nextlayerid":23,
+ "nextobjectid":30,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.1",

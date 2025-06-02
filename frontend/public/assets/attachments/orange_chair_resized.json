@@ -1,5 +1,5 @@
 { "frames": {
-   "Orange_chair_resized 0.aseprite": {
+   "orange-chair-1": {
     "frame": { "x": 0, "y": 0, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 1.aseprite": {
+   "orange-chair-2": {
     "frame": { "x": 100, "y": 0, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +15,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 2.aseprite": {
+   "orange-chair-3": {
     "frame": { "x": 200, "y": 0, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +23,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 3.aseprite": {
+   "orange-chair-4": {
     "frame": { "x": 0, "y": 100, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +31,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 4.aseprite": {
+   "orange-chair-5": {
     "frame": { "x": 100, "y": 100, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 5.aseprite": {
+   "orange-chair-6": {
     "frame": { "x": 200, "y": 100, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,
@@ -47,7 +47,7 @@
     "sourceSize": { "w": 100, "h": 100 },
     "duration": 100
    },
-   "Orange_chair_resized 6.aseprite": {
+   "orange-chair-7": {
     "frame": { "x": 0, "y": 200, "w": 100, "h": 100 },
     "rotated": false,
     "trimmed": false,

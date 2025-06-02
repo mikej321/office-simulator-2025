@@ -1,5 +1,5 @@
 { "frames": {
-   "vending_machine_resized 0.aseprite": {
+   "vending-machine-1": {
     "frame": { "x": 0, "y": 0, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 1.aseprite": {
+   "vending-machine-2": {
     "frame": { "x": 48, "y": 0, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +15,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 2.aseprite": {
+   "vending-machine-3": {
     "frame": { "x": 96, "y": 0, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +23,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 3.aseprite": {
+   "vending-machine-4": {
     "frame": { "x": 0, "y": 64, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +31,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 4.aseprite": {
+   "vending-machine-5": {
     "frame": { "x": 48, "y": 64, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 5.aseprite": {
+   "vending-machine-6": {
     "frame": { "x": 96, "y": 64, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -47,7 +47,7 @@
     "sourceSize": { "w": 48, "h": 64 },
     "duration": 100
    },
-   "vending_machine_resized 6.aseprite": {
+   "vending-machine-7": {
     "frame": { "x": 0, "y": 128, "w": 48, "h": 64 },
     "rotated": false,
     "trimmed": false,

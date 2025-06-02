@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import WebFont from "webfontloader";
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -6,6 +7,19 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.script(
+      "webfont",
+      "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
+    );
+
+    this.load.once("filecomplete-script-webfont", () => {
+      WebFont.load({
+        google: {
+          families: ["Orbitron:400,700"],
+        },
+      });
+    });
+
     this.load.image(
       "tileset",
       "/office-simulator-2025/assets/asset-export-final-resized.png",
@@ -27,12 +41,6 @@ export default class PreloadScene extends Phaser.Scene {
     );
 
     this.load.atlas(
-      "speech-bubble",
-      "/office-simulator-2025/assets/speech_bubble.png",
-      "/office-simulator-2025/assets/speech_bubble.json"
-    );
-
-    this.load.atlas(
       "blue-chair",
       "/office-simulator-2025/assets/attachments/blue_chair_resized.png",
       "/office-simulator-2025/assets/attachments/blue_chair_resized.json"
@@ -40,14 +48,14 @@ export default class PreloadScene extends Phaser.Scene {
 
     this.load.atlas(
       "orange-chair",
-      "/office-simulator-2025/assets/attachments/orange_chair.png",
-      "/office-simulator-2025/assets/attachments/orange_chair.json"
+      "/office-simulator-2025/assets/attachments/orange_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/orange_chair_resized.json"
     );
 
     this.load.atlas(
       "green-chair",
-      "/office-simulator-2025/assets/attachments/green_chair.png",
-      "/office-simulator-2025/assets/attachments/green_chair.json"
+      "/office-simulator-2025/assets/attachments/green_chair_resized.png",
+      "/office-simulator-2025/assets/attachments/green_chair_resized.json"
     );
 
     this.load.atlas(
@@ -64,20 +72,20 @@ export default class PreloadScene extends Phaser.Scene {
 
     this.load.atlas(
       "door",
-      "/office-simulator-2025/assets/attachments/Door.png",
-      "/office-simulator-2025/assets/attachments/Door.json"
+      "/office-simulator-2025/assets/attachments/Door_resized.png",
+      "/office-simulator-2025/assets/attachments/Door_resized.json"
     );
 
     this.load.atlas(
       "printer",
-      "/office-simulator-2025/assets/attachments/printer.png",
-      "/office-simulator-2025/assets/attachments/printer.json"
+      "/office-simulator-2025/assets/attachments/printer_resized.png",
+      "/office-simulator-2025/assets/attachments/printer_resized.json"
     );
 
     this.load.atlas(
       "vending-machine",
-      "/office-simulator-2025/assets/attachments/vending_machine.png",
-      "/office-simulator-2025/assets/attachments/vending_machine.json"
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.png",
+      "/office-simulator-2025/assets/attachments/vending_machine_resized.json"
     );
 
     // this.load.start()
