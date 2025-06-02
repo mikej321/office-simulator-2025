@@ -41,7 +41,7 @@ export default class LostPong extends Phaser.Scene {
 
     // Add key listener for restarting
     this.input.keyboard.once("keydown-SPACE", () => {
-        this.scene.stop("Pong");
+      this.scene.stop("Pong");
       this.scene.start("WorkDay");
     });
   }

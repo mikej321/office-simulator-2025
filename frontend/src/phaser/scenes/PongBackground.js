@@ -69,7 +69,7 @@ export default class PongBackground extends Phaser.Scene {
     );
     const firstToThreeText = this.add.text(
       gameWidth / 2 + 287, // Center horizontally
-      730, // Position near the top
+      770, // Position near the top
       "First to 3 Wins", // Text content
       {
           fontSize: "32px", // Font size

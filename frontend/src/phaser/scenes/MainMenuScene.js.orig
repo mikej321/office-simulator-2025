@@ -138,12 +138,12 @@ class MainMenuScene extends Phaser.Scene {
 
     this.startText.on("pointerdown", () => {
       this.scene.transition({
-        target: "Home",
+        target: "OpeningScene", // Replace with your actual game scene
         duration: 1000,
         moveAbove: true,
         onUpdate: (progress) => {
           this.cameras.main.setAlpha(1 - progress);
->>>>>>> origin/test-merge
+>>>>>>> origin/my-second-merge
         },
       })
       .setOrigin(0.5)

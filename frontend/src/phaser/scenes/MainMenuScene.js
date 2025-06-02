@@ -99,6 +99,9 @@ class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // Author names
+
+    /* IMPORTANT! Figure out how to get the names
+    to come in one at a time from the left to right */
     this.authorTexts = [];
     const authors = ["Bryce Freshwater", "Santiago Mariani", "Michael Johnson"];
     authors.forEach((name, index) => {

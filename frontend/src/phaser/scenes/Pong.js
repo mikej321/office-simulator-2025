@@ -138,51 +138,47 @@ class Pong extends Phaser.Scene {
 
   // Define the maximum score to end the game
   const maxScore = 3; // Maximum score to win the game
-        
-    
-        if (this.leftScore >= maxScore) {
-            console.log("Tom won!!");
-            StatsManager.incrementWins();
-            StatsManager.incrementMP();
-            
-            
-            
-            this.paused = true;
-            //CHANGE MAX GAMES PLAYED
-            if (this.gamesPlayed >= 3) {
-                console.log("Maximum number of games reached!");
-                this.scene.stop("PongBackground");
-                this.scene.start("MaxPong");
-                return;
-              }
-             else { 
-            this.scene.stop("PongBackground");
-            //this.scene.stop("Pong");
-            this.scene.run("WonPong");}
-        }
-        else if (this.rightScore >= maxScore) {
-            console.log("Tom lost!!");
-            StatsManager.incrementLosses();
-            
-            StatsManager.decrementMP();
-            this.paused = true;
-            //CHANGE MAX GAMES PLAYED
-            if (this.gamesPlayed >= 3) {
-                console.log("Maximum number of games reached!");
-                this.scene.stop("PongBackground");
-                this.scene.start("MaxPong");
-                return;
-              }
-              else {
-            
-            this.scene.stop("PongBackground");
-            //this.scene.stop("Pong");
-            this.scene.run("LostPong");}
-        }
-    }
 
-    updateAI() {
-        const diff = this.ball.y - this.paddleRight.y;
+  if (this.leftScore >= maxScore) {
+    console.log("Tom won!!");
+    StatsManager.incrementWins();
+    StatsManager.incrementMP();
+
+    this.paused = true;
+    //CHANGE MAX GAMES PLAYED
+    if (this.gamesPlayed >= 3) {
+        console.log("Maximum number of games reached!");
+        this.scene.stop("PongBackground");
+        this.scene.start("MaxPong");
+        return;
+    } else {
+        this.scene.stop("PongBackground");
+        //this.scene.stop("Pong");
+        this.scene.run("WonPong");
+    }
+    } else if (this.rightScore >= maxScore) {
+    console.log("Tom lost!!");
+    StatsManager.incrementLosses();
+    
+    StatsManager.decrementMP();
+    this.paused = true;
+    //CHANGE MAX GAMES PLAYED
+    if (this.gamesPlayed >= 3) {
+        console.log("Maximum number of games reached!");
+        this.scene.stop("PongBackground");
+        this.scene.start("MaxPong");
+        return;
+        }
+        else {
+    
+    this.scene.stop("PongBackground");
+    //this.scene.stop("Pong");
+    this.scene.run("LostPong");}
+}
+}
+
+updateAI() {
+    const diff = this.ball.y - this.paddleRight.y;
 
     // Scale difficulty based on the player's score
     const difficulty = Math.min(this.leftScore + this.rightScore, 10); // Max difficulty at 10
