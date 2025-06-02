@@ -31,21 +31,21 @@ class EndOfDay extends Phaser.Scene {
      const offsetY = (this.scale.height - gameHeight) / 2;
 
     // Create the tilemap and position it in the center
-    const map = this.make.tilemap({ key: "tilemap" });
-    this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
+    this.map = this.make.tilemap({ key: "tilemap" });
+    this.tileset = this.map.addTilesetImage("asset-export-final-resized", "tileset");
     this.textures.get("asset-export-final-resized").setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // Create layers and position them relative to the offsets
-    this.floor = map.createLayer("Floor", this.tileset, offsetX, offsetY);
-    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
-    this.separators = map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
-    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
-    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
-    this.desktops = map.createLayer("Desktops", this.tileset, offsetX, offsetY);
-    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
-    this.wall = map.createLayer("Wall", this.tileset, offsetX, offsetY);
-    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
-    this.tableDeco = map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+    this.floor = this.map.createLayer("Floor", this.tileset, offsetX, offsetY);
+    this.floorDeco = this.map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
+    this.separators = this.map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
+    this.deskRight = this.map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
+    this.deskLeft = this.map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
+    this.desktops = this.map.createLayer("Desktops", this.tileset, offsetX, offsetY);
+    this.deskDeco = this.map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
+    this.wall = this.map.createLayer("Wall", this.tileset, offsetX, offsetY);
+    this.wallDeco = this.map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
+    this.tableDeco = this.map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
 
     // Add UI elements and position them relative to the offsets
 
@@ -78,12 +78,12 @@ class EndOfDay extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
 
     // World Boundaries
-    this.physics.world.setBounds(offsetX, offsetY, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(offsetX, offsetY, this.map.widthInPixels, this.map.heightInPixels);
 
     // Camera Boundaries
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
     // this.cameras.main.setZoom(1.5);
 

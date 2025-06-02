@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 import SpeechBubble from "../../factories/speechBubble";
-import TestScene from "./TestScene";
+import WorkDay from "./WorkDay";
 import Player from "../../factories/player";
 import Archer from "../../factories/archer";
 

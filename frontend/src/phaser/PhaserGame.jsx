@@ -5,6 +5,7 @@ import PreloadScene from './scenes/PreloadScene';
 import GameScene from './scenes/GameScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import IntroScene from './scenes/IntroScene';
+import GlitchyScene from './scenes/glitchyScene';
 import WorkDay from './scenes/WorkDay';
 import Pong from "./scenes/Pong";
 import PongBackground from "./scenes/PongBackground";
@@ -33,14 +34,12 @@ const PhaserGame = () => {
               gravity: { y: 0 },
                debug: true 
               },
-            arcade: { gravity: { y: 0 }, debug: true },
           },
           scale: {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [BootScene, PreloadScene, MainMenuScene, TestScene, GlitchyScene],
-          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home ],
+          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats,BigTom, GameOver, Home, GlitchyScene ],
         };
   
         gameRef.current = new Phaser.Game(config);
