@@ -213,38 +213,44 @@ class EndOfDay extends Phaser.Scene {
 
     // Sets collision detection for the world boundary
 
-    this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNames("player", {
-        start: 8,
-        end: 12,
-        prefix: "frame-",
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
+    if (!this.anims.exists("walk")) {
+      this.anims.create({
+        key: "walk",
+        frames: this.anims.generateFrameNames("player", {
+          start: 8,
+          end: 12,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
 
-    this.anims.create({
-      key: "back",
-      frames: this.anims.generateFrameNames("player", {
-        start: 17,
-        end: 19,
-        prefix: "frame-",
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
+    if (!this.anims.exists("back")) {
+      this.anims.create({
+        key: "back",
+        frames: this.anims.generateFrameNames("player", {
+          start: 17,
+          end: 19,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
 
-    this.anims.create({
-      key: "idle",
-      frames: this.anims.generateFrameNames("player", {
-        start: 1,
-        end: 8,
-        prefix: "frame-",
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
+    if (!this.anims.exists("idle")) {
+      this.anims.create({
+        key: "idle",
+        frames: this.anims.generateFrameNames("player", {
+          start: 1,
+          end: 8,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
 
     this.cameras.main.startFollow(this.player);
   }

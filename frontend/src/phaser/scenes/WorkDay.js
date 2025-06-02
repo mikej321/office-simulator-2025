@@ -222,142 +222,146 @@ class WorkDay extends Phaser.Scene {
   }
 
   update() {
-    this.statsOverlay.update();
-    // Check if the workday loop is complete
-    if (StatsManager.getWorkDayTaskNumber() >= 3) {
-       StatsManager.incrementWorkDayCount();
+  this.statsOverlay.update();
+  this.playerMovement();
 
-      // Check if limit is reached
+  const sensor = this.currentSensor;
+
+  // ALWAYS check JustDown right away, on its own:
+  if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
+    console.log("E fired");
+
+    // If workday tasks are done, bail out immediately:
+    if (StatsManager.getWorkDayTaskNumber() >= 3) {
+      StatsManager.incrementWorkDayCount();
       if (StatsManager.getWorkDayCount() >= StatsManager.getWorkDayLimit()) {
         StatsManager.setWorkDayLimitReached(true);
       }
-      
       console.log("Workday loop complete. Transitioning to EndOfDay.");
-      this.scene.stop("WorkDay");
-      this.scene.start("EndOfDay");
+      this.scene.transition({ target: "EndOfDay", duration: 500, moveAbove: true });
       return;
     }
 
-    this.playerMovement();
-
-    // Check if the player is within the interactable area
-    const distance = Phaser.Math.Distance.Between(
-      this.player.x,
-      this.player.y,
-      this.interactableX,
-      this.interactableY
-    );
-    const isPlayerInArea = distance <= this.interactableRadius;
-
-    // Show or hide the "Press E to work for the day" text
-    if (isPlayerInArea && !this.choiceText.visible) {
-      this.interactionText.setPosition(this.interactableX, this.interactableY - 50);
-      this.interactionText.setVisible(true);
-    } else {
-      this.interactionText.setVisible(false);
+    // If we're already in the “awaitingChoice” state, pressing E here means "Pong":
+    if (this.awaitingChoice && sensor) {
+      console.log("Choice confirmed: E → Pong");
+      if (this.bubble) this.bubble.destroy();
+      this.scene.transition({ target: "Pong", duration: 500, moveAbove: true });
+      return;
     }
 
-    // Handle interaction when the E key is pressed
-    if (isPlayerInArea && Phaser.Input.Keyboard.JustDown(this.eKey)) {
-      console.log("Interacted with the specific area!");
-      this.choiceText.setPosition(this.interactableX, this.interactableY - 50);
-      this.choiceText.setVisible(true);
-
-      // Hide the "Press E to work for the day" text
-      this.interactionText.setVisible(false);
+    // NOTE: Only now do we check which sensor we’re in, since this code is running on the exact JustDown frame:
+    if (sensor && sensor.name === "Door Sensor") {
+      console.log("playing door sprite animation");
+      if (this.doorSprite) {
+        this.doorSprite.play("exit");
+        this.time.delayedCall(1000, () => {
+          this.scene.transition({
+            target: "Home",
+            duration: 1000,
+            moveAbove: true,
+            onUpdate: (progress) => {
+              this.cameras.main.setAlpha(2 - progress);
+            }
+          });
+        });
+      }
+      if (this.bubble) {
+        this.bubble.hide();
+        this.bubble.destroy();
+        this.bubble = null;
+      }
+      sensor.body.enable = false;
+      sensor.setVisible(false);
+      this.currentSensor = null;
+      this.time.delayedCall(3000, () => {
+        this.doorSprite.anims.playReverse("exit");
+        sensor.body.enable = true;
+        sensor.setVisible(true);
+      });
+      return;
     }
 
-    // Handle the player's choice
-    if (this.choiceText.visible) {
-      if (Phaser.Input.Keyboard.JustDown(this.qKey)) {
-        let effectiveness = 1;
-        if (StatsManager.getEnergyLevel() >= 3) effectiveness += 0.5;
-        if (StatsManager.getFocusLevel() >= 3) effectiveness += 0.5;
-        if (StatsManager.getMotivationLevel() >= 3) effectiveness += 0.5;
-        if (StatsManager.getMP() <= 0) effectiveness -= 1;
+    // Printer Sensor → “print” animation
+    if (sensor && sensor.name === "Printer Sensor") {
+      console.log("playing printer animation");
+      if (sensor.linkedSprite) {
+        sensor.linkedSprite.play("print");
+      }
+      if (this.bubble) {
+        this.bubble.hide();
+        this.bubble.destroy();
+        this.bubble = null;
+      }
+      sensor.body.enable = false;
+      sensor.setVisible(false);
+      this.currentSensor = null;
+      this.time.delayedCall(3000, () => {
+        sensor.body.enable = true;
+        sensor.setVisible(true);
+      });
+      return;
+    }
 
-        effectiveness = Math.max(0, effectiveness); // Cap at minimum 0
-
-        const projectGain = Math.floor(effectiveness);
-        for (let i = 0; i < projectGain; i++) {
-          StatsManager.incrementPP();
+    // Computer Sensor (fallback) → “work for the day”
+    if (sensor) {
+      console.log("Player chose to work for the day");
+      StatsManager.incrementPP();
+      StatsManager.decrementMP();
+      StatsManager.incrementWorkDayCount();
+      this.scene.transition({
+        target: "Home",
+        duration: 500,
+        moveAbove: true,
+        onUpdate: (progress) => {
+          this.cameras.main.setAlpha(1 - progress);
         }
-        // Burnout penalty for working
-        StatsManager.decrementEnergyLevel();
-        StatsManager.decrementMotivationLevel();
-        StatsManager.decrementFocusLevel();
-        StatsManager.decrementMP();
-        console.log("Player chose to work for the day!");
-        this.choiceText.setVisible(false);
-        this.interactionText.setVisible(false);
-        // Destroy the existing player before respawning
-      if (this.player) {
-        this.player.destroy(); // Remove the existing player sprite
-      }
-
-        // Respawn the player
-        //this.player.setPosition(500, 300);
-
-        // Increment the workday count
-        StatsManager.incrementWorkDayTaskNumber();
-        this.createPlayer(); // Recreate the player to show the correct text
-        this.createCollisions(this.player, [
-          this.floor,
-          this.floorDeco,
-          this.separators,
-          this.deskRight,
-          this.deskLeft,
-          this.desktops,
-          this.deskDeco,
-          this.wall,
-          this.wallDeco,
-          this.tableDeco,
-        ]);
-      } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
-          console.log("Player chose to goof off!");
-          StatsManager.incrementMP();
-          StatsManager.incrementMotivationLevel();
-          StatsManager.incrementEnergyLevel();
-          StatsManager.decrementFocusLevel();
-          this.choiceText.setVisible(false);
-
-        // Increment the workday count
-        StatsManager.incrementWorkDayTaskNumber();
-
-        // Transition to Pong
-        this.scene.stop("WorkDay");
-        this.scene.start("Pong");
-      }
+      });
+      return;
     }
-    if (this.currentInteraction && !this.interactionInProgress) {
-      this.interactHint.setVisible(true);
-      this.interactHint.setPosition(this.player.x, this.player.y - 40);
-    } else {
-      this.interactHint.setVisible(false);
+  } // end of JustDown(this.eKey) block
+
+  // Now check Q key presses in the same way:
+  if (Phaser.Input.Keyboard.JustDown(this.qKey)) {
+    console.log("Q fired");
+
+    // If already awaiting choice and in a sensor, Q → “GlitchyScene”
+    if (this.awaitingChoice && sensor) {
+      console.log("Choice confirmed: Q → GlitchyScene");
+      if (this.bubble) this.bubble.destroy();
+      this.scene.transition({ target: "GlitchyScene", duration: 500, moveAbove: true });
+      return;
     }
 
-    const nearAvatar = Phaser.Math.Distance.Between(
-      this.player.x, this.player.y,
-      this.avatar.x, this.avatar.y
-    ) < 50;
+    // If you press Q inside the Computer Sensor (to show choices), spawn a bubble:
+    if (sensor && sensor.name === "Computer Sensor") {
+      console.log("Computer Sensor Q pressed → showing choice bubble");
+      if (this.bubble) this.bubble.destroy();
 
-    if (nearAvatar && !this.wasNearChris) {
-      this.wasNearChris = true;
+      this.bubble = new SpeechBubble(
+        this,
+        this.player.x,
+        this.player.y - this.player.height / 2 - 10,
+        'Press "E" to slack off with pong\nPress "Q" to enter Nightmare world',
+        {},
+        250
+      );
+      this.bubble.show();
+      this.awaitingChoice = true;
+      return;
+    }
+  } // end of JustDown(this.qKey) block
 
-      // Pick a new random line index that's not the same as last time
-      let newIndex;
-      do {
-        newIndex = Phaser.Math.Between(0, this.chrisLines.length - 1);
-      } while (newIndex === this.currentChrisLineIndex && this.chrisLines.length > 1);
-
-      this.currentChrisLineIndex = newIndex;
-      const newLine = this.chrisLines[this.currentChrisLineIndex];
-
-      this.avatarText.setText(newLine);
-      this.avatarText.setVisible(true);
-    } else if (!nearAvatar && this.wasNearChris) {
-      this.wasNearChris = false;
-      this.avatarText.setVisible(false);
+  // If your code reaches here, no key-triggered action needed for this frame.
+  // However, you still want to manage exiting a sensor. For example:
+  if (sensor && this.bubble) {
+    this.bubble.setPosition(this.player.x, this.player.y - this.player.height / 2 - 10);
+    if (!this.physics.world.overlap(this.player, sensor)) {
+      console.log("Exited sensor named", sensor.name);
+      this.bubble.hide();
+      this.bubble = null;
+      this.currentSensor = null;
+      this.awaitingChoice = false; // reset if you exit prematurely
     }
   }
 }
@@ -372,86 +376,166 @@ class WorkDay extends Phaser.Scene {
 
   createPlayer() {
     this.player = this.physics.add.sprite(260, 230, "player", "frame-1").setScale(0.8);
-    this.player = this.physics.add.sprite(500, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
 
-    if (!this.anims.exists("walk")){
-    this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNames("player", { start: 8, end: 12, prefix: "frame-" }),
-      frameRate: 5,
-      repeat: -1,
-    });}
+    if (!this.anims.exists("walk")) {
+      this.anims.create({
+        key: "walk",
+        frames: this.anims.generateFrameNames("player", {
+          start: 8,
+          end: 12,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
 
-    if (!this.anims.exists("back")){
-    this.anims.create({
-      key: "back",
-      frames: this.anims.generateFrameNames("player", { start: 17, end: 19, prefix: "frame-" }),
-      frameRate: 5,
-      repeat: -1,
-    });}
+    if (!this.anims.exists("back")) {
+      this.anims.create({
+        key: "back",
+        frames: this.anims.generateFrameNames("player", {
+          start: 17,
+          end: 19,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
 
-    if (!this.anims.exists("idle")){
-    this.anims.create({
-      key: "idle",
-      frames: this.anims.generateFrameNames("player", { start: 1, end: 8, prefix: "frame-" }),
-      frameRate: 5,
-      repeat: -1,
-    });}
+    if (!this.anims.exists("idle")) {
+      this.anims.create({
+        key: "idle",
+        frames: this.anims.generateFrameNames("player", {
+          start: 1,
+          end: 8,
+          prefix: "frame-",
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+
+    this.cameras.main.startFollow(this.player);
 
     //this.cameras.main.startFollow(this.player);
 
-  const currentDay = StatsManager.getWorkDayCount(); // 1–5
-  const workDay = currentDay - 1; // Adjust to 0–4
-  console.log("Current workday in createPlayer:", workDay);
+    const currentDay = StatsManager.getWorkDayCount(); // 1–5
+    this.workDay = currentDay - 1; // Adjust to 0–4
+    // console.log("Current workday in createPlayer:", this.workDay);
 
-  const taskNum = StatsManager.getWorkDayTaskNumber(); // 0–2
-  console.log("Current task count in createPlayer:", taskNum);
+    // let textToDisplay = "";
+    // switch (workDayCount) {
+    //   case 0:
+    //     textToDisplay = "Tom, you better get working! \n\nYour desk is collecting dust.";
+    //     break;
+    //   case 1:
+    //     textToDisplay = "Ahhhhhhh \n\nmuch better.";
+    //     break;
+    //   case 2:
+    //     textToDisplay = "Is that a cat over there?";
+    //     break;
+    //   case 3:
+    //     textToDisplay = "We should come up with a name for the cat.";
+    //     break;
+    //   default:
+    //     textToDisplay = ""; // No text for other counts
+    // }
 
-  // Defensive check: make sure workDay and taskNum are valid
-  if (workDay >= 0 && workDay < 5 && taskNum >= 0 && taskNum < 3) {
-    const bossYells = {
-      0: [
-        "Tom, you better get working! Your desk is collecting dust.",
-        "Don’t forget the onboarding checklist this time.",
-        "And stop drinking so much coffee!",
-      ],
-      1: [
-        "We have deadlines, Tom. Dead. Lines.",
-        "Did you even clock in today?",
-        "You're not paid to stare at your computer screen!",
-      ],
-      2: [
-        "That report better be done before lunch.",
-        "Why is your desk always a mess?",
-        "You're not the office cat whisperer, Tom!",
-      ],
-      3: [
-        "The printer is not your friend. Stop hugging it.",
-        "We are a *team*, Tom. Not a one-man circus.",
-        "Did you do your best today Tom?",
-      ],
-      4: [
-        "It’s Friday. Try *not* to mess this one up.",
-        "HR is watching, Tom. Smile more.",
-        "Your performance review is soon. Be afraid.",
-      ],
-    };
+    // if (textToDisplay) {
 
-    const line = bossYells[workDay][taskNum];
-    const spawnText = this.add.text(
-      this.scale.width - 300,  // X: near right edge with some padding
-      40,                     // Y: top with some padding
-      line,
-      this.textStyle
-    ).setOrigin(0.5);
+    //   const bubble = new SpeechBubble(
+    //     this,
+    //     this.player.x,
+    //     this.player.y - this.player.height / 2 - 10,
+    //     textToDisplay,
+    //     {},
+    //     250
+    //   );
 
-    this.time.delayedCall(6000, () => {
-      spawnText.destroy();
-    });
-  } else {
-    console.warn("No boss yell found for day", workDay, "and task", taskNum);
+    //   bubble.show();
+
+    //   this.time.delayedCall(2000, () => {
+    //     if (bubble) bubble.destroy();
+    //   })
+    // const spawnText = this.add.text(
+    //   this.player.x, // Position the text at the player's X position
+    //   this.player.y - 50, // Position the text slightly above the player's head
+    //   textToDisplay, // The text to display
+    //   {
+    //     fontSize: "16px",
+    //     fill: "#ffffff",
+    //     backgroundColor: "#000000",
+    //     padding: { x: 10, y: 5 },
+    //   }
+    // ).setOrigin(0.5); // Center the text
+
+    // // Use a delayed call to hide or destroy the text after 2 seconds
+    // this.time.delayedCall(2000, () => {
+    //   spawnText.destroy(); // Remove the text from the scene
+    // });
+    // }
   }
+
+  objectNudge(obj, objX, objY, propertyName = "") {
+    if (propertyName === "") {
+      obj.x += objX;
+      obj.y += objY;
+    } else if (propertyName) {
+      obj.x += objX;
+      obj.y -= objY;
+    } else {
+      obj.x -= objX;
+      obj.y -= objY;
+    }
+    this.taskNum = StatsManager.getWorkDayTaskNumber(); // 0–2
+    console.log("Current task count in createPlayer:", this.taskNum);
+
+    // Defensive check: make sure workDay and taskNum are valid
+    if (this.workDay >= 0 && this.workDay < 5 && this.taskNum >= 0 && this.taskNum < 3) {
+      const bossYells = {
+        0: [
+          "Tom, you better get working! Your desk is collecting dust.",
+          "Don’t forget the onboarding checklist this time.",
+          "And stop drinking so much coffee!",
+        ],
+        1: [
+          "We have deadlines, Tom. Dead. Lines.",
+          "Did you even clock in today?",
+          "You're not paid to stare at your computer screen!",
+        ],
+        2: [
+          "That report better be done before lunch.",
+          "Why is your desk always a mess?",
+          "You're not the office cat whisperer, Tom!",
+        ],
+        3: [
+          "The printer is not your friend. Stop hugging it.",
+          "We are a *team*, Tom. Not a one-man circus.",
+          "Did you do your best today Tom?",
+        ],
+        4: [
+          "It’s Friday. Try *not* to mess this one up.",
+          "HR is watching, Tom. Smile more.",
+          "Your performance review is soon. Be afraid.",
+        ],
+      };
+
+      const line = bossYells[this.workDay][this.taskNum];
+      const spawnText = this.add.text(
+        this.scale.width - 300,  // X: near right edge with some padding
+        40,                     // Y: top with some padding
+        line,
+        this.textStyle
+      ).setOrigin(0.5);
+
+      this.time.delayedCall(6000, () => {
+        spawnText.destroy();
+      });
+    } else {
+      console.warn("No boss yell found for day", this.workDay, "and task", this.taskNum);
+    }
 
   }
 
@@ -499,5 +583,40 @@ class WorkDay extends Phaser.Scene {
       }
     }
   }
+
+  updateClock() {
+    const now = new Date();
+    const h = String(this.gameTime.getHours()).padStart(2, "0");
+    const m = String(this.gameTime.getMinutes()).padStart(2, "0");
+    const s = String(this.gameTime.getSeconds()).padStart(2, "0");
+    this.clockText.setText(`${h}:${m}`);
+  }
+
+  debugBox(sprite) {
+    this.add
+      .rectangle(
+        sprite.body.x + sprite.body.width / 2,
+        sprite.body.y + sprite.body.height / 2,
+        sprite.body.width,
+        sprite.body.height,
+        0xff00000,
+        0.3
+      )
+      .setOrigin(0.5);
+  }
+
+  distanceCheck(player, object) {
+    const dist = Phaser.Math.Distance.Between(
+      player.x,
+      player.y,
+      object.x,
+      object.y
+    );
+
+    if (dist < 32) {
+      console.log("I am in range");
+    }
+  }
 }
+
 export default WorkDay;
