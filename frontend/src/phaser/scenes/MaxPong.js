@@ -15,14 +15,18 @@ export default class MaxPong extends Phaser.Scene {
     const offsetX = (this.scale.width - gameWidth) / 2;
     const offsetY = (this.scale.height - gameHeight) / 2;
 
+    // Set max width for the text to fit in the screen
+    const maxWidth = gameWidth * 0.8; // 80% of the game width
+
     // Add the "You Lost" text
     const title = this.add.text(
       offsetX + gameWidth / 2,
       offsetY + gameHeight / 2 - 50,
       "You really spend the entire day playing Pong?\n...\nI'm impressed?",
       {
-        fontSize: "48px",
+        fontSize: "32px",  // Adjust the font size here
         color: "#ff0000",
+        wordWrap: { width: maxWidth, useAdvancedWrap: true },  // Enable word wrapping with max width
       }
     );
     title.setOrigin(0.5);
@@ -35,6 +39,7 @@ export default class MaxPong extends Phaser.Scene {
       {
         fontSize: "24px",
         color: "#ffffff",
+        wordWrap: { width: maxWidth, useAdvancedWrap: true },  // Wrap this text too
       }
     );
     instructions.setOrigin(0.5);

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import MusicManager from "./MusicManager"; // Ensure this path is correct
 
 export default class VictoryCutscene extends Phaser.Scene {
   constructor() {
@@ -10,6 +11,14 @@ export default class VictoryCutscene extends Phaser.Scene {
   }
 
   create() {
+    if (!this.scene.isActive('MusicManager')) {
+      this.scene.launch('MusicManager');
+      this.time.delayedCall(100, () => {
+        this.scene.get('MusicManager').playTrack('party');
+      });
+    } else {
+      this.scene.get('MusicManager').playTrack('party');
+    }
       // Manually create the animation using all frame names
         this.anims.create({
             key: 'victory_bg_loop',

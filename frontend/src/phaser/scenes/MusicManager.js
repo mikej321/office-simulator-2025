@@ -10,11 +10,15 @@ export default class MusicManager extends Phaser.Scene {
   preload() {
     this.load.audio("home", "assets/home.mp3");
     this.load.audio("office", "assets/office.mp3");
+    this.load.audio("party", "assets/party.mp3");
+    this.load.audio("boo", "assets/boo.mp3");
   }
 
   create() {
     this.music.home = this.sound.add("home", { loop: true, volume: 0.1 });
     this.music.office = this.sound.add("office", { loop: true, volume: 0.1 });
+    this.music.party = this.sound.add("party", { loop: true, volume: 0.1 });
+    this.music.boo = this.sound.add("boo", { loop: true, volume: 0.1 });
   }
 
   playTrack(key) {

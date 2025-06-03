@@ -10,6 +10,14 @@ export default class FiredCutscene extends Phaser.Scene {
   }
 
   create() {
+    if (!this.scene.isActive('MusicManager')) {
+      this.scene.launch('MusicManager');
+      this.time.delayedCall(100, () => {
+        this.scene.get('MusicManager').playTrack('boo');
+      });
+    } else {
+      this.scene.get('MusicManager').playTrack('boo');
+    }
     this.anims.create({
         key: 'fire_bg_loop',
         frames: this.anims.generateFrameNames('firedbg'), // uses all frames from the Aseprite JSON

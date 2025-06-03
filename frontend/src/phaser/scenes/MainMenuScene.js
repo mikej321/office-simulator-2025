@@ -30,6 +30,8 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
+    const { width, height } = this.scale;
+
     this.time.addEvent({
       delay: 100,
       callback: () => {
@@ -43,6 +45,36 @@ class MainMenuScene extends Phaser.Scene {
         }
       },
     });
+    // Cheats button
+
+    // Cheats button
+if (!this.cheatsButton) {
+  this.cheatsButton = this.add
+    .text(width / 2, height - 50, "Cheats", {
+      fontSize: "24px",
+      color: "#ffcc00",
+      fontFamily: "Chewy",
+      backgroundColor: "#222",
+      padding: { x: 10, y: 5 },
+    })
+    .setOrigin(0.5)
+    .setInteractive();
+
+  this.cheatsButton.on("pointerover", () => {
+    this.input.setDefaultCursor("pointer");
+  });
+
+  this.cheatsButton.on("pointerout", () => {
+    this.input.setDefaultCursor("default");
+  });
+
+  this.cheatsButton.on("pointerdown", () => {
+    console.log("Cheats button clicked");
+    this.scene.start("CheatsScene");
+  });
+}
+
+
   }
 
   startMenu() {
@@ -190,6 +222,11 @@ class MainMenuScene extends Phaser.Scene {
     if (this.startText) {
       this.startText.setPosition(width / 2, height - 100);
     }
+
+    if (this.cheatsButton) {
+      this.cheatsButton.setPosition(width / 2, height - 50);
+    }
+
   }
 
   animateAuthors() {
