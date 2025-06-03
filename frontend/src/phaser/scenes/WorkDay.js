@@ -274,7 +274,20 @@ this.anims.create({
     );
 
     // Add the avatar image at a chosen position
-    this.avatar = this.physics.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //HERE
+    //was 300, 400
+    this.avatar = this.physics.add.image(600, 450, "avatarTall").setScale(0.1).setDepth(1); 
     this.avatar.body.setAllowGravity(false); // Make sure Chris doesn’t fall
     this.avatar.body.immovable = true;       // Chris should not move on collision
 
@@ -301,6 +314,7 @@ this.anims.create({
           console.log("Chris says:", randomLine);
           this.avatarText.setText(randomLine);
           this.avatarText.setVisible(true);
+          this.children.bringToTop(this.avatarText); // Ensure text is above other objects
         } else {
           console.warn("Empty or undefined Chris line!");
           this.avatarText.setText("..."); // fallback
@@ -513,8 +527,30 @@ this.anims.create({
   }
 
   createPlayer() {
-    
-    this.player = this.physics.add.sprite(500, 300, "player", "frame-1").setScale(0.8);
+    //HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE//HERE
+    //HERE
+    //HERE
+    //HERE
+    // was 500,300
+    this.player = this.physics.add.sprite(650, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
     this.player.setDepth(10); // or any number higher than the objects
 

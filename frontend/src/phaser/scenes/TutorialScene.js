@@ -12,6 +12,14 @@ class TutorialScene extends Phaser.Scene {
   }
 
   create() {
+        if (!this.scene.isActive('MusicManager')) {
+      this.scene.launch('MusicManager');
+      this.time.delayedCall(100, () => {
+        this.scene.get('MusicManager').playTrack('home');
+      });
+    } else {
+      this.scene.get('MusicManager').playTrack('home');
+    }
     // Set up tilemap and background
     const map = this.make.tilemap({ key: "map" });
     const tileset = map.addTilesetImage("HouseTileSet", "tiles");
