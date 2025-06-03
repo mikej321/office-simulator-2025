@@ -65,7 +65,7 @@ class EndOfDay extends Phaser.Scene {
       this.tableDeco,
     ];
 
-    this.physics.world.setBounds(10, 98, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(10, 98, this.map.widthInPixels, this.map.heightInPixels);
 
     this.createPlayer();
 

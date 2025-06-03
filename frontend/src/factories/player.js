@@ -18,6 +18,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.isHurt = false; // Flip when hurt
         this.isDead = false; // Flip when health reaches 0
 
+        this.health = 100;
         this.maxHealth = 100;
         this.currentHealth = this.maxHealth;
         this.isDefending = false;
@@ -122,7 +123,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
 
         this.cursor = this.scene.input.keyboard.createCursorKeys();
-    
+
         this.keys = this.scene.input.keyboard.addKeys({
             defend: "E",
             light_attack: "A",
@@ -142,39 +143,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 })
             }
         })
-    
-        this.scene.input.keyboard.on("keydown-A", () => {
-            if (!this.isAttacking && !this.isHurt && !this.isDead) {
-                this.isAttacking = true;
-                this.setVelocity(0);
-                this.play("light", true);
-                this.once("animationcomplete-light", () => {
-                    this.isAttacking = false;
-                })
-            }
-        })
-    
-        this.scene.input.keyboard.on("keydown-S", () => {
-            if (!this.isAttacking && !this.isHurt && !this.isDead) {
-                this.isAttacking = true;
-                this.setVelocity(0);
-                this.play("medium", true);
-                this.once("animationcomplete-medium", () => {
-                    this.isAttacking = false;
-                })
-            }
-        })
-    
-        this.scene.input.keyboard.on("keydown-D", () => {
-            if (!this.isAttacking && !this.isHurt && !this.isDead) {
-                this.isAttacking = true;
-                this.setVelocity(0);
-                this.play("heavy", true);
-                this.once("animationcomplete-heavy", () => {
-                    this.isAttacking = false;
-                })
-            }
-        })
+
+        this.scene.input.keyboard.on("keydown-A", () => this.performAttack("light"));
+        this.scene.input.keyboard.on("keydown-S", () => this.performAttack("medium"));
+        this.scene.input.keyboard.on("keydown-D", () => this.performAttack("heavy"))
     }
 
     takeDamage(amount) {
@@ -182,17 +154,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         if (this.isDefending && this.anims.currentFrame?.index == 2) {
             amount = 0;
-            console.log("perfect defense")
         } else if (this.isDefending && this.anims.currentFrame?.index != 6) {
             amount = amount * 0.5;
-            console.log("regular defense")
         }
 
         this.currentHealth = Phaser.Math.Clamp(this.currentHealth - amount, 0, this.maxHealth);
 
+        if (amount > 0) {
+            this.scene.spawnDamageText(this.x, this.y - this.height, Math.round(amount));
+        }
 
-        console.log('health is ', this.currentHealth)
-        
         if (this.isDefending && this.anims.currentFrame?.index !== 6) {
             this.isHurt = false;
             this.isInvincible = true;
@@ -220,7 +191,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 if (this.currentHealth <= 0) this.die();
             })
         }
-        
     }
 
     defend() {
@@ -251,14 +221,20 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.once("animationcomplete-death", () => {
             this.body.enable = false;
+            this.scene.time.delayedCall(1000, () => {
+                this.scene.scene.transition({
+                    target: "WorkDay",
+                    duration: 1000
+                })
+            })
         })
     }
-    
+
     playerMovement() {
 
         if (this.isAttacking || this.isDead || this.isHurt) return;
-        
-         if (this.cursor.left.isDown && this.cursor.up.isDown && this.keys.run.isDown) {
+
+        if (this.cursor.left.isDown && this.cursor.up.isDown && this.keys.run.isDown) {
             this.setVelocity(-500);
             this.anims.play("run", true);
             this.flipX = true;
@@ -266,11 +242,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.setVelocity(500, -500);
             this.anims.play("run", true);
             this.flipX = false;
-        }  else if (this.cursor.left.isDown && this.cursor.down.isDown && this.keys.run.isDown) {
+        } else if (this.cursor.left.isDown && this.cursor.down.isDown && this.keys.run.isDown) {
             this.setVelocity(-500, 500);
             this.anims.play("run", true);
             this.flipX = true;
-        }  else if (this.cursor.right.isDown && this.cursor.down.isDown && this.keys.run.isDown) {
+        } else if (this.cursor.right.isDown && this.cursor.down.isDown && this.keys.run.isDown) {
             this.setVelocity(500);
             this.anims.play("run", true);
             this.flipX = false;
@@ -286,7 +262,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.setVelocity(-300, 300);
             this.anims.play("walk", true);
             this.flipX = true;
-        }  else if (this.cursor.right.isDown && this.cursor.down.isDown) {
+        } else if (this.cursor.right.isDown && this.cursor.down.isDown) {
             this.setVelocity(300);
             this.anims.play("walk", true);
             this.flipX = false;
@@ -315,7 +291,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.anims.play("walk", true);
             this.flipX = true;
         }
-        
+
         else {
             this.setVelocity(0);
 
@@ -323,4 +299,79 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
     }
+
+    performAttack(type) {
+        if (this.isAttacking || this.isHurt || this.isDead) return;
+
+        this.isAttacking = true;
+        this.setVelocity(0);
+
+        let animationKey, damage, knockback;
+
+        switch (type) {
+            case 'light':
+                animationKey = 'light';
+                damage = 5;
+                knockback = 150;
+                break;
+            case 'medium':
+                animationKey = 'medium';
+                damage = 10;
+                knockback = 200;
+                break;
+            case 'heavy':
+                animationKey = 'heavy';
+                damage = 15;
+                knockback = 300;
+                break;
+            default:
+                return;
+        }
+
+        this.play(animationKey, true);
+
+        const attackFrameListener = (anim, frame) => {
+            if (frame.index === 3 && !this.attackHitbox) {
+                this.spawnAttackHitbox(damage, knockback);
+                this.off("animationupdate", attackFrameListener); // remove after one use
+            }
+        };
+        this.on("animationupdate", attackFrameListener);
+
+        this.once(`animationcomplete-${animationKey}`, () => {
+            this.isAttacking = false;
+            if (this.attackHitbox) {
+                this.attackHitbox.destroy();
+                this.attackHitbox = null;
+            }
+        })
+    }
+
+    spawnAttackHitbox(damage, knockback) {
+
+        const offsetX = this.flipX ? -60 : 60;
+        const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
+        hitbox.setOrigin(0.5);
+
+        this.scene.physics.add.existing(hitbox);
+        hitbox.damage = damage;
+        hitbox.knockback = knockback;
+
+        this.scene.playerHitBoxes.add(hitbox);
+
+        // 🔒 Assign it to a property so we can destroy it later
+        this.attackHitbox = hitbox;
+
+        this.scene.time.delayedCall(150, () => {
+            if (hitbox && hitbox.destroy) {
+                hitbox.destroy();
+                // 🧼 Clear the reference too
+                if (this.attackHitbox === hitbox) {
+                    this.attackHitbox = null;
+                }
+            }
+        });
+    }
+
+
 }

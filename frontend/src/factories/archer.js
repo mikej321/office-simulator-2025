@@ -5,27 +5,20 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, "archer_idle", "idle_1");
 
         scene.add.existing(this);
-        scene.physics.add.existing(this, false);
-
-        this.body.setAllowGravity(false); // optional
-this.body.setImmovable(false);    // must be false for dynamic
-this.body.setCollideWorldBounds(true); // optional
-
-// Force the body to be dynamic
-this.body.setVelocity(0, 0); // required to nudge Arcade into recognizing motion
-
-
-        console.log("Body enabled:", this.body.enable);
-console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY ? "Dynamic" : "Static");
-
-
+        scene.physics.add.existing(this);
+        this.body.setAllowGravity(true);
+        this.body.setImmovable(false);
 
         this.setCollideWorldBounds(true);
 
+        this.isDead = false;
+        this.health = 20;
+        this.isInvincible = false;
+        this.invincibilityDuration = 300;
         this.speed = 200; // walk speed
         this.chaseRange = 1000; // chase speed when player gets close to archer
-        this.attackRange = 600; // range in which the archer starts his attack
-        this.attackCooldown = 1000; // milliseconds between archers attacks
+        this.attackRange = 200; // range in which the archer starts his attack
+        this.attackCooldown = 2000; // milliseconds between archers attacks
         this.lastAttackTime = 0; // track archers last attack
 
         this.body.setMaxVelocity(this.speed, this.speed);
@@ -35,6 +28,7 @@ console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY 
         // archer flags
         this.isAttacking = false;
         this.isChasing = false;
+
 
         this.anims.create({
             key: "idle",
@@ -82,23 +76,32 @@ console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY 
     }
 
     update(player, time, delta) {
+        if (this.isDead || !this.body) return;
+
         const dist = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
+        // Don't do anything else while attacking
         if (this.isAttacking) {
-            this.setVelocity(0, 0); // safer than body.stop()
+            if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
+                this.setVelocity(0, 0);
+            }
             return;
         }
 
+        // Close enough to attack
         if (dist <= this.attackRange) {
-            this.setVelocity(0, 0);
+            if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
+                this.setVelocity(0, 0);
+            }
 
-            if (time - this.lastAttackTime > this.attackCooldown) {
+            if (!this.isInvincible && time - this.lastAttackTime > this.attackCooldown) {
                 this.startAttack(time, player);
             }
 
             return;
         }
 
+        // In range to chase — call only one behavior!
         if (dist < this.chaseRange) {
             this.startChase(player);
         } else {
@@ -106,7 +109,9 @@ console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY 
         }
     }
 
+
     startIdle() {
+        if (this.isChasing) return; // ⛔ don’t idle if chasing
         this.setVelocity(0, 0);
         if (!this.anims.isPlaying || this.anims.currentAnim.key !== "idle") {
             this.play("idle");
@@ -115,60 +120,77 @@ console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY 
         this.isAttacking = false;
     }
 
+
     startChase(player) {
-        if (this.isAttacking) return;
+        if (this.isAttacking) {
+            return;
+        }
 
         if (!this.isChasing) {
             this.play("run", true);
             this.isChasing = true;
         }
 
-        // Calculate direction manually
         const angle = Phaser.Math.Angle.Between(this.x, this.y, player.x, player.y);
         const vx = Math.cos(angle) * this.speed;
         const vy = Math.sin(angle) * this.speed;
 
+        if (!this.body) {
+            console.warn("[Chase] No body found!");
+            return;
+        }
+
         this.setVelocity(vx, vy);
 
-        
-
-        // Flip sprite based on direction
+        // Flip sprite depending on direction
         this.flipX = player.x < this.x;
     }
 
+
     startAttack(currentTime, player) {
+        if (this.isDead || this.isInvincible || this.isAttacking) return;
+
         this.isAttacking = true;
         this.hasFiredProjectile = false;
         this.lastAttackTime = currentTime;
 
-        // Stop any movement
-        this.body.stop();
         this.setVelocity(0, 0);
+        if (this.body) this.body.stop();
 
-        // ── Remove any old listeners ──
         this.off("animationupdate");
         this.off("animationcomplete-attack");
 
-        // ── Listen to every frame update and filter for attack frames ──
-        this.on("animationupdate", (anim, frame) => {
-            // DEBUG: log all animation‐update events
+        this.play("attack", true);
 
-            // Only fire when we're in the "attack" animation and reach frame index 3
+        this.on("animationupdate", (anim, frame) => {
             if (anim.key === "attack" && frame.index === 3 && !this.hasFiredProjectile) {
                 this.shootProjectileAt(player);
                 this.hasFiredProjectile = true;
             }
         });
 
-        // ── When the attack animation completes, go back to idle ──
         this.once("animationcomplete-attack", () => {
             this.isAttacking = false;
             this.play("idle", true);
+            this.setVelocity(0, 0);
         });
 
-        // ── Now play the attack animation ──
-        this.play("attack", true);
+        // 🛡 Failsafe: Cancel old one and set a new one
+        if (this.attackFailsafeTimer) {
+            this.attackFailsafeTimer.remove();
+        }
+
+        this.attackFailsafeTimer = this.scene.time.delayedCall(1200, () => {
+            if (!this.active || this.isDead) return;
+
+            if (this.isAttacking) {
+                console.warn("Failsafe: attack state cleared");
+                this.isAttacking = false;
+                this.play("idle", true);
+            }
+        });
     }
+
 
 
 
@@ -195,5 +217,55 @@ console.log("Body type:", this.body.type === Phaser.Physics.Arcade.DYNAMIC_BODY 
         this.scene.time.delayedCall(projectile.lifespan, () => {
             projectile.destroy();
         });
+    }
+
+    takeDamage(amount, source, knockback = 200) {
+        if (this.isDead || this.isInvincible) return;
+
+        this.health -= amount;
+
+        if (source && knockback) {
+            const angle = Phaser.Math.Angle.Between(source.x, source.y, this.x, this.y);
+            const vx = Math.cos(angle) * knockback;
+            const vy = Math.sin(angle) * knockback;
+            this.setVelocity(vx, vy);
+            this.scene.time.delayedCall(200, () => {
+                this.setVelocity(0, 0);
+            });
+        }
+
+        this.isInvincible = true;
+        this.setTint(0xff0000); // quick red flash
+
+
+        this.scene.time.delayedCall(this.invincibilityDuration, () => {
+            this.isInvincible = false;
+            this.clearTint();
+        });
+
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+
+
+    die() {
+
+        if (this.attackFailsafeTimer) {
+            this.attackFailsafeTimer.remove();
+            this.attackFailsafeTimer = null;
+        }
+        this.isDead = true;
+        this.setVelocity(0, 0);
+        this.body.enable = false;
+
+        this.play("death");
+
+        // Add archer score to scene
+        if (this.scene && typeof this.scene.addScore === "function") this.scene.addScore(10);
+
+        this.once("animationcomplete-death", () => {
+            this.destroy();
+        })
     }
 }

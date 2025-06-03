@@ -17,12 +17,10 @@ class MainMenuScene extends Phaser.Scene {
         families: ["Chewy", "Fredoka:wght@300,400,500,600,700"],
       },
       active: () => {
-        console.log("Fonts loaded");
         this.fontsLoaded = true;
         this.startMenu();
       },
       inactive: () => {
-        console.error("Font loading failed");
         this.fontsLoaded = true;
         this.startMenu();
       },
@@ -142,7 +140,7 @@ class MainMenuScene extends Phaser.Scene {
 
     this.startText.on("pointerdown", () => {
       this.scene.transition({
-        target: "OpeningScene", // Replace with your actual game scene
+        target: "GlitchyScene", // Replace with your actual game scene
         duration: 1000,
         moveAbove: true,
         onUpdate: (progress) => {
