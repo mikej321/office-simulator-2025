@@ -14,21 +14,19 @@ export default class DeathCutscene extends Phaser.Scene {
   }
 
   create() {
-    const musicManager = this.scene.get('MusicManager');
+    const musicManager = this.scene.get("MusicManager");
     musicManager.stopMusic(); // stop all music
 
-    console.log(this.textures.get('deathcutscene').frameTotal); // should be 66
+    console.log(this.textures.get("deathcutscene").frameTotal); // should be 66
 
     this.anims.create({
       key: "death",
       frames: this.generateRowMajorOrder(11, 6), // columns, rows
       frameRate: 10,
-      repeat: 0
+      repeat: 0,
     });
 
-
     const cutscene = this.add.sprite(400, 300, "deathcutscene");
-
 
     // Adjust scale to fit screen (experiment with this)
     cutscene.setScale(1); //adjust as needed
@@ -40,7 +38,8 @@ export default class DeathCutscene extends Phaser.Scene {
     cutscene.play("death");
 
     cutscene.on("animationcomplete", () => {
-        this.scene.start("MainMenuScene");
+      const token = localStorage.getItem("token");
+      this.scene.start(token ? "PlayerMenuScene" : "MainMenuScene");
     });
   }
 
@@ -50,11 +49,10 @@ export default class DeathCutscene extends Phaser.Scene {
       for (let col = 0; col < columns; col++) {
         const index = col * rows + row; // ← flips column-major to row-major
         if (index < columns * rows) {
-          frames.push({ key: 'deathcutscene', frame: index });
+          frames.push({ key: "deathcutscene", frame: index });
         }
       }
     }
     return frames;
   }
-
 }

@@ -1,8 +1,11 @@
 import Phaser from "phaser";
 import StatsManager from "../utils/StatsManager";
 import MusicManager from "./MusicManager";
-import StatsOverlay from '../utils/StatsOverlay';
-
+import StatsOverlay from "../utils/StatsOverlay";
+import PauseMenu from "../../factories/pauseMenu";
+import { saveProgress } from "../../utils/saveGame";
+import { getCharacterSaveData } from "../../utils/gameState";
+import { showPopup } from "../../utils/showPopup";
 
 class HomeEvening extends Phaser.Scene {
   constructor() {
@@ -16,15 +19,15 @@ class HomeEvening extends Phaser.Scene {
     this.textStyle = {
       fontFamily: "Fredoka",
       fontSize: "18px",
-      color: "#dcd6f7",              // soft lavender text
-      backgroundColor: "#2a1a40",    // rich indigo background
+      color: "#dcd6f7", // soft lavender text
+      backgroundColor: "#2a1a40", // rich indigo background
       padding: { x: 14, y: 8 },
       align: "center",
       wordWrap: { width: 300 },
       shadow: {
         offsetX: 1,
         offsetY: 1,
-        color: "#6c4ab6",            // moody purple shadow glow
+        color: "#6c4ab6", // moody purple shadow glow
         blur: 0,
         stroke: false,
         fill: true,
@@ -39,12 +42,35 @@ class HomeEvening extends Phaser.Scene {
 
   create() {
     this.statsOverlay = new StatsOverlay(this);
-    this.scene.get('MusicManager').stopMusic();
+    this.scene.get("MusicManager").stopMusic();
     if (!this.scene.isActive("MusicManager")) {
       this.scene.launch("MusicManager");
     }
     this.scene.get("MusicManager").playTrack("home");
     this.interactionInProgress = false;
+
+    // Initialize pause menu
+    this.pauseMenu = new PauseMenu(this, {
+      onSave: async () => {
+        const token = localStorage.getItem("token");
+        const currentStats = getCharacterSaveData(this);
+        if (!currentStats) {
+          showPopup(this, "No progress to save");
+          return;
+        }
+        await saveProgress(currentStats, token);
+      },
+      onBack: () => {
+        // Stop music before transitioning
+        this.scene.get("MusicManager").stopMusic();
+        this.scene.start("PlayerMenuScene");
+      },
+    });
+
+    // Add P key listener for pause menu
+    this.input.keyboard.on("keydown-P", () => {
+      this.pauseMenu.show();
+    });
 
     this.cameras.main.setAlpha(0);
     this.time.delayedCall(500, () => {
@@ -54,7 +80,9 @@ class HomeEvening extends Phaser.Scene {
     });
 
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.interactKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.E
+    );
 
     const gameWidth = 800;
     const gameHeight = 600;
@@ -74,7 +102,7 @@ class HomeEvening extends Phaser.Scene {
     this.createPlayer();
     this.player.setCollideWorldBounds(true);
 
-    this.collisionLayers.forEach(layer => {
+    this.collisionLayers.forEach((layer) => {
       this.physics.add.collider(this.player, layer);
     });
 
@@ -92,7 +120,11 @@ class HomeEvening extends Phaser.Scene {
 
     objectLayer.objects.forEach((obj) => {
       const zone = this.interactables
-        .create(obj.x + offsetX + obj.width / 2, obj.y + offsetY + obj.height / 2, null)
+        .create(
+          obj.x + offsetX + obj.width / 2,
+          obj.y + offsetY + obj.height / 2,
+          null
+        )
         .setSize(obj.width, obj.height)
         .setOrigin(0.5)
         .setVisible(false);
@@ -101,7 +133,13 @@ class HomeEvening extends Phaser.Scene {
       zone.properties = obj.properties || [];
     });
 
-    this.physics.add.overlap(this.player, this.interactables, this.handleOverlap, null, this);
+    this.physics.add.overlap(
+      this.player,
+      this.interactables,
+      this.handleOverlap,
+      null,
+      this
+    );
   }
 
   update() {
@@ -109,7 +147,10 @@ class HomeEvening extends Phaser.Scene {
     if (!this.interactionInProgress) {
       this.playerMovement();
 
-      if (this.currentInteraction && Phaser.Input.Keyboard.JustDown(this.interactKey)) {
+      if (
+        this.currentInteraction &&
+        Phaser.Input.Keyboard.JustDown(this.interactKey)
+      ) {
         this.triggerInteraction(this.currentInteraction);
         this.currentInteraction = null;
       }
@@ -135,13 +176,19 @@ class HomeEvening extends Phaser.Scene {
   }
 
   createPlayer() {
-    this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
+    this.player = this.physics.add
+      .sprite(800, 300, "player", "frame-1")
+      .setScale(0.8);
     this.player.setSize(32, 32);
 
     if (!this.anims.exists("walk")) {
       this.anims.create({
         key: "walk",
-        frames: this.anims.generateFrameNames("player", { start: 8, end: 12, prefix: "frame-" }),
+        frames: this.anims.generateFrameNames("player", {
+          start: 8,
+          end: 12,
+          prefix: "frame-",
+        }),
         frameRate: 5,
         repeat: -1,
       });
@@ -150,7 +197,11 @@ class HomeEvening extends Phaser.Scene {
     if (!this.anims.exists("back")) {
       this.anims.create({
         key: "back",
-        frames: this.anims.generateFrameNames("player", { start: 17, end: 19, prefix: "frame-" }),
+        frames: this.anims.generateFrameNames("player", {
+          start: 17,
+          end: 19,
+          prefix: "frame-",
+        }),
         frameRate: 5,
         repeat: -1,
       });
@@ -159,7 +210,11 @@ class HomeEvening extends Phaser.Scene {
     if (!this.anims.exists("idle")) {
       this.anims.create({
         key: "idle",
-        frames: this.anims.generateFrameNames("player", { start: 1, end: 8, prefix: "frame-" }),
+        frames: this.anims.generateFrameNames("player", {
+          start: 1,
+          end: 8,
+          prefix: "frame-",
+        }),
         frameRate: 5,
         repeat: -1,
       });
@@ -192,7 +247,10 @@ class HomeEvening extends Phaser.Scene {
       this.player.setVelocityY(0);
     }
 
-    if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
+    if (
+      this.player.body.velocity.x === 0 &&
+      this.player.body.velocity.y === 0
+    ) {
       this.player.anims.play("idle", true);
     }
   }
@@ -210,7 +268,12 @@ class HomeEvening extends Phaser.Scene {
     this.interactionInProgress = true;
 
     const box = this.add
-      .text(this.player.x, this.player.y - 50, `${actionText}? (Y/N)`, this.textStyle)
+      .text(
+        this.player.x,
+        this.player.y - 50,
+        `${actionText}? (Y/N)`,
+        this.textStyle
+      )
       .setOrigin(0.5);
 
     const yesKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y);
@@ -319,9 +382,9 @@ class HomeEvening extends Phaser.Scene {
       case "tv":
         return "The sitcom laugh track fills the silence. Again.";
       case "desk":
-        return "Grinding late. Maybe tomorrow you’ll log off on time.";
+        return "Grinding late. Maybe tomorrow you'll log off on time.";
       case "bringlunch":
-        return "You pack lunch like you’re meal-prepping for an apocalypse.";
+        return "You pack lunch like you're meal-prepping for an apocalypse.";
       case "bed":
         return "You scroll into oblivion. The algorithm wins.";
       case "read":
@@ -336,7 +399,6 @@ class HomeEvening extends Phaser.Scene {
   }
 
   showMessage(text, duration = 7000) {
-
     if (this.activeMessage) {
       this.activeMessage.destroy();
     }
@@ -373,7 +435,7 @@ class HomeEvening extends Phaser.Scene {
       alpha: 1,
       scale: 1,
       duration: 700,
-      ease: 'Back.Out',
+      ease: "Back.Out",
       yoyo: true,
       hold: 2000,
       onComplete: () => msg.destroy(),
@@ -382,6 +444,5 @@ class HomeEvening extends Phaser.Scene {
     // Optional cozy sound
     // this.sound.play('eveningChime');
   }
-
 }
 export default HomeEvening;
