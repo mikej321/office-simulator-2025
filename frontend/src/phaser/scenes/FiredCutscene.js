@@ -21,8 +21,11 @@ export default class FiredCutscene extends Phaser.Scene {
     this.bg = this.add.sprite(400, 300, "firedbg").setOrigin(0.5, 0.5);
     this.bg.play("fire_bg_loop");
 
+    const char = this.game.registry.get("activeCharacter");
+    const playerName = char ? char.name : "Tom";
+
     this.dialog = [
-      "Tom.",
+      `${playerName}.`,
       "Let's not drag this out.",
       "You didn't finish the project.",
       "You missed your deadline.",

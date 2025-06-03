@@ -26,13 +26,16 @@ export default class VictoryCutscene extends Phaser.Scene {
     this.bg = this.add.sprite(400, 300, "victorybg").setOrigin(0.5, 0.5);
     this.bg.play("victory_bg_loop");
 
+    const char = this.game.registry.get("activeCharacter");
+    const playerName = char ? char.name : "Tom";
+
     this.dialog = [
-      "Well, well, well... Tom actually pulled it off.",
+      `Well, well, well... ${playerName} actually pulled it off.`,
       "You finished the project. On time. Somehow.",
       "The office is buzzing. Your coworkers are... weirdly impressed.",
       "Even the boss cracked a smile. (We think.)",
       "Your probation period is officially over.",
-      "Congrats, Tom. You're hired!",
+      `Congrats, ${playerName}. You're hired!`,
     ];
 
     this.dialogIndex = 0;

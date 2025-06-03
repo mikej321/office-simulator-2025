@@ -95,7 +95,8 @@ class WorkDay extends Phaser.Scene {
   }
 
   create() {
-    const playerName = localStorage.getItem("playerName");
+    const char = this.game.registry.get("activeCharacter");
+    const playerName = char ? char.name : "Tom";
     const playerStats = localStorage.getItem("playerStats");
     if (playerName === "Cheat3r") {
       console.log(
@@ -672,28 +673,28 @@ class WorkDay extends Phaser.Scene {
     ) {
       const bossYells = {
         0: [
-          "Tom, you better get working! Your desk is collecting dust.",
+          `${playerName}, you better get working! Your desk is collecting dust.`,
           "Don't forget the onboarding checklist this time.",
           "And stop drinking so much coffee!",
         ],
         1: [
-          "We have deadlines, Tom. Dead. Lines.",
+          "We have deadlines, ${playerName}. Dead. Lines.",
           "Did you even clock in today?",
           "You're not paid to stare at your computer screen!",
         ],
         2: [
           "That report better be done before lunch.",
           "Why is your desk always a mess?",
-          "You're not the office cat whisperer, Tom!",
+          "You're not the office cat whisperer, ${playerName}!",
         ],
         3: [
           "The printer is not your friend. Stop hugging it.",
-          "We are a *team*, Tom. Not a one-man circus.",
-          "Did you do your best today Tom?",
+          "We are a *team*, ${playerName}. Not a one-man circus.",
+          "Did you do your best today ${playerName}?",
         ],
         4: [
           "It's Friday. Try *not* to mess this one up.",
-          "HR is watching, Tom. Smile more.",
+          "HR is watching, ${playerName}. Smile more.",
           "Your performance review is soon. Be afraid.",
         ],
       };
