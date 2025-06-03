@@ -152,7 +152,7 @@ class MainMenuScene extends Phaser.Scene {
 
       // this.scene.start("TestScene");
       // Replace with your actual game scene
-      // this.scene.start("IntroScene");
+      this.scene.start("OpeningScene");
     });
 
     // Keyboard listener for fullscreen toggle

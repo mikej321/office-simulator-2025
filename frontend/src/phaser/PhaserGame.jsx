@@ -23,7 +23,6 @@ import VictoryCutscene from './scenes/VictoryCutscene';
 import FiredCutscene from './scenes/FiredCutscene'; 
 import DeathCutscene from './scenes/DeathCutscene';
 import GlitchyScene from './scenes/glitchyScene';
-import TestScene from './scenes/TestScene';
 
 const PhaserGame = () => {
     const gameRef = useRef(null);
@@ -43,7 +42,7 @@ const PhaserGame = () => {
             mode: Phaser.Scale.RESIZE, // This will update the canvas size
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats, Home, HomeEvening, SleepCutscene, MusicManager, OpeningScene, TutorialScene, VictoryCutscene, FiredCutscene, DeathCutscene, GlitchyScene, TestScene ],
+          scene: [ BootScene, PreloadScene, MainMenuScene, WorkDay, GameScene, IntroScene, Pong, PongBackground, LostPong, WonPong, MaxPong, EndOfDay, EODStats, Home, HomeEvening, SleepCutscene, MusicManager, OpeningScene, TutorialScene, VictoryCutscene, FiredCutscene, DeathCutscene, GlitchyScene, ],
         };
   
         gameRef.current = new Phaser.Game(config);
