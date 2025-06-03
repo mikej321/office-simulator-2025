@@ -1,0 +1,66 @@
+{ "frames": {
+   "heavy_animation_1": {
+    "frame": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   },
+   "heavy_animation_2": {
+    "frame": { "x": 96, "y": 0, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   },
+   "heavy_animation_3": {
+    "frame": { "x": 192, "y": 0, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   },
+   "heavy_animation_4": {
+    "frame": { "x": 0, "y": 84, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   },
+   "heavy_animation_5": {
+    "frame": { "x": 96, "y": 84, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   },
+   "heavy_animation_6": {
+    "frame": { "x": 192, "y": 84, "w": 96, "h": 84 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 84 },
+    "sourceSize": { "w": 96, "h": 84 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "heavy_attack.png",
+  "format": "RGBA8888",
+  "size": { "w": 288, "h": 168 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

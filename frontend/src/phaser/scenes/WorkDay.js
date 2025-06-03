@@ -11,6 +11,10 @@ class WorkDay extends Phaser.Scene {
     });
   }
 
+  currentSensor = null;
+  bubble = null;
+  currentChrisLineIndex = null;
+
   init(){
     this.textStyle = {
       fontFamily: "Fredoka",
@@ -36,6 +40,54 @@ class WorkDay extends Phaser.Scene {
   }
 
   create() {
+    
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.chrisLines = [
+        "Debugging is like being the detective in a crime movie where you're also the murderer.",
+        "Did you try turning it off and on again?",
+        "Your code compiles? Looks like someone’s graduating!",
+        "Keep calm and `git commit`.",
+        "Behind every great coder is a stack of failed builds.",
+        "You're not just pushing code — you're pushing limits.",
+        "Real programmers don't comment code. If it was hard to write, it should be hard to read.",
+        "Don't worry, I left a few bugs in there for nostalgia.",
+        "Every bug you squashed brought you here.",
+        "You don't write bugs — you write unexpected features.",
+        "Remember: failing tests are just misunderstood success stories.",
+        "`NaN`, `undefined`, `null` — just like my emotions during your first project review.",
+        "Code is poetry. And your early work was... abstract.",
+        "Graduating? Who gave you permission to stop learning?",
+        "Your recursion has finally terminated. Congratulations!",
+        "I ran a `diff` between then and now — you’ve improved *a lot*.",
+        "You’ve passed the ultimate test: building AND surviving a JavaScript game.",
+        "This game isn’t just fun — it’s functionally awesome.",
+        "What’s the runtime complexity of awesomeness? O(you).",
+        "Don’t forget me when you’re CTO.",
+        "Error 404: Apprenticeship not found. You did it!",
+        "You're like a well-named variable — meaningful and reliable.",
+        "Did you optimize your dreams for performance too?",
+        "If coding were a game, you just hit the boss level.",
+        "No more imposter syndrome. Just programmer pride.",
+        "You’re not just a dev. You’re a dev who shipped.",
+        "You used to `console.log()` bugs. Now you log victories.",
+        "Let’s `merge` this branch of your life with greatness.",
+        "This apprenticeship was your sandbox. Now it’s production time.",
+        "The code of success: curiosity + grit + caffeine.",
+        "Your apprenticeship is over, but your commits live on.",
+        "You’ve graduated from for-loops to foresight.",
+        "I’m not crying. My fan is just overheating.",
+        "Just promise me one thing: always write tests.",
+        "Stack Overflow better watch out. You’re coming.",
+        "You came. You coded. You conquered.",
+        "Let’s be real — I’m just an NPC in the game of your life.",
+        "Achievement unlocked: Survived mentorship with Chris.",
+        "Your future codebases thank you for today.",
+        "I taught you everything I know. The rest is up to you.",
+        "Now go out there and cause some meaningful merge conflicts.",
+    ];
+    this.wasNearChris = false; // Tracks whether player was previously near Chris
+
+
     this.statsOverlay = new StatsOverlay(this);
     this.scene.get('MusicManager').stopMusic();
     if (!this.scene.isActive('MusicManager')) {
@@ -65,21 +117,121 @@ class WorkDay extends Phaser.Scene {
     const offsetY = (this.scale.height - gameHeight) / 2;
 
     // Create the tilemap and position it in the center
-    const map = this.make.tilemap({ key: "tilemap" });
-    this.tileset = map.addTilesetImage("asset-export-final-resized", "tileset");
+    this.map = this.make.tilemap({ key: "tilemap" });
+
+    this.tileset = this.map.addTilesetImage("asset-export-final-resized", "tileset");
     this.textures.get("asset-export-final-resized").setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // Create layers and position them relative to the offsets
-    this.floor = map.createLayer("Floor", this.tileset, offsetX, offsetY);
-    this.floorDeco = map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
-    this.separators = map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
-    this.deskRight = map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
-    this.deskLeft = map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
-    this.desktops = map.createLayer("Desktops", this.tileset, offsetX, offsetY);
-    this.deskDeco = map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
-    this.wall = map.createLayer("Wall", this.tileset, offsetX, offsetY);
-    this.wallDeco = map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
-    this.tableDeco = map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+    this.floor = this.map.createLayer("Floor", this.tileset, offsetX, offsetY);
+    this.floorDeco = this.map.createLayer("Floor Decorations", this.tileset, offsetX, offsetY);
+    this.separators = this.map.createLayer("Cubicle Separators", this.tileset, offsetX, offsetY);
+    this.deskRight = this.map.createLayer("Cubicle Desk Right", this.tileset, offsetX, offsetY);
+    this.deskLeft = this.map.createLayer("Cubicle Desk Left", this.tileset, offsetX, offsetY);
+    this.desktops = this.map.createLayer("Desktops", this.tileset, offsetX, offsetY);
+    this.deskDeco = this.map.createLayer("Desktop Decorations", this.tileset, offsetX, offsetY);
+    this.wall = this.map.createLayer("Wall", this.tileset, offsetX, offsetY);
+    this.wallDeco = this.map.createLayer("Wall Decorations", this.tileset, offsetX, offsetY);
+    this.tableDeco = this.map.createLayer("Table Decorations", this.tileset, offsetX, offsetY);
+
+    this.interactables = this.physics.add.staticGroup();
+    this.sensors = this.physics.add.staticGroup();
+    this.printerGroup = this.add.group();
+
+    [
+      "Blue Chair",
+      "Red Chair",
+      "Green Chair",
+      "Orange Chair",
+      "Vending Machine",
+      "Door",
+      "Printer",
+      "Door Sensor",
+      "Vending Sensor",
+      "Printer Sensor",
+    ].forEach((layerName) => {
+      const objects = this.map.getObjectLayer(layerName)?.objects || [];
+      objects.forEach((obj, idx) => {
+        const isTileObject = obj.gid !== undefined;
+        const frame = obj.properties?.find((p) => p.name === "frame")?.value;
+        const flipX = !!obj.properties?.find((p) => p.name === "flipX")?.value;
+        const centerX = offsetX + obj.x + obj.width / 2;
+        const centerY = offsetY + (isTileObject
+          ? obj.y - obj.height / 2
+          : obj.y + obj.height / 2);
+
+
+        if (layerName === "Printer") {
+          const sprite = this.interactables.create(
+            centerX,
+            centerY,
+            "printer",
+            frame
+          ).setOrigin(0.5);
+
+          this.objectNudge(sprite, -6, 37);
+          sprite.body.setSize(obj.width, obj.height);
+          sprite.body.setOffset(
+            (sprite.width - obj.width) / 2,
+            (sprite.height - obj.height) / 2
+          );
+
+          this.printerGroup.add(sprite);
+
+          const zoneObj = this.map.getObjectLayer("Printer Sensor").objects[idx];
+          const zone = this.add.zone(
+            offsetX + zoneObj.x + zoneObj.width / 2,
+            offsetY + zoneObj.y + zoneObj.height / 2,
+            zoneObj.width,
+            zoneObj.height
+          ).setOrigin(0.5);
+          this.physics.add.existing(zone, true);
+          zone.name = "Printer Sensor";
+          zone.linkedSprite = sprite;
+          this.sensors.add(zone);
+
+          return;
+        }
+
+        if (layerName.includes("Sensor")) {
+          const zone = this.add.zone(centerX, centerY, obj.width, obj.height).setOrigin(0.5);
+          zone.sensorType = obj.name;
+          this.physics.add.existing(zone, true);
+          zone.body.debugShowBody = false;
+          zone.name = obj.name;
+          this.sensors.add(zone);
+          return;
+        }
+
+        const sprite = this.interactables.create(
+          centerX,
+          centerY,
+          layerName.toLowerCase().replace(" ", "-"),
+          frame
+        ).setOrigin(0.5).setFlipX(flipX);
+
+        switch (layerName) {
+          case "Red Chair": this.objectNudge(sprite, 9, 2, flipX); break;
+          case "Blue Chair": this.objectNudge(sprite, 9, 3, flipX); break;
+          case "Orange Chair": this.objectNudge(sprite, 9, 2, flipX); break;
+          case "Green Chair": this.objectNudge(sprite, 9, -2, flipX); break;
+          case "Door": this.objectNudge(sprite, 0, 18); break;
+          default: break;
+        }
+
+        sprite.body.setSize(obj.width, obj.height);
+        sprite.body.setOffset((sprite.width - obj.width) / 2, (sprite.height - obj.height) / 2);
+        this.physics.add.existing(sprite, true);
+        this.interactables.add(sprite);
+      });
+    });
+    this.doorSprite = this.interactables
+  .getChildren()
+  .find((child) => child.texture.key === "door");
+
+this.printerSprite = this.interactables
+  .getChildren()
+  .find((child) => child.texture.key === "printer");
 
     // Add UI elements and position them relative to the offsets
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
@@ -133,16 +285,106 @@ class WorkDay extends Phaser.Scene {
     );
 
     // Add the avatar image at a chosen position
-    this.avatar = this.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+    this.avatar = this.physics.add.image(300, 400, "avatarTall").setScale(0.1).setDepth(1);
+    this.avatar.body.setAllowGravity(false); // Make sure Chris doesn’t fall
+    this.avatar.body.immovable = true;       // Chris should not move on collision
+
 
 
     // Add a text box for interaction (hidden by default)
-    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "Hey there. Long day?", this.textStyle).setOrigin(0.5).setVisible(false);
+    this.avatarText = this.add.text(this.avatar.x, this.avatar.y - 50, "", this.textStyle).setOrigin(0.5).setVisible(false);
+
 
     // Enable overlap check between player and avatar
     this.physics.add.overlap(this.player, this.avatar, () => {
-      this.avatarText.setVisible(true);
+      const nearAvatar = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y,
+        this.avatar.x, this.avatar.y
+      ) < 50;
+
+    if (nearAvatar && !this.wasNearChris) {
+        this.wasNearChris = true;
+
+        const randomIndex = Phaser.Math.Between(0, this.chrisLines.length - 1);
+        const randomLine = this.chrisLines[randomIndex];
+
+        if (randomLine && randomLine.trim() !== "") {
+          console.log("Chris says:", randomLine);
+          this.avatarText.setText(randomLine);
+          this.avatarText.setVisible(true);
+        } else {
+          console.warn("Empty or undefined Chris line!");
+          this.avatarText.setText("..."); // fallback
+          this.avatarText.setVisible(true);
+        }
+
+      } else if (!nearAvatar && this.wasNearChris) {
+        this.wasNearChris = false;
+        this.avatarText.setVisible(false);
+      }
     }, null, this);
+
+    this.physics.add.overlap(
+    this.player,
+    this.sensors,
+    (player, zone) => {
+      if (this.bubble || this.currentSensor === zone) return;
+
+      let msg;
+      switch (zone.name) {
+        case "Door Sensor":
+          msg = `Press 'E' to leave work`;
+          break;
+        case "Vending Sensor":
+          msg = `Press 'E' to grab a drink`;
+          break;
+        case "Printer Sensor":
+          msg = `Press 'E' to print something`;
+          break;
+        default:
+          msg = "";
+      }
+
+      this.bubble = this.add.text(
+        this.player.x,
+        this.player.y - 30,
+        msg,
+        {
+          fontSize: "14px",
+          fill: "#fff",
+          backgroundColor: "#000",
+          padding: { x: 6, y: 3 },
+        }
+      ).setOrigin(0.5).setDepth(1000);
+
+      this.currentSensor = zone;
+    },
+    null,
+    this
+  );
+
+  this.anims.create({
+  key: "exit",
+  frames: this.anims.generateFrameNames("door", {
+    prefix: "door-",
+    start: 1,
+    end: 8,
+  }),
+  frameRate: 24,
+  repeat: 0,
+});
+
+this.anims.create({
+  key: "print",
+  frames: this.anims.generateFrameNames("printer", {
+    prefix: "printer-",
+    start: 1,
+    end: 8,
+  }),
+  frameRate: 8,
+  repeat: 0,
+});
+
   }
 
   update() {
@@ -163,6 +405,48 @@ class WorkDay extends Phaser.Scene {
     }
 
     this.playerMovement();
+    if (this.currentSensor && Phaser.Input.Keyboard.JustDown(this.eKey)) {
+  const sensor = this.currentSensor;
+
+  if (sensor.name === "Door Sensor" && this.doorSprite) {
+    this.doorSprite.play("exit");
+
+    this.time.delayedCall(3000, () => {
+      this.doorSprite.anims.playReverse("exit");
+    });
+    this.time.delayedCall(6000, () => {
+      StatsManager.incrementWorkDayCount();
+      this.scene.stop("WorkDay");
+      this.scene.start("HomeEvening");
+    });
+
+  } else if (sensor.name === "Printer Sensor" && sensor.linkedSprite) {
+    sensor.linkedSprite.play("print");
+  }
+
+  if (this.bubble) {
+    this.bubble.destroy();
+    this.bubble = null;
+  }
+
+  sensor.body.enable = false;
+  sensor.setVisible(false);
+
+  this.time.delayedCall(3000, () => {
+    sensor.body.enable = true;
+    sensor.setVisible(true);
+  });
+
+  this.currentSensor = null;
+}
+if (this.currentSensor && !this.physics.world.overlap(this.player, this.currentSensor)) {
+  if (this.bubble) {
+    this.bubble.destroy();
+    this.bubble = null;
+  }
+  this.currentSensor = null;
+}
+
 
     // Check if the player is within the interactable area
     const distance = Phaser.Math.Distance.Between(
@@ -220,11 +504,23 @@ class WorkDay extends Phaser.Scene {
       }
 
         // Respawn the player
-        this.player.setPosition(800, 300);
+        //this.player.setPosition(500, 300);
 
         // Increment the workday count
         StatsManager.incrementWorkDayTaskNumber();
         this.createPlayer(); // Recreate the player to show the correct text
+        this.createCollisions(this.player, [
+          this.floor,
+          this.floorDeco,
+          this.separators,
+          this.deskRight,
+          this.deskLeft,
+          this.desktops,
+          this.deskDeco,
+          this.wall,
+          this.wallDeco,
+          this.tableDeco,
+        ]);
       } else if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
           console.log("Player chose to goof off!");
           StatsManager.incrementMP();
@@ -253,10 +549,22 @@ class WorkDay extends Phaser.Scene {
       this.avatar.x, this.avatar.y
     ) < 50;
 
-    const wasVisible = this.avatarText.visible;
-    if (nearAvatar && !wasVisible) {
+    if (nearAvatar && !this.wasNearChris) {
+      this.wasNearChris = true;
+
+      // Pick a new random line index that's not the same as last time
+      let newIndex;
+      do {
+        newIndex = Phaser.Math.Between(0, this.chrisLines.length - 1);
+      } while (newIndex === this.currentChrisLineIndex && this.chrisLines.length > 1);
+
+      this.currentChrisLineIndex = newIndex;
+      const newLine = this.chrisLines[this.currentChrisLineIndex];
+
+      this.avatarText.setText(newLine);
       this.avatarText.setVisible(true);
-    } else if (!nearAvatar && wasVisible) {
+    } else if (!nearAvatar && this.wasNearChris) {
+      this.wasNearChris = false;
       this.avatarText.setVisible(false);
     }
   }
@@ -269,7 +577,7 @@ class WorkDay extends Phaser.Scene {
   }
 
   createPlayer() {
-    this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
+    this.player = this.physics.add.sprite(500, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
 
     if (!this.anims.exists("walk")){
@@ -298,41 +606,98 @@ class WorkDay extends Phaser.Scene {
 
     //this.cameras.main.startFollow(this.player);
 
-    // Display a short-timed text box over Tom's head based on workday count
-    const workDayTaskNumber = StatsManager.getWorkDayTaskNumber();
-    console.log("Current WorkDay Count in createPlayer:", workDayTaskNumber);
+  const currentDay = StatsManager.getWorkDayCount(); // 1–5
+  const workDay = currentDay - 1; // Adjust to 0–4
+  console.log("Current workday in createPlayer:", workDay);
 
-    let textToDisplay = "";
-    switch (workDayTaskNumber) {
-      case 0:
-        textToDisplay = "Tom, you better get working! \nYour desk is collecting dust.";
+  const taskNum = StatsManager.getWorkDayTaskNumber(); // 0–2
+  console.log("Current task count in createPlayer:", taskNum);
+
+  // Defensive check: make sure workDay and taskNum are valid
+  if (workDay >= 0 && workDay < 5 && taskNum >= 0 && taskNum < 3) {
+    const bossYells = {
+      0: [
+        "Tom, you better get working! Your desk is collecting dust.",
+        "Don’t forget the onboarding checklist this time.",
+        "And stop drinking so much coffee!",
+      ],
+      1: [
+        "We have deadlines, Tom. Dead. Lines.",
+        "Did you even clock in today?",
+        "You're not paid to stare at your computer screen!",
+      ],
+      2: [
+        "That report better be done before lunch.",
+        "Why is your desk always a mess?",
+        "You're not the office cat whisperer, Tom!",
+      ],
+      3: [
+        "The printer is not your friend. Stop hugging it.",
+        "We are a *team*, Tom. Not a one-man circus.",
+        "Did you do your best today Tom?",
+      ],
+      4: [
+        "It’s Friday. Try *not* to mess this one up.",
+        "HR is watching, Tom. Smile more.",
+        "Your performance review is soon. Be afraid.",
+      ],
+    };
+
+    const line = bossYells[workDay][taskNum];
+    const spawnText = this.add.text(
+      this.scale.width - 300,  // X: near right edge with some padding
+      40,                     // Y: top with some padding
+      line,
+      this.textStyle
+    ).setOrigin(0.5);
+
+    this.time.delayedCall(6000, () => {
+      spawnText.destroy();
+    });
+  } else {
+    console.warn("No boss yell found for day", workDay, "and task", taskNum);
+  }
+
+  this.physics.add.overlap(
+  this.player,
+  this.sensors,
+  (player, zone) => {
+    if (this.bubble || this.currentSensor === zone) return;
+
+    let msg;
+    switch (zone.name) {
+      case "Door Sensor":
+        msg = `Press 'E' to leave work`;
         break;
-      case 1:
-        textToDisplay = "Ahhhhhhh \nmuch better.";
+      case "Vending Sensor":
+        msg = `Press 'E' to grab a drink`;
         break;
-      case 2:
-        textToDisplay = "Is that a cat over there?";
-        break;
-      case 3:
-        textToDisplay = "We should come up with a name for the cat.";
+      case "Printer Sensor":
+        msg = `Press 'E' to print something`;
         break;
       default:
-        textToDisplay = ""; // No text for other counts
+        msg = "";
     }
 
-    if (textToDisplay) {
-      const spawnText = this.add.text(
-        this.player.x, // Position the text at the player's X position
-        this.player.y - 50, // Position the text slightly above the player's head
-        textToDisplay, // The text to display
-        this.textStyle
-      ).setOrigin(0.5); // Center the text
+    this.bubble = this.add.text(
+      this.player.x,
+      this.player.y - 30,
+      msg,
+      {
+        fontSize: "14px",
+        fill: "#fff",
+        backgroundColor: "#000",
+        padding: { x: 6, y: 3 },
+      }
+    ).setOrigin(0.5).setDepth(1000);
 
-      // Use a delayed call to hide or destroy the text after 2 seconds
-      this.time.delayedCall(6000, () => {
-        spawnText.destroy(); // Remove the text from the scene
-      });
-    }
+    this.currentSensor = zone;
+  },
+  null,
+  this
+);
+
+
   }
 
   playerMovement() {
@@ -377,6 +742,19 @@ class WorkDay extends Phaser.Scene {
       if (this.player.anims.currentAnim?.key !== "idle") {
         this.player.anims.play("idle", true);
       }
+    }
+  }
+
+  objectNudge(obj, objX, objY, propertyName = "") {
+    if (propertyName === "") {
+      obj.x += objX;
+      obj.y += objY;
+    } else if (propertyName) {
+      obj.x += objX;
+      obj.y -= objY;
+    } else {
+      obj.x -= objX;
+      obj.y -= objY;
     }
   }
 }

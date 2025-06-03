@@ -31,7 +31,7 @@ export default class DeathCutscene extends Phaser.Scene {
 
 
     // Adjust scale to fit screen (experiment with this)
-    cutscene.setScale(1.5); //adjust as needed
+    cutscene.setScale(1); //adjust as needed
 
     cutscene.setOrigin(0.5);
     cutscene.setFrame(0); // Try 0–65 to test visibility
