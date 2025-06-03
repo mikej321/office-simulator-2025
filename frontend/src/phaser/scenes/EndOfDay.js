@@ -56,14 +56,14 @@ class EndOfDay extends Phaser.Scene {
       key: "exit",
       frames: this.anims.generateFrameNames("door", { prefix: "door-", start: 1, end: 8 }),
       frameRate: 24,
-      repeat: -1,
+      repeat: 0,
     });
 
     this.anims.create({
       key: "print",
       frames: this.anims.generateFrameNames("printer", { prefix: "printer-", start: 1, end: 8 }),
       frameRate: 8,
-      repeat: -1,
+      repeat: 0,
     });
 
     [

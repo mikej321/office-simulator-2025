@@ -255,7 +255,8 @@ class HomeEvening extends Phaser.Scene {
         StatsManager.incrementEnergyLevel();
         break;
       case "bed":
-        StatsManager.incrementMP();
+        //StatsManager.incrementMP();
+        StatsManager.incrementEnergyLevel();
         StatsManager.incrementEnergyLevel();
         StatsManager.decrementFocusLevel();
         StatsManager.decrementMotivationLevel();
@@ -266,14 +267,15 @@ class HomeEvening extends Phaser.Scene {
         StatsManager.incrementMP();
         break;
       case "calloff":
-        StatsManager.incrementMP();
-        StatsManager.incrementMP();
+        StatsManager.decrementMP();
         StatsManager.incrementMotivationLevel();
+        StatsManager.incrementEnergyLevel();
         break;
       case "freshenup":
-        StatsManager.incrementMP();
+        //StatsManager.incrementMP();
         StatsManager.incrementMP();
         StatsManager.incrementEnergyLevel();
+        StatsManager.incrementMotivationLevel();
         break;
       default:
         break;
