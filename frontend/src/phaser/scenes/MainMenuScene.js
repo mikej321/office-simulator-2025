@@ -140,7 +140,7 @@ class MainMenuScene extends Phaser.Scene {
 
     this.startText.on("pointerdown", () => {
       this.scene.transition({
-        target: "TutorialScene", // Replace with your actual game scene
+        target: "OpeningScene", // Replace with your actual game scene
         duration: 1000,
         moveAbove: true,
         onUpdate: (progress) => {
