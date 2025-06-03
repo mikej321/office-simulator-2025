@@ -66,7 +66,7 @@ class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     let titleIndex = 0;
-    const titleString = "BlueSky Thinking";
+    const titleString = "Blue Sky Thinking";
 
     const typeNextLetter = () => {
       if (titleIndex < titleString.length) {

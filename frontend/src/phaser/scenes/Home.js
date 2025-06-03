@@ -334,24 +334,64 @@ class Home extends Phaser.Scene {
     }
   }
 
-  getActionFlavorText(name){
-    switch (name) {
-      case "tv":
-        return "You learn exactly nothing useful, but you feel informed.";
-      case "desk":
-        return "'You are the CEO of your vibe,' says a man with six side hustles.";
-      case "bringlunch":
-        return "You burn toast so perfectly it's modern art.";
-      case "bed":
-        return "Five more minutes turns into a full-on lifestyle.";
-      case "read":
-        return "You read one paragraph. Then re-read it. Three times.";
-      case "calloff":
-        return "You fake cough so well, you almost believe it.";
-      case "freshenup":
-        return "You clean up so well, your mirror says 'who's that?'";
-      default:
-        return "do this";
+getActionFlavorText(name) {
+  const flavorTexts = {
+    tv: [ // "watch news"
+      "You learn exactly nothing useful, but you feel informed.",
+      "You absorb content and remember none of it.",
+      "Somehow the news made you more confused.",
+      "You nod at headlines like you're about to brief the nation.",
+      "You watch the anchors argue while sipping cold coffee."
+    ],
+    desk: [ // "watch a podcast"
+      "'You are the CEO of your vibe,' says a man with six side hustles.",
+      "You write a to-do list and accomplish none of it.",
+      "A productivity podcast shames you into checking your email.",
+      "You half-listen while doomscrolling. Multitasking?",
+      "They say something inspiring. You immediately forget it."
+    ],
+    bringlunch: [ // "make breakfast"
+      "You burn toast so perfectly it's modern art.",
+      "You make eggs and pretend it’s self-care.",
+      "You consider oatmeal, then make coffee and call it a win.",
+      "You craft a breakfast plate worthy of a food blog. Kind of.",
+      "You drop your toast. Butter side down, naturally."
+    ],
+    bed: [ // "sleep in extra"
+      "Five more minutes turns into a full-on lifestyle.",
+      "You dream you're working... then wake up sad you have to work.",
+      "Your bed hugs you like it never wants to let go.",
+      "You wake up refreshed... 30 minutes late.",
+      "You sleep so hard, your alarm gives up."
+    ],
+    read: [ // "read your book"
+      "You read one paragraph. Then re-read it. Three times.",
+      "Your brain drifts after one sentence. Classic.",
+      "You highlight every line. Nothing sinks in.",
+      "You get lost in the story—until reality calls.",
+      "You fall asleep face-first in chapter two."
+    ],
+    calloff: [ // "call off work"
+      "You fake cough so well, you almost believe it.",
+      "You call in sick with the acting skills of a soap star.",
+      "Your boss doesn't buy it, but they let it slide.",
+      "You claim food poisoning with Oscar-worthy conviction.",
+      "You hang up and immediately feel guilty—and relieved."
+    ],
+    freshenup: [ // "put extra effort into appearance"
+      "You clean up so well, your mirror says 'who's that?'",
+      "You're now 20% more presentable and 80% more tired.",
+      "Even your shampoo applauds the effort.",
+      "You try three outfits. Settle on the first. Classic.",
+      "You look great, feel okay, and smell fantastic."
+    ]
+  };
+
+    const options = flavorTexts[name];
+    if (options) {
+      return Phaser.Utils.Array.GetRandom(options); // Or plain JS: options[Math.floor(Math.random() * options.length)]
+    } else {
+      return "You do something vaguely productive.";
     }
   }
 
