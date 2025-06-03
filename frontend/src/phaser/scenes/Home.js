@@ -39,7 +39,7 @@ class Home extends Phaser.Scene {
 
   create() {
     this.statsOverlay = new StatsOverlay(this);
-    this.scene.get('MusicManager').stopMusic();
+    
     if (!this.scene.isActive('MusicManager')) {
       this.scene.launch('MusicManager');
       this.time.delayedCall(100, () => {

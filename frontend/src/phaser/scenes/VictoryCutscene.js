@@ -34,7 +34,7 @@ export default class VictoryCutscene extends Phaser.Scene {
     this.dialog = [
         "Well, well, well... Tom actually pulled it off.",
         "You finished the project. On time. Somehow.",
-        "The office is buzzing. Your coworkers are... weirdly impressed.",
+        "Even Chris is impressed!",
         "Even the boss cracked a smile. (We think.)",
         "Your probation period is officially over.",
         "Congrats, Tom. You’re hired!"

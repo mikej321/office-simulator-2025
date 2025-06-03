@@ -172,7 +172,7 @@ class EndOfDay extends Phaser.Scene {
       }
       this.time.delayedCall(2500, () => {
         this.scene.stop("WorkDay");
-        this.scene.start("HomeEvening");
+        this.scene.start("EODStats");
       });
     }
   }

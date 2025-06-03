@@ -342,7 +342,7 @@ this.anims.create({
       if (StatsManager.getWorkDayCount() >= StatsManager.getWorkDayLimit()) {
         StatsManager.setWorkDayLimitReached(true);
       }
-      
+      StatsManager.resetWorkDayTaskNumber();
       console.log("Workday loop complete. Transitioning to EndOfDay.");
       this.scene.stop("WorkDay");
       this.scene.start("EndOfDay");
