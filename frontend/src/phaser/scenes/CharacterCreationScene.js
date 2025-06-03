@@ -96,6 +96,13 @@ class CharacterCreationScene extends Phaser.Scene {
    * Creates input fields, stat allocation controls, and submit button.
    */
   startForm() {
+    // Destroy old stat value texts if they exist
+    if (this.statTexts) {
+      Object.values(this.statTexts).forEach((text) => text.destroy());
+    }
+    if (this.remainingText) {
+      this.remainingText.destroy();
+    }
     const { width, height } = this.scale;
     // Title
     this.titleText = this.add
@@ -371,9 +378,12 @@ class CharacterCreationScene extends Phaser.Scene {
       this.showError("Please allocate all points");
       return;
     }
+
+    // Disable the button immediately
+    this.submitButton.disableInteractive();
+    this.submitButton.setText("Submitting...");
+
     try {
-      this.submitButton.setText("Submitting...");
-      this.submitButton.disableInteractive();
       const token = localStorage.getItem("token");
       const response = await fetch(
         "http://localhost:8000/api/character/create",
@@ -390,11 +400,57 @@ class CharacterCreationScene extends Phaser.Scene {
       if (!response.ok) {
         throw new Error(data.message || "Failed to create character");
       }
+
       // Store character in global registry
       this.game.registry.set("activeCharacter", data.character);
-      this.submitButton.setText("Hired!");
-      this.time.delayedCall(1000, () => {
-        this.scene.start("OpeningScene");
+
+      // Fade out the submit button
+      this.tweens.add({
+        targets: this.submitButton,
+        alpha: 0,
+        duration: 500,
+        ease: "Power2",
+        onComplete: () => {
+          // Create and show the "Hired!" text
+          const hiredText = this.add
+            .text(this.submitButton.x, this.submitButton.y, "Hired!", {
+              fontSize: "28px",
+              color: "#00ff00",
+              fontFamily: "Chewy",
+              backgroundColor: "#222",
+              padding: { x: 16, y: 8 },
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+
+          // Fade in the "Hired!" text
+          this.tweens.add({
+            targets: hiredText,
+            alpha: 1,
+            duration: 500,
+            ease: "Power2",
+            onComplete: () => {
+              // Wait 2 seconds before starting the scene transition
+              this.time.delayedCall(2000, () => {
+                // Fade out the "Hired!" text
+                this.tweens.add({
+                  targets: hiredText,
+                  alpha: 0,
+                  duration: 500,
+                  ease: "Power2",
+                  onComplete: () => {
+                    // Start fade to black
+                    this.cameras.main.fade(1000, 0, 0, 0);
+                    // Wait for fade to complete before changing scene
+                    this.time.delayedCall(1000, () => {
+                      this.scene.start("OpeningScene");
+                    });
+                  },
+                });
+              });
+            },
+          });
+        },
       });
     } catch (error) {
       this.showError(error.message);

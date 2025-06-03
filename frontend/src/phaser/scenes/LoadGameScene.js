@@ -182,7 +182,7 @@ class LoadGameScene extends Phaser.Scene {
         () => {
           console.log("Loading character data:", char);
           this.game.registry.set("activeCharacter", char);
-          this.scene.start("TestScene");
+          this.scene.start("WorkDay");
         }
       );
     });
