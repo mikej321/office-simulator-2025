@@ -130,8 +130,10 @@ class Pong extends Phaser.Scene {
                 console.log("Maximum number of games reached!");
                 this.scene.stop("PongBackground");
                 this.scene.start("MaxPong");
+                this.gamesPlayed = 0; // Reset games played for the next session
                 return;
             } else {
+                this.gamesPlayed = 0; // Reset games played for the next session
                 this.scene.stop("PongBackground");
                 this.scene.run("WonPong");
             }
@@ -143,10 +145,12 @@ class Pong extends Phaser.Scene {
 
             if (this.gamesPlayed >= 3) {
                 console.log("Maximum number of games reached!");
+                this.gamesPlayed = 0; // Reset games played for the next session
                 this.scene.stop("PongBackground");
                 this.scene.start("MaxPong");
                 return;
             } else {
+                this.gamesPlayed = 0; // Reset games played for the next session
                 this.scene.stop("PongBackground");
                 this.scene.run("LostPong");
             }

@@ -8,6 +8,9 @@ class CheatsScene extends Phaser.Scene {
   preload() {}
 
   create() {
+    if (!this.scene.isActive('MusicManager')) {
+      this.scene.launch('MusicManager');
+    }
     const { width, height } = this.scale;
 
     // Title text

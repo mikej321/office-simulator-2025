@@ -38,7 +38,11 @@ export default class SleepCutscene extends Phaser.Scene {
             // Check if the player has no MP left
             if (StatsManager.getMP() <= 0) {
               this.scene.start("DeathCutscene");
-            } else {
+            } 
+            else if (StatsManager.getMP() === 1) {
+              this.scene.start("GlitchyScene");
+            }
+            else {
               this.sound.play('rooster');
               this.scene.start("Home");
             }

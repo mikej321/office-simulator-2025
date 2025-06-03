@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
-import MusicManager from "../utils/MusicManager";
+import MusicManager from "./MusicManager";
+import StatsManager from "../utils/StatsManager";
 
 class MainMenuScene extends Phaser.Scene {
   constructor() {
@@ -26,7 +27,10 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    MusicManager.stopMusic();
+    StatsManager.resetAllStats();
+    const musicManager = this.scene.get('MusicManager');
+    musicManager.stopMusic(); // stop all music
+
     this.menuStarted = false;
 
     this.time.addEvent({

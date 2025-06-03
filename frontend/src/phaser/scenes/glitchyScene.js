@@ -17,6 +17,8 @@ class GlitchyScene extends Phaser.Scene {
     }
 
     create() {
+        const musicManager = this.scene.get('MusicManager');
+    musicManager.stopMusic(); // stop all music
         this.map = this.make.tilemap({
             key: "glitchy_tilemap",
         })

@@ -251,6 +251,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.once("animationcomplete-death", () => {
             this.body.enable = false;
+            this.scene.scene.start("Home"); 
         })
     }
     
