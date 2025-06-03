@@ -378,11 +378,16 @@ class CharacterCreationScene extends Phaser.Scene {
       this.showError("Please allocate all points");
       return;
     }
+    try {
+      this.submitButton.disableInteractive();
+      this.submitCharacter();
+    } catch (error) {
+      this.showError(error.message);
+      this.submitButton.setInteractive();
+    }
+  }
 
-    // Disable the button immediately
-    this.submitButton.disableInteractive();
-    this.submitButton.setText("Submitting...");
-
+  async submitCharacter() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -404,59 +409,54 @@ class CharacterCreationScene extends Phaser.Scene {
       // Store character in global registry
       this.game.registry.set("activeCharacter", data.character);
 
-      // Fade out the submit button
-      this.tweens.add({
-        targets: this.submitButton,
-        alpha: 0,
-        duration: 500,
-        ease: "Power2",
-        onComplete: () => {
-          // Create and show the "Hired!" text
-          const hiredText = this.add
-            .text(this.submitButton.x, this.submitButton.y, "Hired!", {
-              fontSize: "28px",
-              color: "#00ff00",
-              fontFamily: "Chewy",
-              backgroundColor: "#222",
-              padding: { x: 16, y: 8 },
-            })
-            .setOrigin(0.5)
-            .setAlpha(0);
+      // Show popup with "Hired!"
+      this.showPopUp("Hired!");
 
-          // Fade in the "Hired!" text
-          this.tweens.add({
-            targets: hiredText,
-            alpha: 1,
-            duration: 500,
-            ease: "Power2",
-            onComplete: () => {
-              // Wait 2 seconds before starting the scene transition
-              this.time.delayedCall(2000, () => {
-                // Fade out the "Hired!" text
-                this.tweens.add({
-                  targets: hiredText,
-                  alpha: 0,
-                  duration: 500,
-                  ease: "Power2",
-                  onComplete: () => {
-                    // Start fade to black
-                    this.cameras.main.fade(1000, 0, 0, 0);
-                    // Wait for fade to complete before changing scene
-                    this.time.delayedCall(1000, () => {
-                      this.scene.start("OpeningScene");
-                    });
-                  },
-                });
-              });
-            },
-          });
-        },
+      // Wait 2 seconds before starting the scene transition
+      this.time.delayedCall(2000, () => {
+        // Start fade to black
+        this.cameras.main.fade(1000, 0, 0, 0);
+
+        // Wait for fade to complete before changing scene
+        this.time.delayedCall(1000, () => {
+          this.scene.start("OpeningScene");
+        });
       });
     } catch (error) {
       this.showError(error.message);
-      this.submitButton.setText("Submit Application");
       this.submitButton.setInteractive();
     }
+  }
+
+  showPopUp(message) {
+    const { width, height } = this.scale;
+
+    // Create a semi-transparent background
+    const bg = this.add
+      .rectangle(width / 2, height / 2, 300, 150, 0x000000, 0.8)
+      .setOrigin(0.5)
+      .setDepth(1000);
+
+    // Create the popup text
+    const popupText = this.add
+      .text(width / 2, height / 2, message, {
+        fontSize: "32px",
+        fontFamily: "Chewy",
+        color: "#00ff00",
+      })
+      .setOrigin(0.5)
+      .setDepth(1001);
+
+    // Add entrance animation
+    bg.setScale(0);
+    popupText.setScale(0);
+
+    this.tweens.add({
+      targets: [bg, popupText],
+      scale: 1,
+      duration: 500,
+      ease: "Back.easeOut",
+    });
   }
 
   /**
