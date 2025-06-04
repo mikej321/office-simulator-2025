@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import WebFont from "webfontloader";
 import SpeechBubble from "../../factories/speechBubble";
+import TypewriterText from "../../factories/typewriterText";
 import WorkDay from "./WorkDay";
 import Player from "../../factories/player";
 import Archer from "../../factories/archer";
@@ -14,7 +15,19 @@ class GlitchyScene extends Phaser.Scene {
     }
 
     preload() {
-
+        this.fontsLoaded = false;
+        
+            WebFont.load({
+              google: {
+                families: ["Chewy", "Fredoka:wght@300,400,500,600,700"],
+              },
+              active: () => {
+                this.fontsLoaded = true;
+              },
+              inactive: () => {
+                this.fontsLoaded = true;
+              },
+            });
     }
 
     create() {
@@ -54,7 +67,69 @@ class GlitchyScene extends Phaser.Scene {
 
         const boundaryGroup = this.physics.add.staticGroup();
 
+        this.rem = 16;
+        const margin = 250;
+        const bubbleWidth = 300;
+
+        const x = this.scale.width - bubbleWidth - margin;
+
         this.score = 0;
+
+
+        this.textIsShowing = true;
+
+
+
+        // const welcomeText = new TypewriterText(this, x, 250, "Welcome to your worst nightmare, Tom", {
+        //     fontSize: '24px',
+        //     color: 'blue',
+        //     wordWrap: { width: 300 }
+        // }, 100, () => {
+        //     this.textIsShowing = false;
+        // })
+
+        const introText = [
+            "Welcome to your nightmare, Tom!",
+            "This is your punishment for slacking off...",
+            "Clear 5 levels and perhaps you're really suited for the job."
+        ];
+
+        let i = 0;
+        const showNext = async () => {
+            return new Promise((resolve) => {
+                const showNext = () => {
+                    if (this.typewriter) this.typewriter.destroy();
+
+                    if (i >= introText.length) {
+                        this.textIsShowing = false;
+                        resolve();
+                        return;
+                    }
+
+                    this.typewriter = new TypewriterText(this, x, 250, introText[i], {
+                        fontSize: "24px",
+                        fontFamily: "Fredoka",
+                        lineSpacing: 10,
+                        color: "blue",
+                        wordWrap: {
+                            width: 300,
+                        }
+                    }, 40, () => {
+                        this.time.delayedCall(1000, showNext)
+                    });
+
+                    i++;
+                }
+
+                showNext();
+            })
+        }
+
+        showNext().then(() => {
+            this.time.delayedCall(1000, () => {
+                this.spawnMultipleArchers(10, 100000)
+            })
+        })
 
 
         // Hitbox group
@@ -74,6 +149,60 @@ class GlitchyScene extends Phaser.Scene {
             }),
             frameRate: 5
         })
+        
+        console.log(this.anims.exists("projectile"))
+
+        this.anims.create({
+                    key: "archer_idle",
+                    frames: this.anims.generateFrameNames("archer_idle", {
+                        start: 1,
+                        end: 6,
+                        prefix: "idle_"
+                    }),
+                    frameRate: 8,
+                    repeat: -1
+                })
+        
+                this.anims.create({
+                    key: "archer_run",
+                    frames: this.anims.generateFrameNames("archer_run", {
+                        start: 1,
+                        end: 6,
+                        prefix: "run_"
+                    }),
+                    frameRate: 7,
+                    repeat: -1
+                })
+        
+                this.anims.create({
+                    key: "archer_hurt",
+                    frames: this.anims.generateFrameNames("archer_death", {
+                        start: 1,
+                        end: 3,
+                        prefix: "hurt_"
+                    }),
+                    frameRate: 7,
+                })
+        
+                this.anims.create({
+                    key: "archer_death",
+                    frames: this.anims.generateFrameNames("archer_death", {
+                        start: 1,
+                        end: 4,
+                        prefix: "death_"
+                    }),
+                    frameRate: 7,
+                })
+        
+                this.anims.create({
+                    key: "archer_attack",
+                    frames: this.anims.generateFrameNames("archer_attack", {
+                        start: 1,
+                        end: 7,
+                        prefix: "attack_"
+                    }),
+                    frameRate: 7,
+                })
 
         boundaryUpper.forEach(obj => {
             const rect = this.add.rectangle(obj.x, obj.y - (obj.height + 40), obj.width, obj.height)
@@ -119,7 +248,6 @@ class GlitchyScene extends Phaser.Scene {
             .setScrollFactor(0);
 
         // Score Text
-        this.rem = 16;
         this.marginRight = 4 * this.rem;
 
         this.scoreText = this.add.text(this.scale.width - this.marginRight, 42, "Score: 0", {
@@ -163,11 +291,11 @@ class GlitchyScene extends Phaser.Scene {
         }, null, this);
 
         this.cameras.main.startFollow(this.player);
-
-        this.spawnMultipleArchers(10, 100000)
     }
 
     update(time, delta) {
+
+        if (this.textIsShowing) return;
 
         if (!this.player.isDead) this.player.playerMovement();
 

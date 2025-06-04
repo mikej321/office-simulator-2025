@@ -236,7 +236,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.isAttacking || this.isDead || this.isHurt) return;
 
         if (this.cursor.left.isDown && this.cursor.up.isDown && this.keys.run.isDown) {
-            this.setVelocity(-500);
+            this.setVelocity(-500, -500);
             this.anims.play("run", true);
             this.flipX = true;
         } else if (this.cursor.right.isDown && this.cursor.up.isDown && this.keys.run.isDown) {
@@ -248,11 +248,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.anims.play("run", true);
             this.flipX = true;
         } else if (this.cursor.right.isDown && this.cursor.down.isDown && this.keys.run.isDown) {
-            this.setVelocity(500);
+            this.setVelocity(500, 500);
             this.anims.play("run", true);
             this.flipX = false;
         } else if (this.cursor.left.isDown && this.cursor.up.isDown) {
-            this.setVelocity(-300)
+            this.setVelocity(-300, -300)
             this.anims.play("walk", true);
             this.flipX = true;
         } else if (this.cursor.right.isDown && this.cursor.up.isDown) {
@@ -264,7 +264,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.anims.play("walk", true);
             this.flipX = true;
         } else if (this.cursor.right.isDown && this.cursor.down.isDown) {
-            this.setVelocity(300);
+            this.setVelocity(300, 300);
             this.anims.play("walk", true);
             this.flipX = false;
         }
@@ -349,72 +349,76 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawnAttackHitbox(damage, knockback) {
-    const offsetX = this.flipX ? -60 : 60;
-    const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
-    hitbox.setOrigin(0.5);
+        const offsetX = this.flipX ? -30 : 30;
 
-    this.scene.physics.add.existing(hitbox);
-    hitbox.damage = damage;
-    hitbox.knockback = knockback;
+        // Create hitbox zone
+        const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
+        hitbox.setOrigin(0.5);
 
-    this.scene.playerHitBoxes.add(hitbox);
-    this.attackHitbox = hitbox;
+        this.scene.physics.add.existing(hitbox);
+        hitbox.damage = damage;
+        hitbox.knockback = knockback;
 
-    // ⬅️ Add knockback logic here
-    this.scene.physics.add.overlap(hitbox, this.scene.archers, (hitbox, enemy) => {
-        if (typeof enemy.takeDamage === "function") {
-            enemy.takeDamage(hitbox.damage);
+        this.scene.playerHitBoxes.add(hitbox);
+        this.attackHitbox = hitbox;
 
-            // 💥 Apply directional knockback
-            const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, enemy.x, enemy.y);
-            const vx = Math.cos(angle) * hitbox.knockback;
-            const vy = Math.sin(angle) * hitbox.knockback;
+        // Track enemies already hit
+        const alreadyHit = new Set();
 
-            enemy.setVelocity(vx, vy);
+        // Allow overlap with group of enemies
+        this.scene.physics.add.overlap(hitbox, this.scene.archers, (hitbox, enemy) => {
+            if (alreadyHit.has(enemy)) return;
+            alreadyHit.add(enemy);
 
-            this.scene.time.delayedCall(200, () => {
-                enemy.setVelocity(0, 0);
-            });
+            if (typeof enemy.takeDamage === "function") {
+                enemy.takeDamage(hitbox.damage, hitbox);
 
-            this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
-        }
+                // Knockback
+                const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, enemy.x, enemy.y);
+                const vx = Math.cos(angle) * hitbox.knockback;
+                const vy = Math.sin(angle) * hitbox.knockback;
 
-        hitbox.destroy();
-        if (this.attackHitbox === hitbox) {
-            this.attackHitbox = null;
-        }
-    });
+                enemy.setVelocity(vx, vy);
+                this.scene.time.delayedCall(200, () => {
+                    enemy.setVelocity(0, 0);
+                });
 
-    // 🧼 Just in case hitbox doesn't hit anything
-    this.scene.time.delayedCall(150, () => {
-        if (hitbox && hitbox.destroy) {
-            hitbox.destroy();
-            if (this.attackHitbox === hitbox) {
-                this.attackHitbox = null;
+                this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
             }
-        }
-    });
-}
+        });
 
-handleProjectileHit(projectile) {
-    if (!projectile || this.isDead || this.isInvincible) return;
-
-    const wasDefending = this.isDefending && this.anims.currentFrame?.index === 2;
-
-    if (projectile.damage) this.takeDamage(projectile.damage);
-
-    const dx = this.x - projectile.x;
-    const dy = this.y - projectile.y;
-
-    const pushStrength = wasDefending ? 10 : 50;
-    const pushVec = new Phaser.Math.Vector2(dx, dy).normalize().scale(pushStrength);
-
-    this.setVelocity(pushVec.x, pushVec.y);
-
-    if (projectile.destroy) {
-        projectile.destroy();
+        // Auto-destroy hitbox after short time
+        this.scene.time.delayedCall(150, () => {
+            if (hitbox && hitbox.destroy) {
+                hitbox.destroy();
+                if (this.attackHitbox === hitbox) {
+                    this.attackHitbox = null;
+                }
+            }
+        });
     }
-}
+
+
+
+    handleProjectileHit(projectile) {
+        if (!projectile || this.isDead || this.isInvincible) return;
+
+        const wasDefending = this.isDefending && this.anims.currentFrame?.index === 2;
+
+        if (projectile.damage) this.takeDamage(projectile.damage);
+
+        const dx = this.x - projectile.x;
+        const dy = this.y - projectile.y;
+
+        const pushStrength = wasDefending ? 10 : 50;
+        const pushVec = new Phaser.Math.Vector2(dx, dy).normalize().scale(pushStrength);
+
+        this.setVelocity(pushVec.x, pushVec.y);
+
+        if (projectile.destroy) {
+            projectile.destroy();
+        }
+    }
 
 
 }

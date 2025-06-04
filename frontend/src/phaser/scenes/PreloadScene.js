@@ -213,6 +213,6 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("MainMenuScene");
+    this.scene.start("GlitchyScene");
   }
 }

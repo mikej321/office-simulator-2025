@@ -1,4 +1,5 @@
 import Phaser, { Scene } from "phaser";
+import WebFont from "webfontloader";
 
 export default class SpeechBubble extends Phaser.GameObjects.Container {
   constructor(scene, x, y, message, style = {}, maxWidth = 200) {
@@ -12,6 +13,7 @@ export default class SpeechBubble extends Phaser.GameObjects.Container {
     // 1) Create text with wordWrap
     this.text = scene.add.text(0, 0, message, {
       fontSize: "12px",
+      // fontFamily: "Fredoka",
       color: "#000",
       align: "center",
       wordWrap: {
