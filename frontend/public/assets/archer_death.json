@@ -1,5 +1,5 @@
 { "frames": {
-   "death_1": {
+   "hurt_1": {
     "frame": { "x": 0, "y": 0, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_2": {
+   "hurt_2": {
     "frame": { "x": 186, "y": 0, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +15,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_3": {
+   "hurt_3": {
     "frame": { "x": 0, "y": 0, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +23,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_4": {
+   "death_1": {
     "frame": { "x": 372, "y": 0, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +31,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_5": {
+   "death_2": {
     "frame": { "x": 0, "y": 80, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_6": {
+   "death_3": {
     "frame": { "x": 186, "y": 80, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,
@@ -47,7 +47,7 @@
     "sourceSize": { "w": 186, "h": 80 },
     "duration": 100
    },
-   "death_7": {
+   "death_4": {
     "frame": { "x": 372, "y": 80, "w": 186, "h": 80 },
     "rotated": false,
     "trimmed": false,

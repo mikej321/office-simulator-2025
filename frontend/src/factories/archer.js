@@ -58,10 +58,20 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         })
 
         this.anims.create({
+            key: "hurt",
+            frames: this.anims.generateFrameNames("archer_death", {
+                start: 1,
+                end: 3,
+                prefix: "hurt_"
+            }),
+            frameRate: 7,
+        })
+
+        this.anims.create({
             key: "death",
             frames: this.anims.generateFrameNames("archer_death", {
                 start: 1,
-                end: 7,
+                end: 4,
                 prefix: "death_"
             }),
             frameRate: 7,
@@ -235,12 +245,11 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
 
         this.isInvincible = true;
-        this.setTint(0xff0000); // quick red flash
+        this.play('hurt');
 
 
         this.scene.time.delayedCall(this.invincibilityDuration, () => {
             this.isInvincible = false;
-            this.clearTint();
         });
 
         if (this.health <= 0) {

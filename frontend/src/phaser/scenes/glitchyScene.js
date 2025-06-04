@@ -159,31 +159,8 @@ class GlitchyScene extends Phaser.Scene {
         // this.physics.add.collider(this.player, this.archer);
         
         this.physics.add.overlap(this.player, this.archerProjectiles, (playerSprite, projectileSprite) => {
-            const wasDefending = playerSprite.isDefending && playerSprite.anims.currentFrame?.index === 2;
-            
-            if (projectileSprite.damage && typeof playerSprite.takeDamage === 'function') {
-                playerSprite.takeDamage(projectileSprite.damage);
-            }
-
-            let dx = playerSprite.x - projectileSprite.x;
-            let dy = playerSprite.y - projectileSprite.y;
-
-            const pushStrength = wasDefending ? 10 : 200;
-
-            const pushVec = new Phaser.Math.Vector2(dx, dy).normalize().scale(pushStrength);
-            playerSprite.setVelocity(pushVec.x, pushVec.y);
-
-            projectileSprite.destroy();
+            if (typeof playerSprite.handleProjectileHit === "function") playerSprite.handleProjectileHit(projectileSprite);
         }, null, this);
-
-        this.physics.add.overlap(this.playerHitBoxes, this.archers, (hitbox, enemy) => {
-                if (typeof enemy.takeDamage === "function") {
-                    enemy.takeDamage(hitbox.damage, hitbox);
-                    this.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
-                }
-
-            hitbox.destroy();
-        })
 
         this.cameras.main.startFollow(this.player);
 

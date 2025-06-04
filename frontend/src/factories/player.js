@@ -318,12 +318,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             case 'medium':
                 animationKey = 'medium';
                 damage = 10;
-                knockback = 200;
+                knockback = 300;
                 break;
             case 'heavy':
                 animationKey = 'heavy';
                 damage = 15;
-                knockback = 300;
+                knockback = 600;
                 break;
             default:
                 return;
@@ -349,30 +349,72 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawnAttackHitbox(damage, knockback) {
+    const offsetX = this.flipX ? -60 : 60;
+    const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
+    hitbox.setOrigin(0.5);
 
-        const offsetX = this.flipX ? -60 : 60;
-        const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
-        hitbox.setOrigin(0.5);
+    this.scene.physics.add.existing(hitbox);
+    hitbox.damage = damage;
+    hitbox.knockback = knockback;
 
-        this.scene.physics.add.existing(hitbox);
-        hitbox.damage = damage;
-        hitbox.knockback = knockback;
+    this.scene.playerHitBoxes.add(hitbox);
+    this.attackHitbox = hitbox;
 
-        this.scene.playerHitBoxes.add(hitbox);
+    // ⬅️ Add knockback logic here
+    this.scene.physics.add.overlap(hitbox, this.scene.archers, (hitbox, enemy) => {
+        if (typeof enemy.takeDamage === "function") {
+            enemy.takeDamage(hitbox.damage);
 
-        // 🔒 Assign it to a property so we can destroy it later
-        this.attackHitbox = hitbox;
+            // 💥 Apply directional knockback
+            const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, enemy.x, enemy.y);
+            const vx = Math.cos(angle) * hitbox.knockback;
+            const vy = Math.sin(angle) * hitbox.knockback;
 
-        this.scene.time.delayedCall(150, () => {
-            if (hitbox && hitbox.destroy) {
-                hitbox.destroy();
-                // 🧼 Clear the reference too
-                if (this.attackHitbox === hitbox) {
-                    this.attackHitbox = null;
-                }
+            enemy.setVelocity(vx, vy);
+
+            this.scene.time.delayedCall(200, () => {
+                enemy.setVelocity(0, 0);
+            });
+
+            this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
+        }
+
+        hitbox.destroy();
+        if (this.attackHitbox === hitbox) {
+            this.attackHitbox = null;
+        }
+    });
+
+    // 🧼 Just in case hitbox doesn't hit anything
+    this.scene.time.delayedCall(150, () => {
+        if (hitbox && hitbox.destroy) {
+            hitbox.destroy();
+            if (this.attackHitbox === hitbox) {
+                this.attackHitbox = null;
             }
-        });
+        }
+    });
+}
+
+handleProjectileHit(projectile) {
+    if (!projectile || this.isDead || this.isInvincible) return;
+
+    const wasDefending = this.isDefending && this.anims.currentFrame?.index === 2;
+
+    if (projectile.damage) this.takeDamage(projectile.damage);
+
+    const dx = this.x - projectile.x;
+    const dy = this.y - projectile.y;
+
+    const pushStrength = wasDefending ? 10 : 50;
+    const pushVec = new Phaser.Math.Vector2(dx, dy).normalize().scale(pushStrength);
+
+    this.setVelocity(pushVec.x, pushVec.y);
+
+    if (projectile.destroy) {
+        projectile.destroy();
     }
+}
 
 
 }
