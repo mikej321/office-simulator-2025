@@ -178,7 +178,7 @@ class GlitchyScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.playerHitBoxes, this.archers, (hitbox, enemy) => {
                 if (typeof enemy.takeDamage === "function") {
-                    enemy.takeDamage(hitbox.damage, hitbox.knockback, hitbox);
+                    enemy.takeDamage(hitbox.damage, hitbox);
                     this.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
                 }
 

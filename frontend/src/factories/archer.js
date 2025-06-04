@@ -6,11 +6,16 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.body.setAllowGravity(true);
-        this.body.setImmovable(false);
 
-        this.setCollideWorldBounds(true);
+        if (this.body) {
+            this.body.setAllowGravity(false);
+            this.body.setImmovable(false);
+    
+            this.setCollideWorldBounds(true);
+            this.body.setMaxVelocity(this.speed, this.speed);
+        }
 
+        console.log("Body type is:", this.body?.constructor.name)
         this.isDead = false;
         this.health = 20;
         this.isInvincible = false;
@@ -20,8 +25,8 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.attackRange = 200; // range in which the archer starts his attack
         this.attackCooldown = 2000; // milliseconds between archers attacks
         this.lastAttackTime = 0; // track archers last attack
+        this.isKnockedBack = false;
 
-        this.body.setMaxVelocity(this.speed, this.speed);
 
         this.setScale(3);
         this.setOrigin(0.5, 0.5);
@@ -76,7 +81,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(player, time, delta) {
-        if (this.isDead || !this.body) return;
+        if (this.isDead || !this.body || this.isKnockedBack) return;
 
         const dist = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
@@ -219,20 +224,15 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         });
     }
 
-    takeDamage(amount, source, knockback = 200) {
+    takeDamage(amount, source) {
+        console.log("Damage source:", source);
         if (this.isDead || this.isInvincible) return;
 
-        this.health -= amount;
 
-        if (source && knockback) {
-            const angle = Phaser.Math.Angle.Between(source.x, source.y, this.x, this.y);
-            const vx = Math.cos(angle) * knockback;
-            const vy = Math.sin(angle) * knockback;
-            this.setVelocity(vx, vy);
-            this.scene.time.delayedCall(200, () => {
-                this.setVelocity(0, 0);
-            });
-        }
+        this.health -= amount;
+        this.isKnockedBack = true;
+        this.applyKnockback(source);
+
 
         this.isInvincible = true;
         this.setTint(0xff0000); // quick red flash
@@ -266,6 +266,28 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         this.once("animationcomplete-death", () => {
             this.destroy();
+        })
+    }
+
+    applyKnockback(source, power = 200, duration = 200) {
+
+        if (!source || typeof source.x !== "number" || typeof source.y !== "number") {
+        console.warn("Invalid knockback source:", source);
+        return;
+    }
+
+        const angle = Phaser.Math.Angle.Between(source.x, source.y, this.x, this.y);
+        const vx = Math.cos(angle) * power;
+        const vy = Math.sin(angle) * power;
+
+        console.log("Body velocity before:", this.body.velocity.clone());
+        this.setVelocity(vx, vy);
+        console.log("Body velocity after:", this.body.velocity.clone());
+
+        console.log("Knockback applied:", { vx, vy });
+
+        this.scene.time.delayedCall(duration, () => {
+            this.setVelocity(0, 0);
         })
     }
 }

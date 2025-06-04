@@ -10,6 +10,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setCollideWorldBounds(this);
 
+        console.log("Body type is:", this.body?.constructor.name)
         this.speed = 10;
 
         // Flag that locks movement when an action is playing
