@@ -387,6 +387,48 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             }
         });
 
+        this.scene.physics.add.overlap(hitbox, this.scene.knights, (hitbox, enemy) => {
+            if (alreadyHit.has(enemy)) return;
+            alreadyHit.add(enemy);
+
+            if (typeof enemy.takeDamage === "function") {
+                enemy.takeDamage(hitbox.damage, hitbox);
+
+                // Knockback
+                const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, enemy.x, enemy.y);
+                const vx = Math.cos(angle) * hitbox.knockback;
+                const vy = Math.sin(angle) * hitbox.knockback;
+
+                enemy.setVelocity(vx, vy);
+                this.scene.time.delayedCall(200, () => {
+                    enemy.setVelocity(0, 0);
+                });
+
+                this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
+            }
+        });
+
+        this.scene.physics.add.overlap(hitbox, this.scene.slimes, (hitbox, enemy) => {
+            if (alreadyHit.has(enemy)) return;
+            alreadyHit.add(enemy);
+
+            if (typeof enemy.takeDamage === "function") {
+                enemy.takeDamage(hitbox.damage, hitbox);
+
+                // Knockback
+                const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, enemy.x, enemy.y);
+                const vx = Math.cos(angle) * hitbox.knockback;
+                const vy = Math.sin(angle) * hitbox.knockback;
+
+                enemy.setVelocity(vx, vy);
+                this.scene.time.delayedCall(200, () => {
+                    enemy.setVelocity(0, 0);
+                });
+
+                this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
+            }
+        });
+
         // Auto-destroy hitbox after short time
         this.scene.time.delayedCall(150, () => {
             if (hitbox && hitbox.destroy) {

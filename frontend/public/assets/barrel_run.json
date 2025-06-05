@@ -1,0 +1,74 @@
+{ "frames": {
+   "barrel_run_1": {
+    "frame": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_2": {
+    "frame": { "x": 156, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_3": {
+    "frame": { "x": 312, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_4": {
+    "frame": { "x": 468, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_5": {
+    "frame": { "x": 624, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_6": {
+    "frame": { "x": 780, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   },
+   "barrel_run_7": {
+    "frame": { "x": 936, "y": 0, "w": 156, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 156, "h": 64 },
+    "sourceSize": { "w": 156, "h": 64 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.2  ",
+  "image": "barrel_run.png",
+  "format": "RGBA8888",
+  "size": { "w": 1092, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

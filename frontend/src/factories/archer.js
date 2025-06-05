@@ -18,13 +18,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         console.log("Body type is:", this.body?.constructor.name)
         this.isDead = false;
-        this.health = 20;
+        this.health = 30;
         this.isInvincible = false;
         this.invincibilityDuration = 300;
         this.chaseRange = 1000; // chase speed when player gets close to archer
-        this.attackRange = 200; // range in which the archer starts his attack
-        this.attackCooldown = 2000; // milliseconds between archers attacks
+        this.attackRange = 300; // range in which the archer starts his attack
+        this.attackCooldown = 4000; // milliseconds between archers attacks
         this.lastAttackTime = 0; // track archers last attack
+        this.knockbackMultiplier = .2;
         this.isKnockedBack = false;
 
 
@@ -134,7 +135,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             }
         });
 
-        this.once("animationcomplete-attack", () => {
+        this.once("animationcomplete-archer_attack", () => {
             this.isAttacking = false;
             this.play("archer_idle", true);
             this.setVelocity(0, 0);
@@ -228,7 +229,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.play("archer_death");
 
         // Add archer score to scene
-        if (this.scene && typeof this.scene.addScore === "function") this.scene.addScore(10);
+        if (this.scene && typeof this.scene.addScore === "function") this.scene.addScore(20);
 
         this.once("animationcomplete-archer_death", () => {
             this.destroy();
@@ -248,7 +249,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     console.log("Applying knockback from:", source.x, source.y, "to:", this.x, this.y);
 
-        this.setVelocity(vx, vy);
+        this.setVelocity(vx * this.knockbackMultiplier, vy * this.knockbackMultiplier);
 
         this.scene.time.delayedCall(duration, () => {
             this.setVelocity(0, 0);

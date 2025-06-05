@@ -5,7 +5,8 @@ import TypewriterText from "../../factories/typewriterText";
 import WorkDay from "./WorkDay";
 import Player from "../../factories/player";
 import Archer from "../../factories/archer";
-
+import Slime from "../../factories/slime";
+import Barrel_Knight from "../../factories/barrel_knight";
 
 class GlitchyScene extends Phaser.Scene {
     constructor() {
@@ -127,18 +128,22 @@ class GlitchyScene extends Phaser.Scene {
 
         showNext().then(() => {
             this.time.delayedCall(1000, () => {
-                this.spawnMultipleArchers(10, 100000)
+                // this.spawnMultipleArchers(10, 100000)
+                // this.spawnKnight();
             })
         })
 
 
-        // Hitbox group
+        // Hitbox groups
         this.playerHitBoxes = this.physics.add.group({
             classType: Phaser.GameObjects.Zone,
             runChildUpdate: true
         });
 
-
+        this.knightHitBoxes = this.physics.add.group({
+            classType: Phaser.GameObjects.Zone,
+            runChildUpdate: true
+        })
 
         this.anims.create({
             key: "projectile",
@@ -204,6 +209,110 @@ class GlitchyScene extends Phaser.Scene {
                     frameRate: 7,
                 })
 
+                this.anims.create({
+                    key: "barrel_idle",
+                    frames: this.anims.generateFrameNames("barrel_idle", {
+                        start: 1,
+                        end: 4,
+                        prefix: "barrel_idle_"
+                    }),
+                    frameRate: 7,
+                    repeat: -1
+                })
+
+                this.anims.create({
+                    key: "barrel_attack",
+                    frames: this.anims.generateFrameNames("barrel_attack", {
+                        start: 1,
+                        end: 9,
+                        prefix: "barrel_attack_"
+                    }),
+                    frameRate: 7,
+                })
+
+                this.anims.create({
+                    key: "barrel_death",
+                    frames: this.anims.generateFrameNames("barrel_death", {
+                        start: 1,
+                        end: 6,
+                        prefix: "barrel_death_"
+                    }),
+                    frameRate: 7
+                })
+
+                this.anims.create({
+                    key: "barrel_hurt",
+                    frames: this.anims.generateFrameNames("barrel_hurt", {
+                        start: 1,
+                        end: 5,
+                        prefix: "barrel_hurt_"
+                    }),
+                    frameRate: 7
+                })
+
+                this.anims.create({
+                    key: "barrel_run",
+                    frames: this.anims.generateFrameNames("barrel_run", {
+                        start: 1,
+                        end: 7,
+                        prefix: "barrel_run_"
+                    }),
+                    frameRate: 7,
+                    repeat: -1
+                })
+
+                this.anims.create({
+                    key: "slime_attack",
+                    frames: this.anims.generateFrameNames("slime_attack", {
+                        start: 1,
+                        end: 8,
+                        prefix: "slime_attack_"
+                    }),
+                    frameRate: 7
+                })
+
+                this.anims.create({
+                    key: "slime_hurt",
+                    frames: this.anims.generateFrameNames("slime_death", {
+                        start: 1,
+                        end: 3,
+                        prefix: "slime_death_"
+                    }),
+                    frameRate: 7
+                })
+
+                this.anims.create({
+                    key: "slime_death",
+                    frames: this.anims.generateFrameNames("slime_death", {
+                        start: 1,
+                        end: 9,
+                        prefix: "slime_death_"
+                    }),
+                    frameRate: 7
+                })
+
+                this.anims.create({
+                    key: "slime_hop",
+                    frames: this.anims.generateFrameNames("slime_hop", {
+                        start: 1,
+                        end: 13,
+                        prefix: "slime_hop_"
+                    }),
+                    frameRate: 7,
+                    repeat: -1,
+                })
+
+                this.anims.create({
+                    key: "slime_idle",
+                    frames: this.anims.generateFrameNames("slime_idle", {
+                        start: 1,
+                        end: 6,
+                        prefix: "slime_idle_"
+                    }),
+                    frameRate: 7,
+                    repeat: -1
+                })
+
         boundaryUpper.forEach(obj => {
             const rect = this.add.rectangle(obj.x, obj.y - (obj.height + 40), obj.width, obj.height)
                 .setOrigin(0, 1)
@@ -266,22 +375,63 @@ class GlitchyScene extends Phaser.Scene {
             immovable: false
         })
 
+        this.knights = this.physics.add.group({
+            classType: Barrel_Knight,
+            runChildUpdate: true,
+            allowGravity: true,
+            immovable: false
+        })
+
+        this.slimes = this.physics.add.group({
+            classType: Slime,
+            runChildUpdate: true,
+            allowGravity: true,
+            immovable: false
+        })
+
         this.archer = new Archer(this, 1000, 500);
         this.archers.add(this.archer);
+
+        this.barrel_knight = new Barrel_Knight(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
+        this.knights.add(this.barrel_knight);
+
+        this.slime = new Slime(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
+        this.slimes.add(this.slime);
         
         if (this.archer) {
             this.archer.setActive(true).setVisible(true);
-            this.archer.health = 20;
+            this.archer.health = 30;
         }
 
+        if (this.barrel_knight) {
+            this.barrel_knight.setActive(true).setVisible(true);
+            this.barrel_knight.health = 50;
+        }
+
+        if (this.slime) {
+            this.slime.setActive(true).setVisible(true);
+            this.slime.health = 20;
+        }
+
+        // archer properties
         this.archer.setActive(true);
         this.archer.setVisible(true);
         // this.archer.setImmovable(true);
         this.archer.body.enable = true;
-        this.archer.damage = 20;
 
 
         this.archer.body.pushable = false;
+
+        // barrel knight properties
+        this.barrel_knight.setActive(true);
+        this.barrel_knight.setVisible(true);
+        this.barrel_knight.body.enable = true;
+        this.barrel_knight.body.pushable = false;
+
+        this.slime.setActive(true);
+        this.slime.setVisible(true);
+        this.slime.body.enable = true;
+        this.slime.body.pushable = false;
 
         // this.physics.add.collider(this.player, boundaryGroup);
         // this.physics.add.collider(this.player, this.archer);
@@ -304,6 +454,14 @@ class GlitchyScene extends Phaser.Scene {
             if (archer && archer.active && archer.body) {
                 archer.update(this.player, time, delta);
             }
+        })
+
+        this.knights.children.iterate((barrel_knight) => {
+            if (barrel_knight && barrel_knight.active && barrel_knight.body) barrel_knight.update(this.player, time, delta);
+        })
+
+        this.slimes.children.iterate((slime) => {
+            if (slime && slime.active && slime.body) slime.update(this.player, time, delta);
         })
         // if (this.archer && this.archer.active && this.archer.body) {
         //     this.archer.update(this.player, time, delta);
@@ -382,6 +540,35 @@ class GlitchyScene extends Phaser.Scene {
     newArcher.currentState = 'idle'; // Or whatever your default is
     newArcher.anims.play("archer_idle", true); // If applicable
     newArcher.clearTimers?.(); // If you have any custom timers in Archer
+}
+
+spawnKnight() {
+    const x = Phaser.Math.Between(900, 1300);
+    const y = 400;
+
+    const newKnight = this.knights.get(x, y);
+    if (!newKnight) return;
+
+    if (!newKnight.body) {
+        // First time creation
+        newKnight.setScene(this);
+        this.physics.world.enable(newKnight);
+        this.add.existing(newKnight);
+    }
+
+    // Common reset for both reused and new
+    newKnight.setPosition(x, y);
+    newKnight.setActive(true);
+    newKnight.setVisible(true);
+    newKnight.health = 20;
+    newKnight.setAlpha(1);
+    newKnight.body.enable = true;
+
+    // Reset archer-specific state
+    newKnight.isAttacking = false;
+    newKnight.currentState = 'idle'; // Or whatever your default is
+    newKnight.anims.play("barrel_idle", true); // If applicable
+    newKnight.clearTimers?.(); // If you have any custom timers in Archer
 }
 
 

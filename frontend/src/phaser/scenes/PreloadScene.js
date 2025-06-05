@@ -161,6 +161,69 @@ export default class PreloadScene extends Phaser.Scene {
       "/office-simulator-2025/assets/archer_death"
     )
 
+    // Barrel Knight idle animation
+    this.load.atlas(
+      "barrel_idle",
+      `${filePrefix}/barrel_idle.png`,
+      `${filePrefix}/barrel_idle.json`
+    )
+
+    // Barrel Knight hurt animation
+    this.load.atlas(
+      "barrel_hurt",
+      `${filePrefix}/barrel_hit_idle.png`,
+      `${filePrefix}/barrel_hit_idle.json`
+    )
+
+    // Barrel Knight attack animation
+    this.load.atlas(
+      "barrel_attack",
+      `${filePrefix}/barrel_attack.png`,
+      `${filePrefix}/barrel_attack.json`
+    )
+
+    // Barrel Knight death animation
+    this.load.atlas(
+      "barrel_death",
+      `${filePrefix}/barrel_death.png`,
+      `${filePrefix}/barrel_death.json`
+    )
+
+    // Barrel Knight run animation
+    this.load.atlas(
+      "barrel_run",
+      `${filePrefix}/barrel_run.png`,
+      `${filePrefix}/barrel_run.json`
+    )
+
+    // Slime attack animation
+    this.load.atlas(
+      "slime_attack",
+      `${filePrefix}/slime_attack.png`,
+      `${filePrefix}/slime_attack.json`
+    )
+
+    // Slime death animation
+    this.load.atlas(
+      "slime_death",
+      `${filePrefix}/slime_death.png`,
+      `${filePrefix}/slime_death.json`
+    )
+
+    // Slime hop animation
+    this.load.atlas(
+      "slime_hop",
+      `${filePrefix}/slime_hop.png`,
+      `${filePrefix}/slime_hop.json`
+    )
+
+    // Slime idle animation
+    this.load.atlas(
+      "slime_idle",
+      `${filePrefix}/slime_idle.png`,
+      `${filePrefix}/slime_idle.json`
+    )
+
     this.load.atlas(
       "blue-chair",
       "/office-simulator-2025/assets/attachments/blue_chair_resized.png",
