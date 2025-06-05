@@ -19,6 +19,7 @@ export default class Barrel_Knight extends Phaser.Physics.Arcade.Sprite {
 
         this.isDead = false; // Flag for if the knight is dead
         this.health = 50; // Barrel Knight's health pool...adjustable if needed
+        this.scene = scene;
 
         this.isInvincible = false; // Invincibility flag
         this.invincibilityDuration = 300;
@@ -100,80 +101,89 @@ export default class Barrel_Knight extends Phaser.Physics.Arcade.Sprite {
     startAttack(currentTime, player) {
     if (this.isDead || this.isInvincible || this.isAttacking) return;
 
-    this.isAttacking = true;
-    this.lastAttackTime = currentTime;
-    this.setVelocity(0, 0);
-    if (this.body) this.body.stop();
+    const self = this;
 
-    this.play("barrel_attack", true);
-    this.hasHitPlayer = false;
+    self.isAttacking = true;
+    self.lastAttackTime = currentTime;
+    self.setVelocity(0, 0);
+    if (self.body) self.body.stop();
+
+    self.play("barrel_attack", true);
+    self.hasHitPlayer = false;
 
     // Clean up any previous hitbox or listeners
-    if (this.attackHitbox) {
-        this.attackHitbox.destroy();
-        this.attackHitbox = null;
+    if (self.attackHitbox) {
+        self.attackHitbox.destroy();
+        self.attackHitbox = null;
     }
 
-    const attackFrame = 6; // frame index where hitbox spawns
+    const attackFrame = 6;
+
     const destroyHitbox = () => {
-        if (this.attackHitbox) {
-            this.attackHitbox.destroy();
-            this.attackHitbox = null;
+        if (self.attackCollider) {
+            self.scene.physics.world.removeCollider(self.attackCollider);
+            self.attackCollider = null;
+        }
+        if (self.attackHitbox) {
+            self.attackHitbox.destroy();
+            self.attackHitbox = null;
         }
     };
 
     const handleHit = (hitbox, target) => {
-        if (!this.hasHitPlayer) {
-            this.hasHitPlayer = true;
-            target.takeDamage(this.damage, this);
+        if (!self.hasHitPlayer) {
+            self.hasHitPlayer = true;
+            target.takeDamage(self.damage, self);
 
-            // Knockback
             const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, target.x, target.y);
             const vx = Math.cos(angle) * hitbox.knockback;
             const vy = Math.sin(angle) * hitbox.knockback;
 
             target.setVelocity(vx, vy);
-            this.scene.time.delayedCall(200, () => {
-                target.setVelocity(0, 0);
-            });
+            if (target?.setVelocity && self.scene?.time) {
+                self.scene.time.delayedCall(200, () => {
+                    target.setVelocity(0, 0);
+                });
+            }
 
             destroyHitbox();
         }
     };
 
     const onAnimUpdate = (anim, frame) => {
-        if (frame.index === attackFrame && !this.attackHitbox) {
-            const hitbox = this.spawnAttackHitbox(player, this.damage, this.knockback);
+        if (frame.index === attackFrame && !self.attackHitbox) {
+            const hitbox = self.spawnAttackHitbox(player, self.damage, self.knockback);
 
-            this.attackHitbox = hitbox;
-            this.scene.physics.add.overlap(hitbox, player, handleHit);
+            self.attackHitbox = hitbox;
+            self.attackCollider = self.scene.physics.add.overlap(hitbox, player, handleHit);
 
-            // Optional: Visual debug
+            // Optional debug:
             // hitbox.setFillStyle(0xff0000, 0.5);
         }
     };
 
     const onAnimComplete = () => {
-        this.off("animationupdate", onAnimUpdate);
-        this.isAttacking = false;
-        this.hasHitPlayer = false;
+        self.off("animationupdate", onAnimUpdate);
+        self.isAttacking = false;
+        self.hasHitPlayer = false;
         destroyHitbox();
-        this.play("barrel_idle", true);
+        self.play("barrel_idle", true);
     };
 
-    this.on("animationupdate", onAnimUpdate);
-    this.once("animationcomplete-barrel_attack", onAnimComplete);
+    self.on("animationupdate", onAnimUpdate);
+    self.once("animationcomplete-barrel_attack", onAnimComplete);
 
     // Failsafe
-    if (this.attackFailsafeTimer) this.attackFailsafeTimer.remove();
-    this.attackFailsafeTimer = this.scene.time.delayedCall(1200, () => {
-        if (!this.active || this.isDead) return;
-        if (this.isAttacking) {
-            this.off("animationupdate", onAnimUpdate);
+    if (self.attackFailsafeTimer) self.attackFailsafeTimer.remove();
+    self.attackFailsafeTimer = self.scene.time.delayedCall(1200, () => {
+        if (!self.active || self.isDead) return;
+        if (self.isAttacking) {
+            self.off("animationupdate", onAnimUpdate);
             onAnimComplete();
         }
     });
 }
+
 
 
 
@@ -236,7 +246,7 @@ export default class Barrel_Knight extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawnAttackHitbox(player, damage, knockback) {
-    const offsetX = this.flipX ? -60 : 60;
+    const offsetX = this.flipX ? -120 : 120;
 
     const hitbox = this.scene.add.zone(this.x + offsetX, this.y, 40, 30);
     hitbox.setOrigin(0.5);

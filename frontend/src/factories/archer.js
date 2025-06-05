@@ -17,6 +17,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         }
 
         console.log("Body type is:", this.body?.constructor.name)
+        this.scene = scene;
         this.isDead = false;
         this.health = 30;
         this.isInvincible = false;
