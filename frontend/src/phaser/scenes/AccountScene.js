@@ -1,0 +1,451 @@
+import Phaser from "phaser";
+import WebFont from "webfontloader";
+
+//AccountScene handles user authentication (signup and login) functionality.
+
+class AccountScene extends Phaser.Scene {
+  constructor() {
+    super({
+      key: "AccountScene",
+    });
+    console.log("AccountScene constructor called");
+    this.formData = {
+      email: "",
+      password: "",
+      characterName: "",
+    };
+    this.errorText = null;
+    this.mode = "signup"; 
+  }
+
+  init(data) {
+    // Set mode based on how we got here
+    this.mode = data?.mode || "signup";
+  }
+
+  preload() {
+    console.log("AccountScene preload started");
+    this.fontsLoaded = false;
+
+    WebFont.load({
+      google: {
+        families: ["Chewy", "Fredoka:wght@300,400,500,600,700"],
+      },
+      active: () => {
+        console.log("Fonts loaded in AccountScene");
+        this.fontsLoaded = true;
+        this.startMenu();
+      },
+      inactive: () => {
+        console.error("Font loading failed in AccountScene");
+        this.fontsLoaded = true;
+        this.startMenu();
+      },
+    });
+  }
+
+  //Creates the scene and sets up initial state.
+  create() {
+    console.log("AccountScene create started");
+    this.formData = { email: "", password: "", characterName: "" };
+    this.activeInput = null;
+    this.keyboardListener = null;
+    this.menuStarted = false;
+    this.time.addEvent({
+      delay: 100,
+      callback: () => {
+        if (this.fontsLoaded) {
+          if (!this.menuStarted) {
+            console.log("Starting AccountScene menu");
+            this.menuStarted = true;
+            this.startMenu();
+          }
+        } else {
+          this.time.delayedCall(50, this.create, [], this);
+        }
+      },
+    });
+
+    // Add keyboard listener for password input
+    this.input.keyboard.on("keydown", (event) => {
+      if (
+        event.key === "Enter" &&
+        this.passwordInput &&
+        this.passwordInput.isFocused()
+      ) {
+        this.handleSubmit();
+      }
+    });
+  }
+
+  //Sets up the main menu UI including form fields, buttons, and interactive elements.
+  //Creates input fields for email and password, submit button, and error display.
+  startMenu() {
+    console.log("AccountScene startMenu called");
+    const { width, height } = this.scale;
+
+    // Title
+    this.titleText = this.add
+      .text(
+        width / 2,
+        height / 4,
+        this.mode === "signup" ? "New Account" : "Sign In",
+        {
+          fontSize: "48px",
+          color: "#ffffff",
+          fontFamily: "Fredoka",
+        }
+      )
+      .setOrigin(0.5);
+    console.log("Title text created");
+
+    // Back button
+    this.backButton = this.add
+      .text(50, 50, "← Back", {
+        fontSize: "24px",
+        color: "#ffffff",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: {
+          x: 10,
+          y: 5,
+        },
+      })
+      .setOrigin(0, 0.5)
+      .setInteractive();
+    console.log("Back button created");
+
+    this.backButton.on("pointerover", () => {
+      this.input.setDefaultCursor("pointer");
+    });
+
+    this.backButton.on("pointerout", () => {
+      this.input.setDefaultCursor("default");
+    });
+
+    this.backButton.on("pointerdown", () => {
+      this.scene.transition({
+        target: "MainMenuScene",
+        duration: 1000,
+        moveAbove: true,
+        onUpdate: (progress) => {
+          this.cameras.main.setAlpha(1 - progress);
+        },
+      });
+    });
+
+    // Form container
+    this.formContainer = this.add.container(width / 2, height / 2);
+
+    // Phaser-only input fields
+    this.inputFields = [
+      { key: "email", label: "Email", y: -50, isPassword: false },
+      { key: "password", label: "Password", y: 30, isPassword: true },
+    ];
+    this.inputBoxes = {};
+    this.inputTexts = {};
+    this.activeInput = null;
+    this.keyboardListener = null;
+
+    this.inputFields.forEach((field) => {
+      const labelX = -150;
+      const inputX = 100;
+      // Draw box
+      const boxWidth = 240;
+      const boxHeight = 44;
+      const boxY = field.y;
+      const box = this.add
+        .rectangle(inputX, boxY, boxWidth, boxHeight, 0x444444, 1)
+        .setOrigin(0.5)
+        .setInteractive();
+      box.setStrokeStyle(2, 0xaaaaaa);
+      box.on("pointerdown", () => this.focusInputField(field.key));
+      this.formContainer.add(box);
+      this.inputBoxes[field.key] = box;
+      // Label
+      const label = this.add
+        .text(labelX, boxY, field.label + ":", {
+          fontSize: "24px",
+          color: "#ffffff",
+          fontFamily: "Fredoka",
+        })
+        .setOrigin(0, 0.5);
+      this.formContainer.add(label);
+      // Text
+      const text = this.add
+        .text(
+          inputX - boxWidth / 2 + 12,
+          boxY,
+          this.formData[field.key] || "",
+          {
+            fontSize: "24px",
+            color: "#ffffff",
+            fontFamily: "Fredoka",
+            maxLines: 1,
+          }
+        )
+        .setOrigin(0, 0.5)
+        .setInteractive();
+      text.on("pointerdown", () => this.focusInputField(field.key));
+      this.formContainer.add(text);
+      this.inputTexts[field.key] = text;
+    });
+
+    // Transparent overlay for blur
+    this.inputOverlay = this.add
+      .rectangle(width / 2, height / 2, width, height, 0x000000, 0)
+      .setOrigin(0.5)
+      .setDepth(10000)
+      .setInteractive();
+    this.inputOverlay.visible = false;
+    this.inputOverlay.on("pointerdown", () => this.blurInputField());
+
+    // Submit button
+    this.submitButton = this.add
+      .text(0, 150, this.mode === "signup" ? "Create Account" : "Sign In", {
+        fontSize: "24px",
+        color: "#00ff00",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: {
+          x: 10,
+          y: 5,
+        },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    this.submitButton.on("pointerover", () => {
+      this.input.setDefaultCursor("pointer");
+    });
+
+    this.submitButton.on("pointerout", () => {
+      this.input.setDefaultCursor("default");
+    });
+
+    this.submitButton.on("pointerdown", () => {
+      this.handleSubmit();
+    });
+
+    // Error text
+    this.errorText = this.add
+      .text(0, 200, "", {
+        fontSize: "20px",
+        color: "#ff0000",
+        fontFamily: "Fredoka",
+      })
+      .setOrigin(0.5);
+
+    // Add all elements to the container
+    this.formContainer.add([this.submitButton, this.errorText]);
+
+    // Listen for resize events
+    this.scale.on("resize", this.resize, this);
+  }
+
+  //Focuses an input field and sets up keyboard input handling.
+  //Creates a blinking cursor and handles text input.
+  focusInputField(key) {
+    if (this.activeInput === key) return;
+    this.blurInputField();
+    this.activeInput = key;
+    this.inputTexts[key].setColor("#ffff00");
+    this.inputBoxes[key].setStrokeStyle(2, 0xffff00);
+    this.inputOverlay.visible = true;
+
+    // Create blinking cursor
+    if (this.cursor) {
+      this.cursor.destroy();
+    }
+    const textX = this.inputTexts[key].x;
+    const textY = this.inputTexts[key].y;
+    // Use .width for actual text width (not fixedWidth)
+    const textWidth = this.inputTexts[key].text
+      ? this.inputTexts[key].width
+      : 0;
+    this.cursor = this.add
+      .rectangle(textX + textWidth, textY, 2, 24, 0xffff00)
+      .setOrigin(0, 0.5);
+    this.formContainer.add(this.cursor);
+
+    // Animate cursor
+    this.tweens.add({
+      targets: this.cursor,
+      alpha: { from: 1, to: 0 },
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    if (this.keyboardListener) {
+      this.input.keyboard.off("keydown", this.keyboardListener);
+      this.keyboardListener = null;
+    }
+    this.keyboardListener = (event) => {
+      if (this.activeInput !== key) return;
+      if (event.key === "Backspace") {
+        this.formData[key] = (this.formData[key] || "").slice(0, -1);
+      } else if (event.key === "Enter") {
+        this.blurInputField();
+        return;
+      } else if (
+        event.key.length === 1 &&
+        (this.formData[key] || "").length < 32
+      ) {
+        this.formData[key] = (this.formData[key] || "") + event.key;
+      }
+      this.inputTexts[key].setText(
+        key === "password"
+          ? "•".repeat((this.formData[key] || "").length)
+          : this.formData[key]
+      );
+      // Update cursor position to be right after the last character
+      if (this.cursor) {
+        const textWidth = this.inputTexts[key].text
+          ? this.inputTexts[key].width
+          : 0;
+        this.cursor.x = this.inputTexts[key].x + textWidth;
+      }
+    };
+    this.input.keyboard.on("keydown", this.keyboardListener);
+  }
+
+  //Removes focus from the currently active input field.
+  //Cleans up cursor and keyboard listeners.
+  blurInputField() {
+    if (!this.activeInput) return;
+    this.inputTexts[this.activeInput].setColor("#ffffff");
+    this.inputBoxes[this.activeInput].setStrokeStyle(2, 0xaaaaaa);
+    this.inputOverlay.visible = false;
+    if (this.cursor) {
+      this.cursor.destroy();
+      this.cursor = null;
+    }
+    if (this.keyboardListener) {
+      this.input.keyboard.off("keydown", this.keyboardListener);
+      this.keyboardListener = null;
+    }
+    this.activeInput = null;
+  }
+
+  //Handles form submission for both signup and login.
+  //Validates form data and communicates with the backend API.
+  //Manages loading states and error handling.
+  async handleSubmit() {
+    console.log("Submit button clicked");
+    // Validate form
+    if (!this.formData.email || !this.formData.password) {
+      this.showError("Email and password are required");
+      return;
+    }
+    if (!this.validateEmail(this.formData.email)) {
+      this.showError("Invalid email format");
+      return;
+    }
+    if (this.formData.password.length < 6) {
+      this.showError("Password must be at least 6 characters");
+      return;
+    }
+    try {
+      // Disable submit button and show loading state
+      this.submitButton.setStyle({ color: "#666666" });
+      this.submitButton.setText(
+        this.mode === "signup" ? "Creating Account..." : "Signing In..."
+      );
+      this.submitButton.disableInteractive();
+      console.log(`Attempting to ${this.mode}...`);
+      const endpoint = this.mode === "signup" ? "signup" : "login";
+      const response = await fetch(
+        `http://localhost:8000/api/auth/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: this.formData.email,
+            password: this.formData.password,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("Server response:", data);
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.errors?.[0]?.msg || `Failed to ${this.mode}`
+        );
+      }
+      // Store the token
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Show success message and start transition immediately
+      this.submitButton.setText(
+        this.mode === "signup" ? "Account Created!" : "Signed In!"
+      );
+      this.submitButton.setStyle({ color: "#00ff00" });
+
+      // Start fade transition immediately with shorter duration
+      this.cameras.main.fade(500, 0, 0, 0);
+
+      // Add a success sound effect if available
+      if (this.sound.get("success")) {
+        this.sound.play("success");
+      }
+
+      // Transition to next scene after fade
+      this.time.delayedCall(500, () => {
+        this.scene.start("PlayerMenuScene");
+      });
+    } catch (error) {
+      console.error(`Error during ${this.mode}:`, error);
+      this.showError(error.message);
+      // Reset submit button
+      this.submitButton.setStyle({ color: "#00ff00" });
+      this.submitButton.setText(
+        this.mode === "signup" ? "Create Account" : "Sign In"
+      );
+      this.submitButton.setInteractive();
+    }
+  }
+
+  //Validates an email address format.
+  validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  //Displays an error message to the user.
+  showError(message) {
+    this.errorText.setText(message);
+    this.tweens.add({
+      targets: this.errorText,
+      alpha: { from: 0, to: 1 },
+      duration: 200,
+      ease: "Power2",
+    });
+  }
+
+  //Handles scene resizing.
+  //Updates positions of UI elements when the game window is resized.
+  resize(gameSize) {
+    const width = gameSize.width;
+    const height = gameSize.height;
+
+    if (this.titleText) {
+      this.titleText.setPosition(width / 2, height / 4);
+    }
+
+    if (this.formContainer) {
+      this.formContainer.setPosition(width / 2, height / 2);
+    }
+  }
+
+  //Cleans up resources when the scene is shut down.
+  //Removes focus from input fields and cleans up event listeners.
+  shutdown() {
+    this.blurInputField();
+  }
+}
+
+export default AccountScene;

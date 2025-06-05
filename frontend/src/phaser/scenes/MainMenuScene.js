@@ -113,44 +113,63 @@ class MainMenuScene extends Phaser.Scene {
       this.authorTexts.push(text);
     });
 
-    // Start game button
-    if (!this.startText) {
-      this.startText = this.add
-        .text(width / 2, height - 100, "Click to Start", {
-          fontSize: "24px",
-          color: "#00ff00",
-          fontFamily: "Chewy",
-          backgroundColor: "#222",
-          padding: {
-            x: 10,
-            y: 10,
-          },
-        })
-        .setOrigin(0.5);
-    }
+    // Menu container for buttons
+    this.menuContainer = this.add.container(width / 2, height - 100);
 
-    this.startText.setInteractive();
-    this.startText.on("pointerover", () => {
-      this.input.setDefaultCursor("pointer");
-    });
-
-    this.startText.on("pointerout", () => {
-      this.input.setDefaultCursor("default");
-    });
-
-    this.startText.on("pointerdown", () => {
-      this.scene.transition({
-        target: "OpeningScene", // Replace with your actual game scene
-        duration: 1000,
-        moveAbove: true,
-        onUpdate: (progress) => {
-          this.cameras.main.setAlpha(1 - progress);
+    // New Account button
+    this.newAccountButton = this.add
+      .text(0, -30, "New Account", {
+        fontSize: "24px",
+        color: "#00ff00",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: {
+          x: 10,
+          y: 5,
         },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    // Sign In button
+    this.signInButton = this.add
+      .text(0, 20, "Sign In", {
+        fontSize: "24px",
+        color: "#00ff00",
+        fontFamily: "Chewy",
+        backgroundColor: "#222",
+        padding: {
+          x: 10,
+          y: 5,
+        },
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    // Add buttons to container
+    this.menuContainer.add([this.newAccountButton, this.signInButton]);
+
+    // Add hover effects and click handlers for buttons
+    [this.newAccountButton, this.signInButton].forEach((button) => {
+      button.on("pointerover", () => {
+        this.input.setDefaultCursor("pointer");
       });
 
-      // this.scene.start("TestScene");
-      // Replace with your actual game scene
-      // this.scene.start("IntroScene");
+      button.on("pointerout", () => {
+        this.input.setDefaultCursor("default");
+      });
+    });
+
+    // New Account button click handler
+    this.newAccountButton.on("pointerdown", () => {
+      console.log("New Account button clicked");
+      this.scene.start("AccountScene", { mode: "signup" });
+    });
+
+    // Sign In button click handler
+    this.signInButton.on("pointerdown", () => {
+      console.log("Sign In button clicked");
+      this.scene.start("AccountScene", { mode: "login" });
     });
 
     // Keyboard listener for fullscreen toggle
@@ -185,8 +204,8 @@ class MainMenuScene extends Phaser.Scene {
       });
     }
 
-    if (this.startText) {
-      this.startText.setPosition(width / 2, height - 100);
+    if (this.menuContainer) {
+      this.menuContainer.setPosition(width / 2, height - 100);
     }
   }
 

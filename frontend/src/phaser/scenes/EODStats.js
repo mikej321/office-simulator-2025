@@ -22,26 +22,24 @@ export default class EODStats extends Phaser.Scene {
     const focus = StatsManager.getFocusLevel();
 
     console.log("StatsManager.getPlayGame():", StatsManager.getPlayGame());
-    StatsManager.resetWorkDayTaskNumber(); 
+    StatsManager.resetWorkDayTaskNumber();
 
-    const summary = this.add.text(
-      offsetX + 60,
-      offsetY + 80,
-      "",
-      {
-        fontSize: "28px",
-        color: "#ffffff",
-        lineSpacing: 12,
-        wordWrap: { width: gameWidth - 120 }
-      }
-    );
+    const char = this.game.registry.get("activeCharacter");
+    const playerName = char ? char.name : "Tom";
+
+    const summary = this.add.text(offsetX + 60, offsetY + 80, "", {
+      fontSize: "28px",
+      color: "#ffffff",
+      lineSpacing: 12,
+      wordWrap: { width: gameWidth - 120 },
+    });
 
     let message = "";
 
     if (projectProgress > 0) {
-      message += `Good Job, Tom!\nYour boss noticed your hard work today.\n\n`;
+      message += `Good Job, ${playerName}!\nYour boss noticed your hard work today.\n\n`;
     } else if (StatsManager.getPlayGame()) {
-      message += `Your boss didn’t say anything, but he noticed you...\n\n`;
+      message += `Your boss didn't say anything, but he noticed you...\n\n`;
     } else {
       message += `Pretty unremarkable day.\nYou flew under the radar.\n\n`;
     }
@@ -56,29 +54,31 @@ export default class EODStats extends Phaser.Scene {
 
     summary.setText(message);
 
-    const instructions = this.add.text(
-      offsetX + gameWidth / 2,
-      offsetY + gameHeight - 60,
-      "Press SPACE to continue",
-      {
-        fontSize: "24px",
-        color: "#ffcc00",
-        backgroundColor: "#000000",
-        padding: { x: 10, y: 5 }
+    const instructions = this.add
+      .text(
+        offsetX + gameWidth / 2,
+        offsetY + gameHeight - 60,
+        "Press SPACE to continue",
+        {
+          fontSize: "24px",
+          color: "#ffcc00",
+          backgroundColor: "#000000",
+          padding: { x: 10, y: 5 },
+        }
+      )
+      .setOrigin(0.5);
+
+    this.input.keyboard.once("keydown-SPACE", () => {
+      this.scene.stop("EODStats");
+      if (projectProgress >= StatsManager.getMaxProjectProgress()) {
+        this.scene.start("VictoryCutscene");
+      } else if (StatsManager.getWorkDayCount() >= 5) {
+        this.scene.start("FiredCutscene");
+      } else {
+        this.scene.start("HomeEvening");
       }
-    ).setOrigin(0.5);
+    });
 
-  this.input.keyboard.once("keydown-SPACE", () => {
-    this.scene.stop("EODStats");
-    if (projectProgress >= StatsManager.getMaxProjectProgress()) {
-      this.scene.start("VictoryCutscene");
-    } else if (StatsManager.getWorkDayCount() >= 5) {
-      this.scene.start("FiredCutscene");
-    } else {
-      this.scene.start("HomeEvening");
-    }
-  });
-
-  StatsManager.resetPlayGame();
+    StatsManager.resetPlayGame();
   }
 }

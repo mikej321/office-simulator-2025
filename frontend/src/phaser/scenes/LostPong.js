@@ -15,11 +15,18 @@ export default class LostPong extends Phaser.Scene {
     const offsetX = (this.scale.width - gameWidth) / 2;
     const offsetY = (this.scale.height - gameHeight) / 2;
 
+    const char = this.game.registry.get("activeCharacter");
+    const playerName = char ? char.name : "Tom";
+    this.dialog = [
+      `Not only did ${playerName} slack off at work today, \nbut he also lost against the pesky ai! \nThis will take a toll on his spirit.`,
+      // ... existing dialog lines ...
+    ];
+
     // Add the "You Lost" text
     const title = this.add.text(
       offsetX + gameWidth / 2,
       offsetY + gameHeight / 2 - 50,
-      "Not only did Tom slack off at work today, \nbut he also lost against the pesky ai! \nThis will take a toll on his spirit.",
+      this.dialog[0],
       {
         fontSize: "48px",
         color: "#ff0000",

@@ -1,7 +1,5 @@
-
-import { useState } from 'react'
-import PhaserGame from './phaser/PhaserGame';
-import './App.css'
+import PhaserGame from "./phaser/PhaserGame";
+import "./App.css";
 
 function App() {
 
@@ -10,7 +8,7 @@ function App() {
       <div className="game-container"></div> {/* Added for Phaser to recognize */}
       <PhaserGame />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
