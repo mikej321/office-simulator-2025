@@ -38,6 +38,11 @@ class HomeEvening extends Phaser.Scene {
   preload() {
     this.load.image("tiles", "assets/InteriorTilesLITE.png");
     this.load.tilemapTiledJSON("map", "assets/map.json");
+    this.load.atlas(
+      "player",
+      "assets/player-sprite.png",
+      "assets/player-sprite.json"
+    );
   }
 
   create() {
