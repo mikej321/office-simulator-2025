@@ -550,7 +550,7 @@ this.anims.create({
     //HERE
     //HERE
     // was 500,300
-    this.player = this.physics.add.sprite(650, 300, "player", "frame-1").setScale(0.8);
+    this.player = this.physics.add.sprite(850, 300, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
     this.player.setDepth(10); // or any number higher than the objects
 

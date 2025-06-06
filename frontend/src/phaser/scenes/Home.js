@@ -143,7 +143,7 @@ class Home extends Phaser.Scene {
   }
 
   createPlayer() {
-    this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
+    this.player = this.physics.add.sprite(900, 600, "player", "frame-1").setScale(0.8);
     this.player.setSize(32, 32);
 
     if (!this.anims.exists("walk")) {
