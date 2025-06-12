@@ -161,7 +161,7 @@ class GlitchyScene extends Phaser.Scene {
         const margin = 250;
         const bubbleWidth = 300;
 
-        const x = this.scale.width - bubbleWidth - margin;
+        this.x = this.scale.width - bubbleWidth - margin;
 
         this.score = 0;
 
@@ -183,6 +183,11 @@ class GlitchyScene extends Phaser.Scene {
             "This is your punishment for slacking off...",
             "Clear 5 levels and perhaps you're really suited for the job."
         ];
+        
+        // level variable
+        this.level = 1;
+        this.numOfEnemies = 10;
+        this.timer = 10000
 
         let i = 0;
         const showNext = async () => {
@@ -196,7 +201,7 @@ class GlitchyScene extends Phaser.Scene {
                         return;
                     }
 
-                    this.typewriter = new TypewriterText(this, x, 250, introText[i], {
+                    this.typewriter = new TypewriterText(this, this.x, 250, introText[i], {
                         fontSize: "24px",
                         fontFamily: "Fredoka",
                         lineSpacing: 10,
@@ -217,9 +222,7 @@ class GlitchyScene extends Phaser.Scene {
 
         showNext().then(() => {
             this.time.delayedCall(1000, () => {
-                // this.spawnMultipleArchers(10, 100000)
-                // this.spawnKnight();
-                this.spawnMultipleEnemies(40, 200000);
+                this.runLevels()
             })
         })
 
@@ -403,6 +406,36 @@ class GlitchyScene extends Phaser.Scene {
             repeat: -1
         })
 
+        this.anims.create({
+            key: "light_attack",
+            frames: this.anims.generateFrameNames("hit_effects", {
+                start: 1,
+                end: 6,
+                prefix: "light_attack_"
+            }),
+            frameRate: 24,
+        })
+
+        this.anims.create({
+            key: "medium_attack",
+            frames: this.anims.generateFrameNames("hit_effects", {
+                start: 1,
+                end: 8,
+                prefix: "medium_attack_"
+            }),
+            frameRate: 24
+        })
+
+        this.anims.create({
+            key: "heavy_attack",
+            frames: this.anims.generateFrameNames("hit_effects", {
+                start: 1,
+                end: 7,
+                prefix: "heavy_attack_"
+            }),
+            frameRate: 24
+        })
+
         boundaryUpper.forEach(obj => {
             const rect = this.add.rectangle(obj.x, obj.y - (obj.height + 40), obj.width, obj.height)
                 .setOrigin(0, 1)
@@ -431,6 +464,7 @@ class GlitchyScene extends Phaser.Scene {
             classType: Phaser.Physics.Arcade.Sprite,
             runChildUpdate: true
         });
+
 
         this.player = new Player(this, 0, 500, "glitch_knight_idle", "idle_animation_1").setScale(3);
         this.player.setSize(32, 32);
@@ -626,6 +660,84 @@ class GlitchyScene extends Phaser.Scene {
         }
     }
 
+    // Main loop that shows text, spawns the wave, updates counters
+
+    async runLevels() {
+        while (true) {
+            // Show the text with level inside
+            await this.showLevelText(this.level);
+
+            // Spawns the wave of enemies
+            await this.spawnWave(this.numOfEnemies, this.timer);
+
+            // Update my variables
+            this.level += 1;
+            this.numOfEnemies += 10;
+            this.timer = Math.max(1000, this.timer - 1000);
+        }
+    }
+
+    showLevelText(level) {
+        return new Promise(resolve => {
+            if (this.typewriter) this.typewriter.destroy();
+
+            this.textIsShowing = true;
+            this.typewriter = new TypewriterText(
+                this,
+                this.x,
+                250,
+                `Level ${level}`,
+                {
+                    fontSize: "24px",
+                    fontFamily: "Fredoka",
+                    lineSpacing: 10,
+                    color: "blue",
+                    wordWrap: {
+                        width: 300
+                    },
+                    align: "center"
+                },
+                40,
+                () => {
+                    this.time.delayedCall(1000, () => {
+                        if (this.typewriter) this.typewriter.destroy();
+                        this.textIsShowing = false;
+                        resolve();
+                    })
+                }
+            )
+        })
+    }
+
+    waitForClear() {
+        return new Promise(resolve => {
+            const check = () => {
+                // Count all active enemies across my groups
+                const aliveArchers = this.archers.countActive(true);
+                const aliveSlimes = this.slimes.countActive(true);
+                const aliveKnights = this.knights.countActive(true);
+                const totalAlive = aliveArchers + aliveSlimes + aliveKnights;
+
+                if (totalAlive === 0) {
+                    resolve()
+                } else {
+                    this.time.delayedCall(500, check, null, this);
+                }
+            }
+
+            check();
+        })
+    }
+
+    async spawnWave(count, duration) {
+        this.spawnMultipleEnemies(count, duration);
+
+        await new Promise(r => this.time.delayedCall(duration, r));
+
+        await this.waitForClear();
+    }
+
+    
 }
 
 export default GlitchyScene;

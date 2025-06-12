@@ -306,6 +306,34 @@ export default class PreloadScene extends Phaser.Scene {
       "/office-simulator-2025/assets/attachments/vending_machine_resized.png",
       "/office-simulator-2025/assets/attachments/vending_machine_resized.json"
     );
+
+    // hit effects
+    this.load.atlas(
+      "hit_effects",
+      "/office-simulator-2025/assets/sword_animation.png",
+      "/office-simulator-2025/assets/sword_animation.json"
+    );
+
+    // Hit sounds
+    this.load.audio(
+      "hit_1",
+      `${filePrefix}/Sounds/sword_collisions/collision_1.wav`
+    )
+
+    this.load.audio(
+      "hit_2",
+      `${filePrefix}/Sounds/sword_collisions/collision_2.wav`
+    )
+
+    this.load.audio(
+      "hit_3",
+      `${filePrefix}/Sounds/sword_collisions/collision_3.wav`
+    )
+
+    this.load.audio(
+      "hit_4",
+      `${filePrefix}/Sounds/sword_collisions/collision_4.wav`
+    )
   }
 
   create() {

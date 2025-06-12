@@ -307,23 +307,29 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.isAttacking = true;
         this.setVelocity(0);
 
-        let animationKey, damage, knockback;
+        let animationKey, damage, knockback, soundKey, effect;
 
         switch (type) {
             case 'light':
                 animationKey = 'light';
                 damage = 5;
                 knockback = 150;
+                soundKey = 'hit_4';
+                effect = "light_attack";
                 break;
             case 'medium':
                 animationKey = 'medium';
                 damage = 10;
                 knockback = 300;
+                soundKey = 'hit_2';
+                effect = 'medium_attack';
                 break;
             case 'heavy':
                 animationKey = 'heavy';
                 damage = 15;
                 knockback = 600;
+                soundKey = 'hit_1';
+                effect = 'heavy_attack';
                 break;
             default:
                 return;
@@ -333,6 +339,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         const attackFrameListener = (anim, frame) => {
             if (frame.index === 3 && !this.attackHitbox) {
+                this.scene.sound.play(soundKey);
+                
+                const fx = this.scene.add.sprite(this.x, this.y, "hit_effects");
+
+                fx
+                 .setOrigin(0, 0.5)
+                 .setScale(2)
+                 .setDepth(1000)
+                 .play(effect);
+                fx.once("animationcomplete", () => fx.destroy())
                 this.spawnAttackHitbox(damage, knockback);
                 this.off("animationupdate", attackFrameListener); // remove after one use
             }
@@ -424,7 +440,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 this.scene.time.delayedCall(200, () => {
                     enemy.setVelocity(0, 0);
                 });
-
                 this.scene.spawnDamageText(enemy.x, enemy.y - enemy.height, hitbox.damage);
             }
         });

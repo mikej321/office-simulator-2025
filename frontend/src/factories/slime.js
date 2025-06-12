@@ -122,24 +122,28 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
         }
     };
 
-    const handleHit = (hitbox, target) => {
-        if (!this.hasHitPlayer) {
-            this.hasHitPlayer = true;
-            target.takeDamage(this.damage, this);
+    // inside your startAttack, where you define handleHit…
+const handleHit = (hitbox, target) => {
+  // if the knight has already died or left the scene, do nothing
+  if (!this.scene || this.isDead || !this.active) {
+    return;
+  }
 
-            // Knockback
-            const angle = Phaser.Math.Angle.Between(hitbox.x, hitbox.y, target.x, target.y);
-            const vx = Math.cos(angle) * hitbox.knockback;
-            const vy = Math.sin(angle) * hitbox.knockback;
+  if (!this.hasHitPlayer) {
+    this.hasHitPlayer = true;
+    target.takeDamage(this.damage, this);
 
-            target.setVelocity(vx, vy);
-            this.scene.time.delayedCall(200, () => {
-                target.setVelocity(0, 0);
-            });
+    // Knockback …
+    this.scene.time.delayedCall(200, () => {
+      if (this.active) {
+        target.setVelocity(0, 0);
+      }
+    });
 
-            destroyHitbox();
-        }
-    };
+    destroyHitbox();
+  }
+};
+
 
     const onAnimUpdate = (anim, frame) => {
         if (frame.index === attackFrame && !this.attackHitbox) {
