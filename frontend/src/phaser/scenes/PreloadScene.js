@@ -8,28 +8,16 @@ export default class PreloadScene extends Phaser.Scene {
 
   init(data) {
     this.targetScene = data?.targetScene;
-    this.assets = data?.assets || [];
   }
 
   preload() {
+    const filePrefix = '/office-simulator-2025/assets'
     // Load WebFont script if not already loaded
     if (!window.WebFont) {
       this.load.script(
         "webfont",
         "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
       );
-    }
-
-    // If we're loading assets for a specific scene
-    if (this.targetScene) {
-      const scene = this.scene.manager.keys[this.targetScene];
-      if (scene && scene.preload) {
-        // Call the scene's preload method to load its assets
-        scene.preload.call(this);
-      }
-    } else {
-      // Load default assets for normal game flow
-      this.loadDefaultAssets();
     }
 
     // Add loading text
@@ -59,9 +47,8 @@ export default class PreloadScene extends Phaser.Scene {
       progressBox.destroy();
       this.loadingText.destroy();
     });
-  }
 
-  loadDefaultAssets() {
+    console.log("Preload scene preloaded")
     this.load.once("filecomplete-script-webfont", () => {
       WebFont.load({
         google: {
@@ -322,6 +309,9 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("MainMenuScene");
+    console.log("PreloadScene created")
+    console.log("Have map?", this.cache.tilemap.has("tilemap"))
+    console.log("Have tiles?", this.textures.exists("tileset"));
+    this.scene.start(this.targetScene || "MainMenuScene");
   }
 }

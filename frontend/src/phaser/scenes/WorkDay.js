@@ -18,6 +18,10 @@ class WorkDay extends Phaser.Scene {
 
   create() {
 
+    console.log("Workday fired")
+    console.log("Have tilemap key?", this.cache.tilemap.has("tilemap"));
+console.log("Have texture?", this.textures.exists("tileset"));
+
     this.textStyle = {
       fontFamily: "Fredoka",
       fontSize: "18px",
@@ -48,6 +52,9 @@ class WorkDay extends Phaser.Scene {
       .get("asset-export-final-resized")
       .setFilter(Phaser.Textures.FilterMode.NEAREST);
     // This is the code that fixes the issue
+
+    console.log(`Tile Layers: ${this.map.layers.map(l => l.name)}`)
+    console.log(`Object Layers: ${this.map.objects.map(l => l.name)}`)
 
     if (StatsManager.getWorkDayCount() === 0) {
       StatsManager.resetWorkDayCount();

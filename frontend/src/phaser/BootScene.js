@@ -6,27 +6,26 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    console.log("Bootscene is preloaded")
   }
 
   async create() {
     const token = localStorage.getItem("token");
+    let next = "MainMenuScene";
     if (token) {
       try {
-        const response = await fetch("http://localhost:8000/api/auth/verify", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.ok) {
-          if (this.scene && this.scene.manager) {
-            this.scene.start("PlayerMenuScene");
+        const res = await fetch("http://localhost:8000/api/auth/verify", {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-          return;
-        }
-      } catch (e) {
-        console.error(e);
+        });
+        if (res.ok) next = "PlayerMenuScene";
+      } catch(e) {
+        console.error("Auth check failed:", e);
       }
     }
-    if (this.scene && this.scene.manager) {
-      this.scene.start("MainMenuScene");
-    }
+
+    console.log("BootScene.create -> PreloadScene, target:", next);
+    this.scene.start("PreloadScene", { targetScene: next })
   }
 }

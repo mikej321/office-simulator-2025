@@ -771,6 +771,153 @@
         }, 
         {
          "draworder":"topdown",
+         "id":23,
+         "name":"Computer Sensor",
+         "objects":[
+                {
+                 "height":32,
+                 "id":30,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":320,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":31,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":320,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":32,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":448,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":33,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":448,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":34,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":176
+                }, 
+                {
+                 "height":32,
+                 "id":35,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":36,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":64,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":37,
+                 "name":"Computer Sensor",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"computer-sensor"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":64,
+                 "y":176
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":22,
          "name":"Printer Sensor",
          "objects":[
@@ -813,156 +960,9 @@
          "visible":true,
          "x":0,
          "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":23,
-         "name":"Computer Sensor",
-         "objects":[
-                {
-                 "height":32,
-                 "id":30,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":448,
-                 "y":176
-                }, 
-                {
-                 "height":32,
-                 "id":32,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":448,
-                 "y":240
-                }, 
-                {
-                 "height":32,
-                 "id":33,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":320,
-                 "y":240
-                }, 
-                {
-                 "height":32,
-                 "id":34,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":320,
-                 "y":176
-                }, 
-                {
-                 "height":32,
-                 "id":35,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":192,
-                 "y":176
-                }, 
-                {
-                 "height":32,
-                 "id":36,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":192,
-                 "y":240
-                }, 
-                {
-                 "height":32,
-                 "id":37,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":64,
-                 "y":240
-                }, 
-                {
-                 "height":32,
-                 "id":38,
-                 "name":"Computer Sensor",
-                 "properties":[
-                        {
-                         "name":"target",
-                         "type":"string",
-                         "value":"computer-sensor"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":64,
-                 "y":176
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":39,
+ "nextobjectid":38,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -1991,6 +1991,19 @@
                          "value":true
                         }]
                 }],
+         "tilewidth":16
+        }, 
+        {
+         "columns":32,
+         "firstgid":833,
+         "image":"..\/..\/..\/..\/..\/Downloads\/asset-export-final-resized.png",
+         "imageheight":416,
+         "imagewidth":512,
+         "margin":0,
+         "name":"asset-export-final-resized",
+         "spacing":0,
+         "tilecount":832,
+         "tileheight":16,
          "tilewidth":16
         }],
  "tilewidth":16,
