@@ -24,7 +24,7 @@ class TutorialScene extends Phaser.Scene {
     });
 
     // Create the player sprite
-    this.createPlayer();
+    // this.createPlayer();
 
     // Tutorial dialog steps
     this.tutorialText = [
@@ -77,22 +77,22 @@ class TutorialScene extends Phaser.Scene {
     });
   }
 
-  createPlayer() {
-    this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
-    this.player.setSize(32, 32);
+  // createPlayer() {
+  //   this.player = this.physics.add.sprite(800, 300, "player", "frame-1").setScale(0.8);
+  //   this.player.setSize(32, 32);
 
-    // Reuse your player's animations if already defined in another scene
-    if (!this.anims.exists("idle")) {
-      this.anims.create({
-        key: "idle",
-        frames: this.anims.generateFrameNames("player", { start: 1, end: 8, prefix: "frame-" }),
-        frameRate: 5,
-        repeat: -1
-      });
-    }
+  //   // Reuse your player's animations if already defined in another scene
+  //   if (!this.anims.exists("idle")) {
+  //     this.anims.create({
+  //       key: "idle",
+  //       frames: this.anims.generateFrameNames("player", { start: 1, end: 8, prefix: "frame-" }),
+  //       frameRate: 5,
+  //       repeat: -1
+  //     });
+  //   }
 
-    this.player.anims.play("idle");
-  }
+  //   this.player.anims.play("idle");
+  // }
 }
 
 export default TutorialScene;

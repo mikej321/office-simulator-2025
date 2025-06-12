@@ -45,7 +45,7 @@ router.post(
               workDayLimit: 5,
               workDayLimitReached: false,
               actionsUsed: 0,
-              currentScene: "TestScene", // Start in TestScene
+              currentScene: "TutorialScene", // Start in TestScene
             },
           },
         },

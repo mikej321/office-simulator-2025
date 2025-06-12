@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import Phaser from "phaser";
 import StatsManager from "../utils/StatsManager";
 import MusicManager from "./MusicManager";
