@@ -13,22 +13,111 @@ class GlitchyScene extends Phaser.Scene {
         super({
             key: "GlitchyScene",
         });
+
+        this.spawnSlime = () => {
+            const x = Phaser.Math.Between(900, 1300);
+            const y = 400;
+
+            const newSlime = new Slime(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
+            this.slimes.add(newSlime);
+            if (!newSlime) return;
+
+            if (!newSlime.body) {
+                this.physics.world.enable(newSlime);
+                this.add.existing(newSlime);
+            }
+
+            // Common reset for both reused and new
+            newSlime.setPosition(x, y);
+            newSlime.setActive(true);
+            newSlime.setVisible(true);
+            newSlime.health = 20;
+            newSlime.setAlpha(1);
+            newSlime.body.enable = true;
+            newSlime.body.pushable = false;
+
+            // Reset archer-specific state
+            newSlime.isAttacking = false;
+            newSlime.currentState = 'idle'; // Or whatever your default is
+            newSlime.anims.play("slime_idle", true); // If applicable
+            newSlime.clearTimers?.(); // If you have any custom timers in Archer
+        }
+
+        this.spawnArcher = () => {
+            const x = Phaser.Math.Between(900, 1300);
+            const y = 400;
+
+            const newArcher = new Archer(this, 1000, 500);
+            this.archers.add(newArcher);
+
+            if (!newArcher) return;
+
+            if (!newArcher.body) {
+                // First time creation
+                this.physics.world.enable(newArcher);
+                this.add.existing(newArcher);
+            }
+
+            newArcher.body.pushable = false;
+            // Common reset for both reused and new
+            newArcher.setPosition(x, y);
+            newArcher.setActive(true);
+            newArcher.setVisible(true);
+            newArcher.health = 30;
+            newArcher.setAlpha(1);
+            newArcher.body.enable = true;
+
+            // Reset archer-specific state
+            newArcher.isAttacking = false;
+            newArcher.currentState = 'idle'; // Or whatever your default is
+            newArcher.anims.play("archer_idle", true); // If applicable
+            newArcher.clearTimers?.(); // If you have any custom timers in Archer
+        }
+
+        this.spawnKnight = () => {
+            const x = Phaser.Math.Between(900, 1300);
+            const y = 400;
+
+            const newKnight = new Barrel_Knight(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
+            this.knights.add(newKnight);
+            if (!newKnight) return;
+
+            if (!newKnight.body) {
+                this.physics.world.enable(newKnight);
+                this.add.existing(newKnight);
+            }
+
+            // Common reset for both reused and new
+            newKnight.setPosition(x, y);
+            newKnight.setActive(true);
+            newKnight.setVisible(true);
+            newKnight.health = 50;
+            newKnight.setAlpha(1);
+            newKnight.body.enable = true;
+            newKnight.body.pushable = false;
+
+            // Reset archer-specific state
+            newKnight.isAttacking = false;
+            newKnight.currentState = 'idle'; // Or whatever your default is
+            newKnight.anims.play("barrel_idle", true); // If applicable
+            newKnight.clearTimers?.(); // If you have any custom timers in Archer
+        }
     }
 
     preload() {
         this.fontsLoaded = false;
-        
-            WebFont.load({
-              google: {
+
+        WebFont.load({
+            google: {
                 families: ["Chewy", "Fredoka:wght@300,400,500,600,700"],
-              },
-              active: () => {
+            },
+            active: () => {
                 this.fontsLoaded = true;
-              },
-              inactive: () => {
+            },
+            inactive: () => {
                 this.fontsLoaded = true;
-              },
-            });
+            },
+        });
     }
 
     create() {
@@ -59,7 +148,7 @@ class GlitchyScene extends Phaser.Scene {
             this.map.heightInPixels
         );
 
-        
+
         this.floor = this.map.createLayer("floor", this.tileset, 0, 0);
         this.background = this.map.createLayer("background", this.tileset, 0, 0);
 
@@ -130,6 +219,7 @@ class GlitchyScene extends Phaser.Scene {
             this.time.delayedCall(1000, () => {
                 // this.spawnMultipleArchers(10, 100000)
                 // this.spawnKnight();
+                this.spawnMultipleEnemies(40, 200000);
             })
         })
 
@@ -154,164 +244,164 @@ class GlitchyScene extends Phaser.Scene {
             }),
             frameRate: 5
         })
-        
+
         console.log(this.anims.exists("projectile"))
 
         this.anims.create({
-                    key: "archer_idle",
-                    frames: this.anims.generateFrameNames("archer_idle", {
-                        start: 1,
-                        end: 6,
-                        prefix: "idle_"
-                    }),
-                    frameRate: 8,
-                    repeat: -1
-                })
-        
-                this.anims.create({
-                    key: "archer_run",
-                    frames: this.anims.generateFrameNames("archer_run", {
-                        start: 1,
-                        end: 6,
-                        prefix: "run_"
-                    }),
-                    frameRate: 7,
-                    repeat: -1
-                })
-        
-                this.anims.create({
-                    key: "archer_hurt",
-                    frames: this.anims.generateFrameNames("archer_death", {
-                        start: 1,
-                        end: 3,
-                        prefix: "hurt_"
-                    }),
-                    frameRate: 7,
-                })
-        
-                this.anims.create({
-                    key: "archer_death",
-                    frames: this.anims.generateFrameNames("archer_death", {
-                        start: 1,
-                        end: 4,
-                        prefix: "death_"
-                    }),
-                    frameRate: 7,
-                })
-        
-                this.anims.create({
-                    key: "archer_attack",
-                    frames: this.anims.generateFrameNames("archer_attack", {
-                        start: 1,
-                        end: 7,
-                        prefix: "attack_"
-                    }),
-                    frameRate: 7,
-                })
+            key: "archer_idle",
+            frames: this.anims.generateFrameNames("archer_idle", {
+                start: 1,
+                end: 6,
+                prefix: "idle_"
+            }),
+            frameRate: 8,
+            repeat: -1
+        })
 
-                this.anims.create({
-                    key: "barrel_idle",
-                    frames: this.anims.generateFrameNames("barrel_idle", {
-                        start: 1,
-                        end: 4,
-                        prefix: "barrel_idle_"
-                    }),
-                    frameRate: 7,
-                    repeat: -1
-                })
+        this.anims.create({
+            key: "archer_run",
+            frames: this.anims.generateFrameNames("archer_run", {
+                start: 1,
+                end: 6,
+                prefix: "run_"
+            }),
+            frameRate: 7,
+            repeat: -1
+        })
 
-                this.anims.create({
-                    key: "barrel_attack",
-                    frames: this.anims.generateFrameNames("barrel_attack", {
-                        start: 1,
-                        end: 9,
-                        prefix: "barrel_attack_"
-                    }),
-                    frameRate: 7,
-                })
+        this.anims.create({
+            key: "archer_hurt",
+            frames: this.anims.generateFrameNames("archer_death", {
+                start: 1,
+                end: 3,
+                prefix: "hurt_"
+            }),
+            frameRate: 7,
+        })
 
-                this.anims.create({
-                    key: "barrel_death",
-                    frames: this.anims.generateFrameNames("barrel_death", {
-                        start: 1,
-                        end: 6,
-                        prefix: "barrel_death_"
-                    }),
-                    frameRate: 7
-                })
+        this.anims.create({
+            key: "archer_death",
+            frames: this.anims.generateFrameNames("archer_death", {
+                start: 1,
+                end: 4,
+                prefix: "death_"
+            }),
+            frameRate: 7,
+        })
 
-                this.anims.create({
-                    key: "barrel_hurt",
-                    frames: this.anims.generateFrameNames("barrel_hurt", {
-                        start: 1,
-                        end: 5,
-                        prefix: "barrel_hurt_"
-                    }),
-                    frameRate: 7
-                })
+        this.anims.create({
+            key: "archer_attack",
+            frames: this.anims.generateFrameNames("archer_attack", {
+                start: 1,
+                end: 7,
+                prefix: "attack_"
+            }),
+            frameRate: 7,
+        })
 
-                this.anims.create({
-                    key: "barrel_run",
-                    frames: this.anims.generateFrameNames("barrel_run", {
-                        start: 1,
-                        end: 7,
-                        prefix: "barrel_run_"
-                    }),
-                    frameRate: 7,
-                    repeat: -1
-                })
+        this.anims.create({
+            key: "barrel_idle",
+            frames: this.anims.generateFrameNames("barrel_idle", {
+                start: 1,
+                end: 4,
+                prefix: "barrel_idle_"
+            }),
+            frameRate: 7,
+            repeat: -1
+        })
 
-                this.anims.create({
-                    key: "slime_attack",
-                    frames: this.anims.generateFrameNames("slime_attack", {
-                        start: 1,
-                        end: 8,
-                        prefix: "slime_attack_"
-                    }),
-                    frameRate: 7
-                })
+        this.anims.create({
+            key: "barrel_attack",
+            frames: this.anims.generateFrameNames("barrel_attack", {
+                start: 1,
+                end: 9,
+                prefix: "barrel_attack_"
+            }),
+            frameRate: 7,
+        })
 
-                this.anims.create({
-                    key: "slime_hurt",
-                    frames: this.anims.generateFrameNames("slime_death", {
-                        start: 1,
-                        end: 3,
-                        prefix: "slime_death_"
-                    }),
-                    frameRate: 7
-                })
+        this.anims.create({
+            key: "barrel_death",
+            frames: this.anims.generateFrameNames("barrel_death", {
+                start: 1,
+                end: 6,
+                prefix: "barrel_death_"
+            }),
+            frameRate: 7
+        })
 
-                this.anims.create({
-                    key: "slime_death",
-                    frames: this.anims.generateFrameNames("slime_death", {
-                        start: 1,
-                        end: 9,
-                        prefix: "slime_death_"
-                    }),
-                    frameRate: 7
-                })
+        this.anims.create({
+            key: "barrel_hurt",
+            frames: this.anims.generateFrameNames("barrel_hurt", {
+                start: 1,
+                end: 5,
+                prefix: "barrel_hurt_"
+            }),
+            frameRate: 7
+        })
 
-                this.anims.create({
-                    key: "slime_hop",
-                    frames: this.anims.generateFrameNames("slime_hop", {
-                        start: 1,
-                        end: 13,
-                        prefix: "slime_hop_"
-                    }),
-                    frameRate: 7,
-                    repeat: -1,
-                })
+        this.anims.create({
+            key: "barrel_run",
+            frames: this.anims.generateFrameNames("barrel_run", {
+                start: 1,
+                end: 7,
+                prefix: "barrel_run_"
+            }),
+            frameRate: 7,
+            repeat: -1
+        })
 
-                this.anims.create({
-                    key: "slime_idle",
-                    frames: this.anims.generateFrameNames("slime_idle", {
-                        start: 1,
-                        end: 6,
-                        prefix: "slime_idle_"
-                    }),
-                    frameRate: 7,
-                    repeat: -1
-                })
+        this.anims.create({
+            key: "slime_attack",
+            frames: this.anims.generateFrameNames("slime_attack", {
+                start: 1,
+                end: 8,
+                prefix: "slime_attack_"
+            }),
+            frameRate: 7
+        })
+
+        this.anims.create({
+            key: "slime_hurt",
+            frames: this.anims.generateFrameNames("slime_death", {
+                start: 1,
+                end: 3,
+                prefix: "slime_death_"
+            }),
+            frameRate: 7
+        })
+
+        this.anims.create({
+            key: "slime_death",
+            frames: this.anims.generateFrameNames("slime_death", {
+                start: 1,
+                end: 9,
+                prefix: "slime_death_"
+            }),
+            frameRate: 7
+        })
+
+        this.anims.create({
+            key: "slime_hop",
+            frames: this.anims.generateFrameNames("slime_hop", {
+                start: 1,
+                end: 13,
+                prefix: "slime_hop_"
+            }),
+            frameRate: 7,
+            repeat: -1,
+        })
+
+        this.anims.create({
+            key: "slime_idle",
+            frames: this.anims.generateFrameNames("slime_idle", {
+                start: 1,
+                end: 6,
+                prefix: "slime_idle_"
+            }),
+            frameRate: 7,
+            repeat: -1
+        })
 
         boundaryUpper.forEach(obj => {
             const rect = this.add.rectangle(obj.x, obj.y - (obj.height + 40), obj.width, obj.height)
@@ -321,7 +411,7 @@ class GlitchyScene extends Phaser.Scene {
             this.physics.add.existing(rect, true);
 
             rect.body.setSize(obj.width, obj.height);
-            
+
             boundaryGroup.add(rect)
         })
 
@@ -341,7 +431,7 @@ class GlitchyScene extends Phaser.Scene {
             classType: Phaser.Physics.Arcade.Sprite,
             runChildUpdate: true
         });
-        
+
         this.player = new Player(this, 0, 500, "glitch_knight_idle", "idle_animation_1").setScale(3);
         this.player.setSize(32, 32);
         // this.player.body.pushable = false;
@@ -360,13 +450,14 @@ class GlitchyScene extends Phaser.Scene {
         this.marginRight = 4 * this.rem;
 
         this.scoreText = this.add.text(this.scale.width - this.marginRight, 42, "Score: 0", {
-            fontSize: "24px",
+            fontSize: "48px",
+            fontFamily: "Fredoka",
             fill: "#fff"
         })
 
         this.scoreText.setScrollFactor(0);
         this.scoreText.setOrigin(1, 0);
-        
+
         // this.archer = new Archer(this, 1000, 500);
         this.archers = this.physics.add.group({
             classType: Archer,
@@ -389,15 +480,9 @@ class GlitchyScene extends Phaser.Scene {
             immovable: false
         })
 
-        this.archer = new Archer(this, 1000, 500);
-        this.archers.add(this.archer);
 
-        this.barrel_knight = new Barrel_Knight(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
-        this.knights.add(this.barrel_knight);
 
-        this.slime = new Slime(this, Phaser.Math.Between(1000, 1500), Phaser.Math.Between(500, 700));
-        this.slimes.add(this.slime);
-        
+
         if (this.archer) {
             this.archer.setActive(true).setVisible(true);
             this.archer.health = 30;
@@ -414,33 +499,17 @@ class GlitchyScene extends Phaser.Scene {
         }
 
         // archer properties
-        this.archer.setActive(true);
-        this.archer.setVisible(true);
-        // this.archer.setImmovable(true);
-        this.archer.body.enable = true;
 
-
-        this.archer.body.pushable = false;
-
-        // barrel knight properties
-        this.barrel_knight.setActive(true);
-        this.barrel_knight.setVisible(true);
-        this.barrel_knight.body.enable = true;
-        this.barrel_knight.body.pushable = false;
-
-        this.slime.setActive(true);
-        this.slime.setVisible(true);
-        this.slime.body.enable = true;
-        this.slime.body.pushable = false;
 
         // this.physics.add.collider(this.player, boundaryGroup);
         // this.physics.add.collider(this.player, this.archer);
-        
+
         this.physics.add.overlap(this.player, this.archerProjectiles, (playerSprite, projectileSprite) => {
             if (typeof playerSprite.handleProjectileHit === "function") playerSprite.handleProjectileHit(projectileSprite);
         }, null, this);
 
         this.cameras.main.startFollow(this.player);
+        
     }
 
     update(time, delta) {
@@ -483,7 +552,7 @@ class GlitchyScene extends Phaser.Scene {
             0xff00000,
             0.3
         )
-        .setOrigin(0.5);
+            .setOrigin(0.5);
     }
 
     spawnDamageText(x, y, amount, color = '#ff3333') {
@@ -494,9 +563,9 @@ class GlitchyScene extends Phaser.Scene {
             stroke: '#000',
             strokeThickness: 3
         })
-        .setOrigin(0.5)
-        .setDepth(100)
-        .setScrollFactor(0)
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setScrollFactor(0)
 
         this.tweens.add({
             targets: text,
@@ -512,75 +581,50 @@ class GlitchyScene extends Phaser.Scene {
         this.score += points;
         this.scoreText.setText(`Score: ${this.score}`);
     }
-    
-    spawnArcher() {
-    const x = Phaser.Math.Between(900, 1300);
-    const y = 400;
 
-    const newArcher = this.archers.get(x, y);
-    if (!newArcher) return;
 
-    if (!newArcher.body) {
-        // First time creation
-        newArcher.setScene(this);
-        this.physics.world.enable(newArcher);
-        this.add.existing(newArcher);
-    }
 
-    // Common reset for both reused and new
-    newArcher.setPosition(x, y);
-    newArcher.setActive(true);
-    newArcher.setVisible(true);
-    newArcher.health = 20;
-    newArcher.setAlpha(1);
-    newArcher.body.enable = true;
 
-    // Reset archer-specific state
-    newArcher.isAttacking = false;
-    newArcher.currentState = 'idle'; // Or whatever your default is
-    newArcher.anims.play("archer_idle", true); // If applicable
-    newArcher.clearTimers?.(); // If you have any custom timers in Archer
-}
 
-spawnKnight() {
-    const x = Phaser.Math.Between(900, 1300);
-    const y = 400;
 
-    const newKnight = this.knights.get(x, y);
-    if (!newKnight) return;
-
-    if (!newKnight.body) {
-        // First time creation
-        newKnight.setScene(this);
-        this.physics.world.enable(newKnight);
-        this.add.existing(newKnight);
-    }
-
-    // Common reset for both reused and new
-    newKnight.setPosition(x, y);
-    newKnight.setActive(true);
-    newKnight.setVisible(true);
-    newKnight.health = 20;
-    newKnight.setAlpha(1);
-    newKnight.body.enable = true;
-
-    // Reset archer-specific state
-    newKnight.isAttacking = false;
-    newKnight.currentState = 'idle'; // Or whatever your default is
-    newKnight.anims.play("barrel_idle", true); // If applicable
-    newKnight.clearTimers?.(); // If you have any custom timers in Archer
-}
 
 
     spawnMultipleArchers(count = 5, duration = 10000) {
-    const interval = duration / count;
+        const interval = duration / count;
 
-    for (let i = 0; i < count; i++) {
-        this.time.delayedCall(i * interval, () => {
-            this.spawnArcher();
-        });
+        for (let i = 0; i < count; i++) {
+            this.time.delayedCall(i * interval, () => {
+                this.spawnArcher();
+            });
+        }
     }
-}
+
+    spawnMultipleEnemies(count = 5, duration = 10000) {
+        const interval = duration / count;
+
+        // place enemies in an array
+        const enemies = [
+            'archer',
+            'barrel_knight',
+            'slime'
+        ];
+
+        // call a random element from that array to spawn
+
+        // do a check for which enemy was pulled. Whichever was pulled is what will be summoned
+        for (let i = 0; i < count; i++) {
+            const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+            this.time.delayedCall(i * interval, () => {
+                if (randomEnemy === 'archer') {
+                    this.spawnArcher();
+                } else if (randomEnemy === 'slime') {
+                    this.spawnSlime();
+                } else if (randomEnemy === 'barrel_knight') {
+                    this.spawnKnight();
+                }
+            })
+        }
+    }
 
 }
 
