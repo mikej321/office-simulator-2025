@@ -509,6 +509,7 @@ class GlitchyScene extends Phaser.Scene {
         }, null, this);
 
         this.cameras.main.startFollow(this.player);
+        
     }
 
     update(time, delta) {

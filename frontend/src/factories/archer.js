@@ -22,7 +22,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.health = 30;
         this.isInvincible = false;
         this.invincibilityDuration = 300;
-        this.chaseRange = 1000; // chase speed when player gets close to archer
+        this.chaseRange = 500; // chase speed when player gets close to archer
         this.attackRange = 300; // range in which the archer starts his attack
         this.attackCooldown = 4000; // milliseconds between archers attacks
         this.lastAttackTime = 0; // track archers last attack

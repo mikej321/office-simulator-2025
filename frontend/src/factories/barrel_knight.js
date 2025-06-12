@@ -23,7 +23,7 @@ export default class Barrel_Knight extends Phaser.Physics.Arcade.Sprite {
 
         this.isInvincible = false; // Invincibility flag
         this.invincibilityDuration = 300;
-        this.chaseRange = 1000; // chase range from player to chase them
+        this.chaseRange = 500; // chase range from player to chase them
         this.attackRange = 200; // range to start attacking player
         this.attackCooldown = 2500; // ms between barrel knight attacks
         this.lastAttackTime = 0; // track barrel knight last attack
