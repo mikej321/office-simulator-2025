@@ -2,7 +2,7 @@ class StatsManager  {
     
     static wins = 0;
     static losses = 0;
-    static mentalPoints = 3; // Starting mental points
+    static menta0lPoints = -1; // Starting mental points
     static projectProgress = 0;
     static maxProjectProgress = 10; // Set a maximum for project progress
     static energyLevel = 3;
